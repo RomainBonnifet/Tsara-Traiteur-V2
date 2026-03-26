@@ -1,0 +1,103 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Categorie {
+  id       Int       @id @default(autoincrement())
+  nom      String    @unique
+  formules Formule[]
+}
+
+model Formule {
+  id          Int       @id @default(autoincrement())
+  nom         String
+  prix        Float
+  description String?
+  image       String?
+  categorieId Int
+  categorie   Categorie @relation(fields: [categorieId], references: [id])
+  slots       Slot[]
+  orders      Order[]
+}
+
+model Slot {
+  id         Int           @id @default(autoincrement())
+  nom        String
+  formuleId  Int
+  formule    Formule       @relation(fields: [formuleId], references: [id])
+  articles   SlotArticle[]
+  orderItems OrderItem[]
+}
+
+model Article {
+  id          Int           @id @default(autoincrement())
+  nom         String
+  description String?
+  image       String?
+  disponible  Boolean       @default(true)
+  slots       SlotArticle[]
+  orderItems  OrderItem[]
+}
+
+model SlotArticle {
+  slotId    Int
+  articleId Int
+  slot      Slot    @relation(fields: [slotId], references: [id])
+  article   Article @relation(fields: [articleId], references: [id])
+
+  @@id([slotId, articleId])
+}
+
+model User {
+  id       Int     @id @default(autoincrement())
+  email    String  @unique
+  password String
+  role     String  @default("customer")
+  orders   Order[]
+}
+
+model Order {
+  id           Int          @id @default(autoincrement())
+  statut       String       @default("en_attente")
+  date         DateTime     @default(now())
+  nbPersonnes  Int          @default(1)
+  montantTotal Float
+  userId       Int
+  formuleId    Int
+  user         User         @relation(fields: [userId], references: [id])
+  formule      Formule      @relation(fields: [formuleId], references: [id])
+  items        OrderItem[]
+  extras       OrderExtra[]
+}
+
+model Extra {
+  id          Int          @id @default(autoincrement())
+  nom         String
+  prix        Float
+  disponible  Boolean      @default(true)
+  orderExtras OrderExtra[]
+}
+
+model OrderExtra {
+  id       Int   @id @default(autoincrement())
+  orderId  Int
+  extraId  Int
+  quantite Int   @default(1)
+  order    Order @relation(fields: [orderId], references: [id])
+  extra    Extra @relation(fields: [extraId], references: [id])
+}
+
+model OrderItem {
+  id        Int     @id @default(autoincrement())
+  orderId   Int
+  slotId    Int
+  articleId Int
+  order     Order   @relation(fields: [orderId], references: [id])
+  slot      Slot    @relation(fields: [slotId], references: [id])
+  article   Article @relation(fields: [articleId], references: [id])
+}
