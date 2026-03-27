@@ -12,6 +12,7 @@ export async function GET(
       slots: {
         include: {
           articles: {
+            where: { article: { disponible: true } },
             include: {
               article: true
             }

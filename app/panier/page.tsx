@@ -10,6 +10,35 @@ export default function PanierPage() {
   const { user } = useAuth()
   const router = useRouter()
   const [loading, setLoading] = useState(false)
+  const [livraison, setLivraison] = useState({ telephone: "", date: "", adresse: "" })
+  const [adresseStatut, setAdresseStatut] = useState<"idle" | "checking" | "ok" | "error">("idle")
+  const [adresseMessage, setAdresseMessage] = useState("")
+
+  const hasIndividuel = items.every(item => !item.isGroupe)
+
+  const livraisonValide =
+    livraison.telephone.trim() !== "" &&
+    livraison.date !== "" &&
+    (hasIndividuel ? adresseStatut === "ok" : livraison.adresse.trim() !== "")
+
+  async function validerAdresse() {
+    if (!livraison.adresse.trim()) return
+    setAdresseStatut("checking")
+    setAdresseMessage("")
+    const res = await fetch("/api/validate-adresse", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ adresse: livraison.adresse }),
+    })
+    const data = await res.json()
+    if (data.ok) {
+      setAdresseStatut("ok")
+      setAdresseMessage(`✓ ${data.label}`)
+    } else {
+      setAdresseStatut("error")
+      setAdresseMessage(data.message)
+    }
+  }
 
   if (items.length === 0) {
     return (
@@ -109,9 +138,57 @@ export default function PanierPage() {
             </div>
           </div>
 
+          {/* ── Infos de livraison ── */}
+          <div className="livraison-form">
+            <h3 className="livraison-title">Informations de livraison</h3>
+            <div className="livraison-field">
+              <label className="livraison-label">Téléphone</label>
+              <input
+                className="livraison-input"
+                type="tel"
+                placeholder="06 12 34 56 78"
+                value={livraison.telephone}
+                onChange={e => setLivraison({ ...livraison, telephone: e.target.value })}
+              />
+            </div>
+            <div className="livraison-field">
+              <label className="livraison-label">Date de livraison</label>
+              <input
+                className="livraison-input"
+                type="date"
+                min={new Date().toISOString().split("T")[0]}
+                value={livraison.date}
+                onChange={e => setLivraison({ ...livraison, date: e.target.value })}
+              />
+            </div>
+            <div className="livraison-field">
+              <label className="livraison-label">Adresse de livraison</label>
+              <input
+                className={`livraison-input ${adresseStatut === "ok" ? "livraison-input-ok" : adresseStatut === "error" ? "livraison-input-error" : ""}`}
+                type="text"
+                placeholder="12 rue des Fleurs, 33000 Bordeaux"
+                value={livraison.adresse}
+                onChange={e => {
+                  setLivraison({ ...livraison, adresse: e.target.value })
+                  setAdresseStatut("idle")
+                  setAdresseMessage("")
+                }}
+                onBlur={hasIndividuel ? validerAdresse : undefined}
+              />
+              {hasIndividuel && adresseStatut === "checking" && (
+                <span className="livraison-hint">Vérification en cours...</span>
+              )}
+              {hasIndividuel && adresseMessage && (
+                <span className={`livraison-hint ${adresseStatut === "ok" ? "livraison-hint-ok" : "livraison-hint-error"}`}>
+                  {adresseMessage}
+                </span>
+              )}
+            </div>
+          </div>
+
           <button
             className="summary-cta"
-            disabled={loading}
+            disabled={loading || (!!user && !livraisonValide)}
             onClick={async () => {
               // Si non connecté, on redirige vers la connexion
               if (!user) {
@@ -122,7 +199,7 @@ export default function PanierPage() {
               const res = await fetch("/api/checkout", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ items })
+                body: JSON.stringify({ items, livraison })
               })
               const data = await res.json()
               setLoading(false)

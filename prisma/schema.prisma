@@ -62,17 +62,20 @@ model User {
 }
 
 model Order {
-  id           Int          @id @default(autoincrement())
-  statut       String       @default("en_attente")
-  date         DateTime     @default(now())
-  nbPersonnes  Int          @default(1)
-  montantTotal Float
-  userId       Int
-  formuleId    Int
-  user         User         @relation(fields: [userId], references: [id])
-  formule      Formule      @relation(fields: [formuleId], references: [id])
-  items        OrderItem[]
-  extras       OrderExtra[]
+  id            Int          @id @default(autoincrement())
+  statut        String       @default("en_attente")
+  date          DateTime     @default(now())
+  nbPersonnes   Int          @default(1)
+  montantTotal  Float
+  userId        Int
+  formuleId     Int
+  telephone     String?
+  dateLivraison DateTime?
+  adresse       String?
+  user          User         @relation(fields: [userId], references: [id])
+  formule       Formule      @relation(fields: [formuleId], references: [id])
+  items         OrderItem[]
+  extras        OrderExtra[]
 }
 
 model Extra {

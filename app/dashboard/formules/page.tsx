@@ -293,7 +293,7 @@ export default function FormulesPage() {
                     className="dash-btn dash-btn-sm dash-btn-danger"
                     onClick={() => handleDelete(f.id)}
                   >
-                    Supprimer
+                    X
                   </button>
                   {/* Lien vers la page d'édition des slots */}
                   <Link
@@ -301,7 +301,7 @@ export default function FormulesPage() {
                     className="dash-btn dash-btn-sm dash-btn-neutral"
                     style={{ textDecoration: "none" }}
                   >
-                    Gérer les slots →
+                    Slots
                   </Link>
                 </td>
               </tr>

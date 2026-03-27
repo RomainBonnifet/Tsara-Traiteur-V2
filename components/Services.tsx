@@ -9,13 +9,13 @@ export default function Services() {
           <div className="service-num">01</div>
           <h3>Livraison à domicile</h3>
           <p>Petit-déjeuner livré chez vous. Pas de courses, pas de préparation, juste le plaisir.</p>
-          <span className="service-pill">En Gironde &amp; alentours</span>
+          <span className="service-pill">Rayon de 20km autour de Coutras</span>
         </div>
         <div className="service-card">
           <div className="service-num">02</div>
           <h3>Séminaires &amp; pro</h3>
           <p>Solution clé en main pour vos pauses professionnelles et moments de cohésion.</p>
-          <span className="service-pill">Devis sur mesure</span>
+          <span className="service-pill">Secteur Libournais & Bordelais</span>
         </div>
         <div className="service-card">
           <div className="service-num">03</div>

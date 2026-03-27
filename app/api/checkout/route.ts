@@ -3,6 +3,7 @@ import Stripe from "stripe"
 import { prisma } from "@/lib/prisma"
 import { getCurrentUser } from "@/lib/auth"
 import { CartItem } from "@/context/CartContext"
+import { verifierRayon } from "@/lib/geo"
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
 
@@ -13,10 +14,27 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Non connecté" }, { status: 401 })
   }
 
-  const { items }: { items: CartItem[] } = await req.json()
+  const { items, livraison }: { items: CartItem[]; livraison: { telephone: string; date: string; adresse: string } } = await req.json()
 
   if (!items || items.length === 0) {
     return NextResponse.json({ error: "Panier vide" }, { status: 400 })
+  }
+
+  // Vérifier si le panier contient au moins une formule Individuelle.
+  // On interroge la DB avec les formuleIds du panier — le frontend ne doit pas
+  // être la seule source de vérité sur la catégorie.
+  const formuleIds = items.map(item => item.formuleId)
+  const formules = await prisma.formule.findMany({
+    where: { id: { in: formuleIds } },
+    include: { categorie: true },
+  })
+  const hasIndividuel = formules.every(f => f.categorie.nom !== "Groupe")
+
+  if (hasIndividuel) {
+    const rayonCheck = await verifierRayon(livraison.adresse)
+    if (!rayonCheck.ok) {
+      return NextResponse.json({ error: rayonCheck.message }, { status: 422 })
+    }
   }
 
   // 2. Créer les commandes en base (une par item du panier)
@@ -31,6 +49,9 @@ export async function POST(req: NextRequest) {
         nbPersonnes: item.nbPersonnes,
         montantTotal: item.subtotal,
         statut: "en_attente",
+        telephone: livraison.telephone,
+        dateLivraison: new Date(livraison.date),
+        adresse: livraison.adresse,
         // On aplatit les sélections : une OrderItem par slot/article par personne
         items: {
           create: item.selections.flatMap(personSel =>

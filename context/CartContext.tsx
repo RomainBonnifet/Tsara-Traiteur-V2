@@ -16,6 +16,7 @@ export type CartItem = {
   formuleNom: string
   formulePrix: number
   nbPersonnes: number
+  isGroupe: boolean
   selections: Array<Record<number, SelectionDetail>>  // [personne0: { slotId → détail }, personne1: ...]
   extras: ExtraDetail[]
   subtotal: number

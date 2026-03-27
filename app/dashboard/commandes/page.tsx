@@ -37,7 +37,7 @@ export default function CommandesPage() {
         <p className="dash-empty">Aucune commande pour le moment.</p>
       ) : (
         <div className="dash-table-wrapper">
-          <table className="dash-table">
+          <table className="dash-table commandes-table">
             <thead>
               <tr>
                 <th>#</th>
@@ -61,7 +61,7 @@ export default function CommandesPage() {
                       year: "numeric",
                     })}
                   </td>
-                  <td>{c.user.email}</td>
+                  <td><span className="cell-truncate">{c.user.email}</span></td>
                   <td>{c.formule.nom}</td>
                   <td>{c.nbPersonnes}</td>
                   <td>{c.montantTotal.toFixed(2)} €</td>

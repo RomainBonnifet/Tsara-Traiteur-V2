@@ -122,6 +122,7 @@ export default function CommanderPage() {
       formuleNom:  formule.nom,
       formulePrix: formule.prix,
       nbPersonnes,
+      isGroupe,
       selections:  selectionsDetail,
       extras:      extrasDetail,
       subtotal:    total,

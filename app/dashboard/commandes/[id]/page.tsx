@@ -25,6 +25,9 @@ type Commande = {
   statut: string
   montantTotal: number
   nbPersonnes: number
+  telephone: string | null
+  dateLivraison: string | null
+  adresse: string | null
   user: { email: string }
   formule: { nom: string; prix: number }
   items: OrderItem[]
@@ -110,6 +113,16 @@ export default function CommandeDetailPage() {
             <dd>{commande.nbPersonnes}</dd>
             <dt>Montant total</dt>
             <dd>{commande.montantTotal.toFixed(2)} €</dd>
+            <dt>Téléphone</dt>
+            <dd>{commande.telephone || "—"}</dd>
+            <dt>Date de livraison</dt>
+            <dd>
+              {commande.dateLivraison
+                ? new Date(commande.dateLivraison).toLocaleDateString("fr-FR", { day: "2-digit", month: "long", year: "numeric" })
+                : "—"}
+            </dd>
+            <dt>Adresse</dt>
+            <dd>{commande.adresse || "—"}</dd>
             <dt>Statut actuel</dt>
             <dd>
               <span className={`badge badge-${commande.statut}`}>

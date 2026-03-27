@@ -1659,6 +1659,71 @@ nav.scrolled .nav-admin:hover {
   cursor: not-allowed;
 }
 
+.livraison-form {
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+}
+
+.livraison-title {
+  font-size: .95rem;
+  font-weight: 600;
+  color: var(--brun);
+  margin-bottom: .25rem;
+}
+
+.livraison-field {
+  display: flex;
+  flex-direction: column;
+  gap: .3rem;
+}
+
+.livraison-label {
+  font-size: .8rem;
+  font-weight: 500;
+  color: var(--brun-clair);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.livraison-input {
+  padding: .6rem .75rem;
+  border: 1px solid var(--beige);
+  border-radius: 6px;
+  font-size: .9rem;
+  font-family: inherit;
+  color: var(--brun);
+  background: var(--blanc);
+  outline: none;
+  transition: border-color .15s;
+}
+
+.livraison-input:focus {
+  border-color: var(--vert);
+}
+
+.livraison-input-ok {
+  border-color: #4caf50;
+}
+
+.livraison-input-error {
+  border-color: #e53935;
+}
+
+.livraison-hint {
+  font-size: .8rem;
+  color: var(--brun-clair);
+}
+
+.livraison-hint-ok {
+  color: #4caf50;
+}
+
+.livraison-hint-error {
+  color: #e53935;
+}
+
 .summary-warning {
   font-size: .75rem;
   color: var(--brun-clair);
@@ -2167,6 +2232,33 @@ nav.scrolled .nav-admin:hover {
 .dash-row-edit td {
   background: rgba(184, 217, 74, .07);
   vertical-align: middle;
+}
+
+/* Commandes : largeurs proportionnelles par colonne
+   col 1 = #id, col 2 = date, col 3 = email, col 4 = formule,
+   col 5 = nb personnes, col 6 = montant, col 7 = statut, col 8 = action */
+.commandes-table th:nth-child(1),
+.commandes-table td:nth-child(1) { flex: 0.4; }   /* # */
+.commandes-table th:nth-child(2),
+.commandes-table td:nth-child(2) { flex: 0.9; }   /* Date */
+.commandes-table th:nth-child(3),
+.commandes-table td:nth-child(3) { flex: 2; min-width: 0; } /* Client (email long) */
+.commandes-table th:nth-child(4),
+.commandes-table td:nth-child(4) { flex: 1; }     /* Formule */
+.commandes-table th:nth-child(5),
+.commandes-table td:nth-child(5) { flex: 0.7; }   /* Nb personnes */
+.commandes-table th:nth-child(6),
+.commandes-table td:nth-child(6) { flex: 0.9; }   /* Montant */
+.commandes-table th:nth-child(7),
+.commandes-table td:nth-child(7) { flex: 0.8; }   /* Statut */
+.commandes-table th:nth-child(8),
+.commandes-table td:nth-child(8) { flex: 0.5; }   /* Action */
+
+.cell-truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
 }
 
 .dash-actions {
