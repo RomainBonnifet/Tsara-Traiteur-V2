@@ -1207,6 +1207,51 @@ footer {
   }
 }
 
+/* ── Actions nav (auth + panier) ── */
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+}
+
+.nav-login,
+.nav-logout,
+.nav-admin {
+  text-decoration: none;
+  background: none;
+  font-family: inherit;
+  font-size: .75rem;
+  font-weight: 500;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: rgba(253, 250, 244, .85);
+  border: 1px solid rgba(253, 250, 244, .5);
+  padding: 7px 18px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background .3s, color .3s, border-color .3s;
+}
+
+.nav-login:hover,
+.nav-logout:hover,
+.nav-admin:hover {
+  background: rgba(253, 250, 244, .12);
+}
+
+nav.scrolled .nav-login,
+nav.scrolled .nav-logout,
+nav.scrolled .nav-admin {
+  color: var(--vert);
+  border-color: var(--vert);
+}
+
+nav.scrolled .nav-login:hover,
+nav.scrolled .nav-logout:hover,
+nav.scrolled .nav-admin:hover {
+  background: var(--vert);
+  color: var(--blanc);
+}
+
 /* ── Icône panier dans la nav ── */
 .nav-cart {
   position: relative;
@@ -1249,7 +1294,7 @@ footer {
 .commander {
   min-height: 100vh;
   background: var(--creme);
-  padding: 7rem clamp(1.5rem, 6vw, 5rem) 5rem;
+  padding: 3rem clamp(1.5rem, 6vw, 5rem) 5rem;
 }
 
 .commander-header {
@@ -1629,6 +1674,10 @@ footer {
   .commander-summary {
     position: static;
   }
+
+  .nav-logo-container {
+    display: none;
+  }
 }
 
 /* ── Toast notification ── */
@@ -1793,5 +1842,750 @@ footer {
 @media (max-width: 900px) {
   .panier-body {
     grid-template-columns: 1fr;
+  }
+}
+
+/* ── Auth pages ─────────────────────────────────────────────────────────── */
+
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--creme);
+  padding: 2rem;
+}
+
+.auth-card {
+  background: var(--blanc);
+  border-radius: 12px;
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 4px 24px rgba(46,34,21,.08);
+}
+
+.auth-title {
+  font-size: 1.6rem;
+  color: var(--brun);
+  margin-bottom: 1.8rem;
+  text-align: center;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.auth-field {
+  display: flex;
+  flex-direction: column;
+  gap: .4rem;
+}
+
+.auth-field label {
+  font-size: .85rem;
+  font-weight: 600;
+  color: var(--brun-clair);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+
+.auth-field input {
+  padding: .75rem 1rem;
+  border: 1.5px solid var(--beige);
+  border-radius: 8px;
+  font-size: 1rem;
+  color: var(--brun);
+  background: var(--blanc);
+  transition: border-color .2s;
+  outline: none;
+}
+
+.auth-field input:focus {
+  border-color: var(--vert-clair);
+}
+
+.auth-error {
+  font-size: .88rem;
+  color: #c0392b;
+  background: #fdf0ef;
+  border-radius: 6px;
+  padding: .6rem .9rem;
+}
+
+.auth-success {
+  font-size: .88rem;
+  color: var(--vert);
+  background: #eef6e6;
+  border-radius: 6px;
+  padding: .6rem .9rem;
+  margin-bottom: .5rem;
+}
+
+.auth-btn {
+  padding: .85rem;
+  background: var(--vert);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .2s;
+  margin-top: .4rem;
+}
+
+.auth-btn:hover:not(:disabled) {
+  background: var(--vert-clair);
+}
+
+.auth-btn:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+.auth-switch {
+  text-align: center;
+  margin-top: 1.4rem;
+  font-size: .9rem;
+  color: var(--brun-clair);
+}
+
+.auth-switch a {
+  color: var(--vert-clair);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.auth-switch a:hover {
+  text-decoration: underline;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   DASHBOARD ADMIN
+   ═══════════════════════════════════════════════════════════ */
+
+/* Layout principal : sidebar fixe + contenu */
+.dashboard-layout {
+  display: flex;
+  min-height: 100vh;
+  background: var(--creme);
+}
+
+.dashboard-sidebar {
+  width: 240px;
+  min-height: 100vh;
+  background: var(--brun);
+  color: var(--blanc);
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  flex-shrink: 0;
+}
+
+.dashboard-brand {
+  padding: 1.5rem 1.25rem 1rem;
+  border-bottom: 1px solid rgba(253, 250, 244, .1);
+}
+
+.dashboard-brand a {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.2rem;
+  font-style: italic;
+  color: var(--lime);
+  text-decoration: none;
+  letter-spacing: .05em;
+}
+
+.dashboard-nav {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 0;
+  flex: 1;
+}
+
+.dashboard-nav-link {
+  display: block;
+  padding: .7rem 1.25rem;
+  color: rgba(253, 250, 244, .7);
+  text-decoration: none;
+  font-size: .85rem;
+  font-weight: 500;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  transition: background .2s, color .2s;
+  border-left: 3px solid transparent;
+}
+
+.dashboard-nav-link:hover {
+  background: rgba(253, 250, 244, .06);
+  color: var(--blanc);
+}
+
+.dashboard-nav-link.active {
+  background: rgba(184, 217, 74, .12);
+  color: var(--lime);
+  border-left-color: var(--lime);
+}
+
+.dashboard-sidebar-footer {
+  padding: 1rem 0;
+  border-top: 1px solid rgba(253, 250, 244, .1);
+}
+
+.dashboard-content {
+  flex: 1;
+  padding: 2rem 2.5rem;
+  max-width: 1100px;
+  overflow-x: auto;
+}
+
+/* Titres */
+.dash-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2rem;
+  font-weight: 300;
+  color: var(--brun);
+  margin-bottom: 1.5rem;
+}
+
+.dash-subtitle {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.4rem;
+  font-weight: 300;
+  color: var(--brun);
+  margin-bottom: 1rem;
+}
+
+/* Cartes de stats */
+.dash-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2.5rem;
+}
+
+.dash-card {
+  background: var(--blanc);
+  border: 1px solid var(--beige);
+  border-radius: 6px;
+  padding: 1.5rem;
+  text-align: center;
+  box-shadow: 0 1px 4px rgba(46, 34, 21, .06);
+}
+
+.dash-card-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--vert);
+  margin-bottom: .25rem;
+}
+
+.dash-card-label {
+  font-size: .8rem;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--brun-clair);
+}
+
+.dash-card-attente .dash-card-value { color: #d97706; }
+.dash-card-payee .dash-card-value   { color: var(--vert); }
+
+/* Sections */
+.dash-section {
+  margin-top: 2.5rem;
+}
+
+.dash-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+/* Tableau */
+.dash-table-wrapper {
+  overflow-x: auto;
+}
+
+.dash-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--blanc);
+  border: 1px solid var(--beige);
+  border-radius: 6px;
+  overflow: hidden;
+  font-size: .9rem;
+}
+
+.dash-table tr {
+  display: flex;
+  align-items: stretch;
+}
+
+.dash-table th {
+  flex: 1;
+  background: var(--vert);
+  color: var(--blanc);
+  padding: .75rem 1rem;
+  text-align: left;
+  font-weight: 500;
+  font-size: .78rem;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  white-space: nowrap;
+}
+
+.dash-table td {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: .7rem 1rem;
+  border-bottom: 1px solid var(--beige);
+  color: var(--brun);
+}
+
+/* Next/Image génère un span inline-block qui crée un espace vertical parasite.
+   On le force en block pour que la cellule calcule correctement sa hauteur. */
+.dash-table td span,
+.dash-table td img {
+  display: block;
+}
+
+.dash-table tr:last-child td {
+  border-bottom: none;
+}
+
+.dash-table tr:hover td {
+  background: rgba(58, 90, 28, .03);
+}
+
+.dash-row-edit td {
+  background: rgba(184, 217, 74, .07);
+  vertical-align: middle;
+}
+
+.dash-actions {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  white-space: nowrap;
+}
+
+.dash-img-cell {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+
+/* Badges statut */
+.badge {
+  display: inline-block;
+  padding: .25rem .65rem;
+  border-radius: 999px;
+  font-size: .75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  white-space: nowrap;
+}
+
+.badge-en_attente {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.badge-payee {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.badge-annulee {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* Badge cliquable (toggle disponibilité) */
+.badge-toggle {
+  border: none;
+  cursor: pointer;
+  transition: opacity .2s;
+}
+
+.badge-toggle:hover {
+  opacity: .8;
+}
+
+/* Boutons */
+.dash-btn {
+  display: inline-block;
+  padding: .55rem 1.1rem;
+  background: var(--vert);
+  color: var(--blanc);
+  border: none;
+  border-radius: 4px;
+  font-size: .85rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background .2s;
+  font-family: inherit;
+}
+
+.dash-btn:hover {
+  background: var(--vert-clair);
+}
+
+.dash-btn:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+.dash-btn-sm {
+  padding: .35rem .75rem;
+  font-size: .78rem;
+}
+
+.dash-btn-danger {
+  background: #dc2626;
+}
+
+.dash-btn-danger:hover {
+  background: #b91c1c;
+}
+
+.dash-btn-neutral {
+  background: var(--beige);
+  color: var(--brun);
+}
+
+.dash-btn-neutral:hover {
+  background: var(--brun-clair);
+  color: var(--blanc);
+}
+
+/* Formulaires */
+.dash-form {
+  background: var(--blanc);
+  border: 1px solid var(--beige);
+  border-radius: 6px;
+  padding: 1.5rem;
+}
+
+.dash-form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.dash-field {
+  display: flex;
+  flex-direction: column;
+  gap: .35rem;
+}
+
+.dash-label {
+  font-size: .8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--brun-clair);
+}
+
+.dash-input {
+  padding: .55rem .75rem;
+  border: 1px solid var(--beige);
+  border-radius: 4px;
+  font-size: .9rem;
+  font-family: inherit;
+  color: var(--brun);
+  background: var(--blanc);
+  transition: border-color .2s;
+  width: 100%;
+}
+
+.dash-input:focus {
+  outline: none;
+  border-color: var(--vert-clair);
+  box-shadow: 0 0 0 2px rgba(106, 146, 54, .15);
+}
+
+/* Détail commande */
+.dash-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.dash-detail-card {
+  background: var(--blanc);
+  border: 1px solid var(--beige);
+  border-radius: 6px;
+  padding: 1.5rem;
+}
+
+.dash-dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: .4rem 1rem;
+  font-size: .9rem;
+}
+
+.dash-dl dt {
+  font-weight: 600;
+  color: var(--brun-clair);
+  white-space: nowrap;
+}
+
+.dash-dl dd {
+  color: var(--brun);
+  margin: 0;
+}
+
+/* Messages et états */
+.dash-message {
+  margin: .75rem 0;
+  padding: .6rem 1rem;
+  background: rgba(58, 90, 28, .08);
+  border-left: 3px solid var(--vert-clair);
+  border-radius: 2px;
+  font-size: .9rem;
+  color: var(--brun);
+}
+
+.dash-loading {
+  padding: 3rem;
+  text-align: center;
+  color: var(--brun-clair);
+  font-size: 1rem;
+}
+
+.dash-empty {
+  padding: 2rem;
+  text-align: center;
+  color: var(--brun-clair);
+  background: var(--blanc);
+  border: 1px solid var(--beige);
+  border-radius: 6px;
+}
+
+.dash-back {
+  margin-bottom: 1.5rem;
+}
+
+/* ── Grille de cartes articles / extras ──────────────────────────────────── */
+
+.articles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1rem;
+  margin-top: .6rem;
+}
+
+/* Carte article (sélectionnable) */
+.article-card {
+  background: var(--blanc);
+  border: 2px solid var(--beige);
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  text-align: left;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  transition: border-color .2s, box-shadow .2s;
+  width: 100%;
+}
+
+.article-card:hover {
+  border-color: var(--vert-clair);
+  box-shadow: 0 2px 12px rgba(58,90,28,.1);
+}
+
+.article-card.selected {
+  border-color: var(--vert);
+  box-shadow: 0 0 0 3px rgba(58,90,28,.12);
+}
+
+/* Carte extra (avec compteur) */
+.extra-card {
+  background: var(--blanc);
+  border: 2px solid var(--beige);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: border-color .2s, box-shadow .2s;
+}
+
+.extra-card.selected {
+  border-color: var(--vert);
+  box-shadow: 0 0 0 3px rgba(58,90,28,.12);
+}
+
+/* Image commune aux deux types de cartes */
+.article-card-img {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background: var(--beige);
+  overflow: hidden;
+}
+
+.article-card-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--beige) 0%, var(--creme) 100%);
+}
+
+/* Coche de sélection sur l'image (articles) — en haut à droite */
+.article-card-check {
+  position: absolute;
+  top: .5rem;
+  right: .5rem;
+  width: 1.6rem;
+  height: 1.6rem;
+  background: var(--vert);
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .85rem;
+  font-weight: 700;
+}
+
+/* Quantité extras — pastille verte en haut à gauche */
+.extra-card-qty {
+  right: auto;
+  left: .5rem;
+}
+
+/* Bouton retrait extras — pastille rouge en haut à droite */
+.extra-card-remove {
+  position: absolute;
+  top: .5rem;
+  right: .5rem;
+  width: 1.6rem;
+  height: 1.6rem;
+  background: #c0392b;
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .15s;
+}
+
+.extra-card-remove:hover {
+  background: #a93226;
+}
+
+/* Corps de la carte */
+.article-card-body {
+  padding: .7rem .8rem .8rem;
+}
+
+.article-card-nom {
+  font-size: .9rem;
+  font-weight: 600;
+  color: var(--brun);
+  margin: 0 0 .25rem;
+}
+
+.article-card-desc {
+  font-size: .78rem;
+  color: var(--brun-clair);
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Prix et compteur spécifiques aux extras */
+.extra-card-prix {
+  font-size: .95rem;
+  font-weight: 700;
+  color: var(--vert);
+  margin: .4rem 0 .5rem;
+}
+
+
+/* ── Gestion slots dashboard ── */
+
+/* Carte conteneur d'un slot dans l'éditeur de formule */
+.slot-card {
+  background: var(--blanc);
+  border: 1px solid var(--beige);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+}
+
+/* Ligne du haut : input nom + boutons Renommer / Supprimer */
+.slot-card-header {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  flex-wrap: wrap;
+}
+
+/* Zone qui liste les articles sous forme de badges */
+.slot-articles-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+  min-height: 1.5rem;
+}
+
+/* Badge d'un article dans un slot — fond vert clair, texte blanc */
+.slot-article-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  background: var(--vert-clair);
+  color: var(--blanc);
+  border-radius: 20px;
+  padding: .2rem .65rem;
+  font-size: .8rem;
+  font-weight: 500;
+}
+
+/* Bouton ✕ dans le badge */
+.slot-article-tag button {
+  background: none;
+  border: none;
+  color: var(--blanc);
+  cursor: pointer;
+  font-size: .75rem;
+  line-height: 1;
+  padding: 0;
+  opacity: .75;
+  transition: opacity .15s;
+}
+
+.slot-article-tag button:hover {
+  opacity: 1;
+}
+
+/* Ligne du bas : select + bouton Ajouter */
+.slot-add-article {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 600px) {
+  .articles-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }

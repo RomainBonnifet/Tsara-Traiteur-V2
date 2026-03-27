@@ -79,6 +79,8 @@ model Extra {
   id          Int          @id @default(autoincrement())
   nom         String
   prix        Float
+  description String?
+  image       String?
   disponible  Boolean      @default(true)
   orderExtras OrderExtra[]
 }

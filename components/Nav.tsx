@@ -3,14 +3,16 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const { count } = useCart();
+  const { user, logout } = useAuth();
 
   useEffect(() => {
-    const handler = () => setScrolled(window.scrollY > 80);
+    const handler = () => setScrolled(window.scrollY > 40);
     handler(); // vérifie la position dès le montage, sans attendre un scroll
     window.addEventListener("scroll", handler);
     return () => window.removeEventListener("scroll", handler);
@@ -45,10 +47,22 @@ export default function Nav() {
           </a>
         </li>
       </ul>
-      <Link href="/panier" className="nav-cart" aria-label="Panier">
-        🛒
-        {count > 0 && <span className="nav-cart-count">{count}</span>}
-      </Link>
+      <div className="nav-actions">
+        {user ? (
+          <>
+            {user.role === "admin" && (
+              <Link href="/dashboard" className="nav-admin">Admin</Link>
+            )}
+            <button onClick={logout} className="nav-logout">Déconnexion</button>
+          </>
+        ) : (
+          <Link href="/connexion" className="nav-login">Connexion</Link>
+        )}
+        <Link href="/panier" className="nav-cart" aria-label="Panier">
+          🛒
+          {count > 0 && <span className="nav-cart-count">{count}</span>}
+        </Link>
+      </div>
       <button
         className="nav-hamburger"
         onClick={() => setMenuOpen(!menuOpen)}

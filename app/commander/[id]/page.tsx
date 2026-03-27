@@ -1,15 +1,16 @@
 "use client"
 import { useState, useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
+import Image from "next/image"
 import { useCart } from "@/context/CartContext"
 
 // --- Types ---
-type Article     = { id: number; nom: string }
+type Article     = { id: number; nom: string; description?: string; image?: string }
 type SlotArticle = { article: Article }
 type Slot        = { id: number; nom: string; articles: SlotArticle[] }
 type Categorie   = { id: number; nom: string }
 type Formule     = { id: number; nom: string; prix: number; categorie: Categorie; slots: Slot[] }
-type Extra       = { id: number; nom: string; prix: number }
+type Extra       = { id: number; nom: string; prix: number; description?: string; image?: string }
 
 export default function CommanderPage() {
   const { id }      = useParams()
@@ -23,7 +24,7 @@ export default function CommanderPage() {
   // ── État commun ──
   // Pour INDIVIDUEL : un dict par personne → [{ slotId: articleId }, { slotId: articleId }]
   // Pour GROUPE     : toujours un seul dict → [{ slotId: articleId }]
-  const [selections, setSelections]     = useState<Array<Record<number, number>>>([{}])
+  const [selections, setSelections]         = useState<Array<Record<number, number>>>([{}])
   const [activePersonne, setActivePersonne] = useState(0)
 
   // Pour GROUPE uniquement : nombre de plateaux commandés (découplé des sélections)
@@ -48,7 +49,6 @@ export default function CommanderPage() {
 
   // ── Fonctions de sélection ──
 
-  // INDIVIDUEL : ajoute / retire un onglet personne
   function changeNbPersonnes(delta: number) {
     setSelections(prev => {
       const next = Math.max(1, prev.length + delta)
@@ -61,7 +61,6 @@ export default function CommanderPage() {
     })
   }
 
-  // INDIVIDUEL : sélectionne un article pour la personne active
   function selectArticleIndividuel(slotId: number, articleId: number) {
     setSelections(prev => {
       const updated = [...prev]
@@ -70,7 +69,6 @@ export default function CommanderPage() {
     })
   }
 
-  // GROUPE : sélectionne un article pour la configuration commune
   function selectArticleGroupe(slotId: number, articleId: number) {
     setSelections([{ ...selections[0], [slotId]: articleId }])
   }
@@ -92,8 +90,6 @@ export default function CommanderPage() {
   const totalExtras  = extras.reduce((sum, e) => sum + (extraQty[e.id] ?? 0) * e.prix, 0)
   const total        = totalFormule + totalExtras
 
-  // GROUPE : la config commune est complète
-  // INDIVIDUEL : toutes les personnes ont tous leurs slots remplis
   const allSelected = formule
     ? isGroupe
       ? formule.slots.every(slot => selections[0]?.[slot.id])
@@ -109,10 +105,10 @@ export default function CommanderPage() {
     if (!formule || !allSelected) return
 
     const selectionsDetail = selections.map(personSel => {
-      const detail: Record<number, { slotNom: string; articleNom: string }> = {}
+      const detail: Record<number, { slotNom: string; articleNom: string; articleId: number }> = {}
       for (const slot of formule.slots) {
-        const articleNom = slot.articles.find(sa => sa.article.id === personSel[slot.id])?.article.nom ?? ""
-        detail[slot.id] = { slotNom: slot.nom, articleNom }
+        const sa = slot.articles.find(sa => sa.article.id === personSel[slot.id])
+        detail[slot.id] = { slotNom: slot.nom, articleNom: sa?.article.nom ?? "", articleId: sa?.article.id ?? 0 }
       }
       return detail
     })
@@ -137,6 +133,72 @@ export default function CommanderPage() {
 
   if (!formule) return <div className="commander-loading">Chargement...</div>
 
+  // ── Composant carte article ──
+  function ArticleCard({ sa, selected, onSelect }: {
+    sa: SlotArticle
+    selected: boolean
+    onSelect: () => void
+  }) {
+    return (
+      <button
+        className={`article-card ${selected ? "selected" : ""}`}
+        onClick={onSelect}
+        type="button"
+      >
+        <div className="article-card-img">
+          {sa.article.image
+            ? <Image src={sa.article.image} alt={sa.article.nom} fill style={{ objectFit: "cover" }} />
+            : <div className="article-card-placeholder" />
+          }
+          {selected && <div className="article-card-check">✓</div>}
+        </div>
+        <div className="article-card-body">
+          <p className="article-card-nom">{sa.article.nom}</p>
+          {sa.article.description && (
+            <p className="article-card-desc">{sa.article.description}</p>
+          )}
+        </div>
+      </button>
+    )
+  }
+
+  // ── Composant carte extra ──
+  // Clic sur la carte = +1 / clic sur le badge = −1
+  function ExtraCard({ extra }: { extra: Extra }) {
+    const qty = extraQty[extra.id] ?? 0
+    return (
+      <button
+        className={`article-card ${qty > 0 ? "selected" : ""}`}
+        onClick={() => changeQty(extra.id, 1)}
+        type="button"
+      >
+        <div className="article-card-img">
+          {extra.image
+            ? <Image src={extra.image} alt={extra.nom} fill style={{ objectFit: "cover" }} />
+            : <div className="article-card-placeholder" />
+          }
+          {qty > 0 && (
+            <>
+              <div className="article-card-check extra-card-qty">{qty}</div>
+              <div
+                className="extra-card-remove"
+                onClick={e => { e.stopPropagation(); changeQty(extra.id, -1) }}
+                title="Retirer un"
+              >✕</div>
+            </>
+          )}
+        </div>
+        <div className="article-card-body">
+          <p className="article-card-nom">{extra.nom}</p>
+          {extra.description && (
+            <p className="article-card-desc">{extra.description}</p>
+          )}
+          <p className="extra-card-prix">{extra.prix.toFixed(2)} €</p>
+        </div>
+      </button>
+    )
+  }
+
   return (
     <main className="commander">
 
@@ -152,9 +214,6 @@ export default function CommanderPage() {
         <div className="commander-slots">
 
           {isGroupe ? (
-            /* ════════════════════════════════
-               MODE GROUPE — config commune
-               ════════════════════════════════ */
             <>
               <h2>Composez le plateau</h2>
               <p className="extras-subtitle">Une composition commune pour tous les plateaux</p>
@@ -162,30 +221,20 @@ export default function CommanderPage() {
               {formule.slots.map(slot => (
                 <div key={slot.id} className="slot-group">
                   <h3>{slot.nom}</h3>
-                  <div className="slot-articles">
+                  <div className="articles-grid">
                     {slot.articles.map(sa => (
-                      <label
+                      <ArticleCard
                         key={sa.article.id}
-                        className={`article-option ${selections[0]?.[slot.id] === sa.article.id ? "selected" : ""}`}
-                      >
-                        <input
-                          type="radio"
-                          name={`slot-${slot.id}`}
-                          value={sa.article.id}
-                          checked={selections[0]?.[slot.id] === sa.article.id}
-                          onChange={() => selectArticleGroupe(slot.id, sa.article.id)}
-                        />
-                        {sa.article.nom}
-                      </label>
+                        sa={sa}
+                        selected={selections[0]?.[slot.id] === sa.article.id}
+                        onSelect={() => selectArticleGroupe(slot.id, sa.article.id)}
+                      />
                     ))}
                   </div>
                 </div>
               ))}
             </>
           ) : (
-            /* ════════════════════════════════
-               MODE INDIVIDUEL — onglets
-               ════════════════════════════════ */
             <>
               <div className="personnes-header">
                 <h2>Composez les plateaux</h2>
@@ -212,21 +261,14 @@ export default function CommanderPage() {
               {formule.slots.map(slot => (
                 <div key={slot.id} className="slot-group">
                   <h3>{slot.nom}</h3>
-                  <div className="slot-articles">
+                  <div className="articles-grid">
                     {slot.articles.map(sa => (
-                      <label
+                      <ArticleCard
                         key={sa.article.id}
-                        className={`article-option ${selections[activePersonne]?.[slot.id] === sa.article.id ? "selected" : ""}`}
-                      >
-                        <input
-                          type="radio"
-                          name={`slot-${slot.id}-p${activePersonne}`}
-                          value={sa.article.id}
-                          checked={selections[activePersonne]?.[slot.id] === sa.article.id}
-                          onChange={() => selectArticleIndividuel(slot.id, sa.article.id)}
-                        />
-                        {sa.article.nom}
-                      </label>
+                        sa={sa}
+                        selected={selections[activePersonne]?.[slot.id] === sa.article.id}
+                        onSelect={() => selectArticleIndividuel(slot.id, sa.article.id)}
+                      />
                     ))}
                   </div>
                 </div>
@@ -234,22 +276,14 @@ export default function CommanderPage() {
             </>
           )}
 
-          {/* ── Extras (communs aux deux modes) ── */}
+          {/* ── Extras ── */}
           {extras.length > 0 && (
             <div className="extras-section">
               <h2>Ajouter des extras</h2>
               <p className="extras-subtitle">Articles supplémentaires à la carte</p>
-              <div className="extras-list">
+              <div className="articles-grid">
                 {extras.map(extra => (
-                  <div key={extra.id} className="extra-item">
-                    <span className="extra-nom">{extra.nom}</span>
-                    <span className="extra-prix">{extra.prix.toFixed(2)} €</span>
-                    <div className="extra-counter">
-                      <button onClick={() => changeQty(extra.id, -1)} disabled={!extraQty[extra.id]}>−</button>
-                      <span>{extraQty[extra.id] ?? 0}</span>
-                      <button onClick={() => changeQty(extra.id, 1)}>+</button>
-                    </div>
-                  </div>
+                  <ExtraCard key={extra.id} extra={extra} />
                 ))}
               </div>
             </div>
@@ -261,7 +295,6 @@ export default function CommanderPage() {
         <div className="commander-summary">
           <h2>Récapitulatif</h2>
 
-          {/* Sélecteur de quantité — GROUPE seulement */}
           {isGroupe && (
             <div className="summary-personnes">
               <label>Nombre de plateaux</label>
@@ -273,7 +306,6 @@ export default function CommanderPage() {
             </div>
           )}
 
-          {/* Sélections */}
           {isGroupe ? (
             <div className="summary-selections">
               <p className="summary-section-title">Composition commune</p>
@@ -310,7 +342,6 @@ export default function CommanderPage() {
             ))
           )}
 
-          {/* Extras */}
           {Object.keys(extraQty).length > 0 && (
             <div className="summary-extras">
               <p className="summary-section-title">Extras</p>
@@ -323,7 +354,6 @@ export default function CommanderPage() {
             </div>
           )}
 
-          {/* Total */}
           <div className="summary-total">
             <div className="summary-line">
               <span>Formule × {nbPersonnes}</span>

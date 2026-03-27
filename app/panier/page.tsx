@@ -1,9 +1,15 @@
 "use client"
 import Link from "next/link"
+import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { useCart } from "@/context/CartContext"
+import { useAuth } from "@/context/AuthContext"
 
 export default function PanierPage() {
   const { items, removeItem, total, clearCart } = useCart()
+  const { user } = useAuth()
+  const router = useRouter()
+  const [loading, setLoading] = useState(false)
 
   if (items.length === 0) {
     return (
@@ -103,8 +109,28 @@ export default function PanierPage() {
             </div>
           </div>
 
-          <button className="summary-cta">
-            Passer commande
+          <button
+            className="summary-cta"
+            disabled={loading}
+            onClick={async () => {
+              // Si non connecté, on redirige vers la connexion
+              if (!user) {
+                router.push("/connexion?redirect=/panier")
+                return
+              }
+              setLoading(true)
+              const res = await fetch("/api/checkout", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ items })
+              })
+              const data = await res.json()
+              setLoading(false)
+              // Stripe nous renvoie une URL, on y redirige
+              if (data.url) window.location.href = data.url
+            }}
+          >
+            {loading ? "Chargement..." : user ? "Passer commande" : "Se connecter pour commander"}
           </button>
 
           <button
