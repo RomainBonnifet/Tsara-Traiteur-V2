@@ -7,9 +7,9 @@ import { useCart } from "@/context/CartContext"
 // --- Types ---
 type Article     = { id: number; nom: string; description?: string; image?: string }
 type SlotArticle = { article: Article }
-type Slot        = { id: number; nom: string; articles: SlotArticle[] }
+type Slot        = { id: number; nom: string; capacite: number; articles: SlotArticle[] }
 type Categorie   = { id: number; nom: string }
-type Formule     = { id: number; nom: string; prix: number; categorie: Categorie; slots: Slot[] }
+type Formule     = { id: number; nom: string; prix: number; description: string | null; minPersonnes: number; pasPersonnes: number; categorie: Categorie; slots: Slot[] }
 type Extra       = { id: number; nom: string; prix: number; description?: string; image?: string }
 
 export default function CommanderPage() {
@@ -21,13 +21,12 @@ export default function CommanderPage() {
   const [extras, setExtras]   = useState<Extra[]>([])
   const [toast, setToast]     = useState(false)
 
-  // ── État commun ──
-  // Pour INDIVIDUEL : un dict par personne → [{ slotId: articleId }, { slotId: articleId }]
-  // Pour GROUPE     : toujours un seul dict → [{ slotId: articleId }]
+  // Un tableau de dicts : selections[personneIndex][slotId] = articleId
+  // Pour GROUPE : un seul élément (selections[0])
   const [selections, setSelections]         = useState<Array<Record<number, number>>>([{}])
   const [activePersonne, setActivePersonne] = useState(0)
 
-  // Pour GROUPE uniquement : nombre de plateaux commandés (découplé des sélections)
+  // Pour GROUPE uniquement : nombre de plateaux (découplé des sélections)
   const [nbGroupePersonnes, setNbGroupePersonnes] = useState(10)
 
   const [extraQty, setExtraQty] = useState<Record<number, number>>({})
@@ -41,36 +40,64 @@ export default function CommanderPage() {
       .then(data => setExtras(data))
   }, [id])
 
-  // true si la formule appartient à la catégorie "Groupe"
-  const isGroupe = formule?.categorie.nom === "Groupe"
+  // Quand la formule charge, initialiser le nombre de personnes au minimum requis
+  useEffect(() => {
+    if (!formule) return
+    const isG = formule.categorie.nom === "Groupe"
+    if (!isG && formule.minPersonnes > 1) {
+      setSelections(Array.from({ length: formule.minPersonnes }, () => ({})))
+    }
+  }, [formule])
 
-  // Le vrai nbPersonnes selon le mode
+  const isGroupe   = formule?.categorie.nom === "Groupe"
   const nbPersonnes = isGroupe ? nbGroupePersonnes : selections.length
 
-  // ── Fonctions de sélection ──
+  // ── Logique de groupe ──
+  // Pour un slot de capacite C, les personnes 0, C, 2C, ... sont "chefs de groupe".
+  // Elles choisissent pour tout leur groupe. Les autres reçoivent automatiquement le même choix.
 
-  function changeNbPersonnes(delta: number) {
-    setSelections(prev => {
-      const next = Math.max(1, prev.length + delta)
-      if (next > prev.length) {
-        return [...prev, ...Array(next - prev.length).fill({})]
-      } else {
-        setActivePersonne(curr => Math.min(curr, next - 1))
-        return prev.slice(0, next)
-      }
-    })
+  function getGroupLeader(personIndex: number, capacite: number): number {
+    return Math.floor(personIndex / capacite) * capacite
   }
 
-  function selectArticleIndividuel(slotId: number, articleId: number) {
+  function isGroupLeader(personIndex: number, capacite: number): boolean {
+    return personIndex % capacite === 0
+  }
+
+  // Quand on sélectionne un article pour un slot partagé, on propage à tout le groupe
+  function selectArticle(slotId: number, articleId: number, capacite: number) {
+    const groupStart = getGroupLeader(activePersonne, capacite)
+    const groupEnd   = Math.min(groupStart + capacite - 1, selections.length - 1)
+
     setSelections(prev => {
-      const updated = [...prev]
-      updated[activePersonne] = { ...updated[activePersonne], [slotId]: articleId }
+      const updated = prev.map(sel => ({ ...sel }))
+      for (let p = groupStart; p <= groupEnd; p++) {
+        updated[p] = { ...updated[p], [slotId]: articleId }
+      }
       return updated
     })
   }
 
   function selectArticleGroupe(slotId: number, articleId: number) {
     setSelections([{ ...selections[0], [slotId]: articleId }])
+  }
+
+  // +/- personnes en respectant minPersonnes et pasPersonnes
+  function changeNbPersonnes(delta: number) {
+    if (!formule) return
+    const min  = formule.minPersonnes
+    const step = formule.pasPersonnes
+
+    setSelections(prev => {
+      const next = Math.max(min, prev.length + (delta > 0 ? step : -step))
+      if (next > prev.length) {
+        return [...prev, ...Array.from({ length: next - prev.length }, () => ({}))]
+      } else if (next < prev.length) {
+        setActivePersonne(curr => Math.min(curr, next - 1))
+        return prev.slice(0, next)
+      }
+      return prev
+    })
   }
 
   function changeQty(extraId: number, delta: number) {
@@ -90,10 +117,16 @@ export default function CommanderPage() {
   const totalExtras  = extras.reduce((sum, e) => sum + (extraQty[e.id] ?? 0) * e.prix, 0)
   const total        = totalFormule + totalExtras
 
+  // Pour les slots partagés, seuls les chefs de groupe doivent avoir fait un choix
+  // (les autres reçoivent le choix du chef automatiquement)
   const allSelected = formule
     ? isGroupe
       ? formule.slots.every(slot => selections[0]?.[slot.id])
-      : selections.every(ps => formule.slots.every(slot => ps[slot.id]))
+      : formule.slots.every(slot =>
+          // Pour chaque groupe dans ce slot, le chef a fait son choix
+          Array.from({ length: Math.ceil(selections.length / slot.capacite) }, (_, g) => g * slot.capacite)
+            .every(leaderIdx => selections[leaderIdx]?.[slot.id])
+        )
     : false
 
   function isPersonneComplete(i: number) {
@@ -135,28 +168,37 @@ export default function CommanderPage() {
   if (!formule) return <div className="commander-loading">Chargement...</div>
 
   // ── Composant carte article ──
-  function ArticleCard({ sa, selected, onSelect }: {
+  // autoSelected = sélectionné automatiquement (non-chef de groupe) : affiché comme sélectionné mais non cliquable
+  function ArticleCard({ sa, selected, onSelect, autoSelected, leaderIndex }: {
     sa: SlotArticle
     selected: boolean
     onSelect: () => void
+    autoSelected?: boolean
+    leaderIndex?: number
   }) {
     return (
       <button
-        className={`article-card ${selected ? "selected" : ""}`}
-        onClick={onSelect}
+        className={`article-card ${selected ? "selected" : ""} ${autoSelected ? "article-card-auto" : ""}`}
+        onClick={autoSelected ? undefined : onSelect}
         type="button"
+        style={autoSelected ? { cursor: "default" } : undefined}
       >
         <div className="article-card-img">
           {sa.article.image
             ? <Image src={sa.article.image} alt={sa.article.nom} fill style={{ objectFit: "cover" }} />
             : <div className="article-card-placeholder" />
           }
-          {selected && <div className="article-card-check">✓</div>}
+          {selected && (
+            <div className="article-card-check">{autoSelected ? "↑" : "✓"}</div>
+          )}
         </div>
         <div className="article-card-body">
           <p className="article-card-nom">{sa.article.nom}</p>
           {sa.article.description && (
             <p className="article-card-desc">{sa.article.description}</p>
+          )}
+          {autoSelected && (
+            <p className="article-card-auto-label">Identique au plateau {(leaderIndex ?? 0) + 1}</p>
           )}
         </div>
       </button>
@@ -164,7 +206,6 @@ export default function CommanderPage() {
   }
 
   // ── Composant carte extra ──
-  // Clic sur la carte = +1 / clic sur le badge = −1
   function ExtraCard({ extra }: { extra: Extra }) {
     const qty = extraQty[extra.id] ?? 0
     return (
@@ -207,6 +248,9 @@ export default function CommanderPage() {
         <a href="/#formules" className="commander-back">← Retour aux formules</a>
         <h1>Formule <em>{formule.nom}</em></h1>
         <p>{formule.prix.toFixed(2)} € / personne</p>
+        {formule.description && (
+          <p className="commander-description">{formule.description}</p>
+        )}
       </div>
 
       <div className="commander-body">
@@ -240,7 +284,7 @@ export default function CommanderPage() {
               <div className="personnes-header">
                 <h2>Composez les plateaux</h2>
                 <div className="personnes-counter">
-                  <button onClick={() => changeNbPersonnes(-1)} disabled={selections.length <= 1}>−</button>
+                  <button onClick={() => changeNbPersonnes(-1)} disabled={selections.length <= formule.minPersonnes}>−</button>
                   <span>{selections.length} personne{selections.length > 1 ? "s" : ""}</span>
                   <button onClick={() => changeNbPersonnes(1)}>+</button>
                 </div>
@@ -259,21 +303,40 @@ export default function CommanderPage() {
                 ))}
               </div>
 
-              {formule.slots.map(slot => (
-                <div key={slot.id} className="slot-group">
-                  <h3>{slot.nom}</h3>
-                  <div className="articles-grid">
-                    {slot.articles.map(sa => (
-                      <ArticleCard
-                        key={sa.article.id}
-                        sa={sa}
-                        selected={selections[activePersonne]?.[slot.id] === sa.article.id}
-                        onSelect={() => selectArticleIndividuel(slot.id, sa.article.id)}
-                      />
-                    ))}
+              {formule.slots.map(slot => {
+                const leader   = getGroupLeader(activePersonne, slot.capacite)
+                const isLeader = isGroupLeader(activePersonne, slot.capacite)
+                // Nombre de personnes couvertes par le groupe de activePersonne pour ce slot
+                const groupSize = Math.min(slot.capacite, selections.length - leader)
+
+                return (
+                  <div key={slot.id} className="slot-group">
+                    <h3>
+                      {slot.nom}
+                      {slot.capacite > 1 && (
+                        <span className="slot-shared-badge">
+                          {isLeader
+                            ? `1 choix pour ${groupSize} personne${groupSize > 1 ? "s" : ""}`
+                            : `Même choix que le plateau ${leader + 1}`
+                          }
+                        </span>
+                      )}
+                    </h3>
+                    <div className="articles-grid">
+                      {slot.articles.map(sa => (
+                        <ArticleCard
+                          key={sa.article.id}
+                          sa={sa}
+                          selected={selections[activePersonne]?.[slot.id] === sa.article.id}
+                          autoSelected={!isLeader}
+                          leaderIndex={leader}
+                          onSelect={() => selectArticle(slot.id, sa.article.id, slot.capacite)}
+                        />
+                      ))}
+                    </div>
                   </div>
-                </div>
-              ))}
+                )
+              })}
             </>
           )}
 
@@ -323,24 +386,35 @@ export default function CommanderPage() {
               ))}
             </div>
           ) : (
-            selections.map((personSel, i) => (
-              <div key={i} className="summary-selections">
-                <p className="summary-section-title">
-                  {selections.length > 1 ? `Plateau ${i + 1}` : "Votre plateau"}
-                </p>
-                {formule.slots.map(slot => (
-                  <div key={slot.id} className="summary-line">
-                    <span>{slot.nom}</span>
-                    <span>
-                      {personSel[slot.id]
-                        ? slot.articles.find(sa => sa.article.id === personSel[slot.id])?.article.nom
-                        : <em>Non choisi</em>
-                      }
-                    </span>
-                  </div>
-                ))}
-              </div>
-            ))
+            // Dans le récap, on affiche un bloc par groupe (pas par personne) pour les slots partagés
+            // On utilise le premier plateau de chaque groupe comme représentant
+            Array.from({ length: selections.length }, (_, i) => i)
+              .filter(() => true)
+              .map((i) => (
+                <div key={i} className="summary-selections">
+                  <p className="summary-section-title">
+                    {selections.length > 1 ? `Plateau ${i + 1}` : "Votre plateau"}
+                  </p>
+                  {formule.slots.map(slot => {
+                    const leader   = getGroupLeader(i, slot.capacite)
+                    const isLeader = isGroupLeader(i, slot.capacite)
+                    return (
+                      <div key={slot.id} className="summary-line">
+                        <span>{slot.nom}</span>
+                        <span>
+                          {selections[i]?.[slot.id]
+                            ? <>
+                                {slot.articles.find(sa => sa.article.id === selections[i][slot.id])?.article.nom}
+                                {!isLeader && <em style={{ fontSize: ".75rem", marginLeft: ".3rem", opacity: .6 }}>(plateau {leader + 1})</em>}
+                              </>
+                            : <em>Non choisi</em>
+                          }
+                        </span>
+                      </div>
+                    )
+                  })}
+                </div>
+              ))
           )}
 
           {Object.keys(extraQty).length > 0 && (

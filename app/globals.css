@@ -673,6 +673,13 @@ h1 em {
   color: var(--brun-clair);
 }
 
+.formule-description {
+  font-size: .9rem;
+  color: var(--brun-clair);
+  font-style: italic;
+  margin-bottom: .75rem;
+}
+
 /* Panneau de détail déroulant */
 .formule-detail {
   padding: 1rem 1.1rem 1.2rem;
@@ -1320,6 +1327,14 @@ nav.scrolled .nav-admin:hover {
   margin-bottom: .3rem;
 }
 
+.commander-description {
+  margin-top: .5rem;
+  font-size: .95rem;
+  color: var(--brun-clair);
+  font-style: italic;
+  max-width: 60ch;
+}
+
 .commander-header p {
   color: var(--vert);
   font-size: 1rem;
@@ -1610,9 +1625,15 @@ nav.scrolled .nav-admin:hover {
 .summary-line {
   display: flex;
   justify-content: space-between;
+  align-items: baseline;
   gap: .5rem;
   font-size: .83rem;
   color: var(--brun);
+}
+
+.summary-line span:last-child {
+  text-align: right;
+  flex-shrink: 0;
 }
 
 .summary-line em {
@@ -1749,6 +1770,21 @@ nav.scrolled .nav-admin:hover {
 @keyframes toast-in {
   from { opacity: 0; transform: translateY(20px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+
+.dash-toast {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background: var(--vert);
+  color: var(--blanc);
+  padding: .75rem 1.25rem;
+  border-radius: 6px;
+  box-shadow: 0 4px 20px rgba(0,0,0,.15);
+  font-size: .9rem;
+  font-weight: 500;
+  animation: toast-in .25s ease;
+  z-index: 1000;
 }
 
 .toast {
@@ -2257,8 +2293,8 @@ nav.scrolled .nav-admin:hover {
 .cell-truncate {
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis;
-  width: 100%;
+  overflow: scroll;
+  width: 80%;
 }
 
 .dash-actions {
@@ -2597,6 +2633,34 @@ nav.scrolled .nav-admin:hover {
   color: var(--brun-clair);
   margin: 0;
   line-height: 1.4;
+}
+
+/* Carte auto-sélectionnée (slot partagé, non-chef de groupe) */
+.article-card-auto {
+  opacity: .7;
+}
+.article-card-auto:hover {
+  transform: none;
+  box-shadow: none;
+}
+.article-card-auto-label {
+  font-size: .7rem;
+  color: var(--vert);
+  font-style: italic;
+  margin: .2rem 0 0;
+}
+
+/* Badge sur le titre d'un slot partagé */
+.slot-shared-badge {
+  display: inline-block;
+  margin-left: .6rem;
+  font-size: .72rem;
+  font-weight: 500;
+  background: rgba(58, 90, 28, .1);
+  color: var(--vert);
+  padding: .15rem .5rem;
+  border-radius: 20px;
+  vertical-align: middle;
 }
 
 /* Prix et compteur spécifiques aux extras */

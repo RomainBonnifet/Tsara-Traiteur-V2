@@ -14,20 +14,23 @@ model Categorie {
 }
 
 model Formule {
-  id          Int       @id @default(autoincrement())
-  nom         String
-  prix        Float
-  description String?
-  image       String?
-  categorieId Int
-  categorie   Categorie @relation(fields: [categorieId], references: [id])
-  slots       Slot[]
-  orders      Order[]
+  id           Int       @id @default(autoincrement())
+  nom          String
+  prix         Float
+  description  String?
+  image        String?
+  minPersonnes Int       @default(1)
+  pasPersonnes Int       @default(1)
+  categorieId  Int
+  categorie    Categorie @relation(fields: [categorieId], references: [id])
+  slots        Slot[]
+  orders       Order[]
 }
 
 model Slot {
   id         Int           @id @default(autoincrement())
   nom        String
+  capacite   Int           @default(1)
   formuleId  Int
   formule    Formule       @relation(fields: [formuleId], references: [id])
   articles   SlotArticle[]

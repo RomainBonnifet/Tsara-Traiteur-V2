@@ -43,7 +43,7 @@ export async function PUT(
 
   const { id } = await params
   const body = await req.json()
-  const { nom, prix, description } = body
+  const { nom, prix, description, minPersonnes, pasPersonnes } = body
 
   const formule = await prisma.formule.update({
     where: { id: parseInt(id) },
@@ -51,6 +51,8 @@ export async function PUT(
       ...(nom !== undefined && { nom }),
       ...(prix !== undefined && { prix: parseFloat(prix) }),
       ...(description !== undefined && { description }),
+      ...(minPersonnes !== undefined && { minPersonnes: parseInt(minPersonnes) }),
+      ...(pasPersonnes !== undefined && { pasPersonnes: parseInt(pasPersonnes) }),
     },
     include: { categorie: true },
   })

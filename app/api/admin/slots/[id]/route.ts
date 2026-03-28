@@ -13,7 +13,7 @@ export async function PUT(
 
   const { id } = await params
   const body = await req.json()
-  const { nom } = body
+  const { nom, capacite } = body
 
   if (!nom) {
     return NextResponse.json({ error: "Le nom est requis" }, { status: 400 })
@@ -21,7 +21,10 @@ export async function PUT(
 
   const slot = await prisma.slot.update({
     where: { id: parseInt(id) },
-    data: { nom },
+    data: {
+      nom,
+      ...(capacite !== undefined && { capacite: parseInt(capacite) }),
+    },
     include: {
       articles: { include: { article: true } },
     },

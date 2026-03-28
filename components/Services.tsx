@@ -15,7 +15,7 @@ export default function Services() {
           <div className="service-num">02</div>
           <h3>Séminaires &amp; pro</h3>
           <p>Solution clé en main pour vos pauses professionnelles et moments de cohésion.</p>
-          <span className="service-pill">Secteur Libournais & Bordelais</span>
+          <span className="service-pill">Dans toute la région</span>
         </div>
         <div className="service-card">
           <div className="service-num">03</div>

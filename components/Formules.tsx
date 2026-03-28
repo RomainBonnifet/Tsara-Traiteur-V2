@@ -10,7 +10,7 @@ type Article = { id: number; nom: string }
 type SlotArticle = { article: Article }
 type Slot = { id: number; nom: string; articles: SlotArticle[] }
 type FormuleDetail = { id: number; nom: string; prix: number; slots: Slot[] }
-type Formule = { id: number; nom: string; prix: number }
+type Formule = { id: number; nom: string; prix: number; description: string | null }
 type Categorie = { id: number; nom: string; formules: Formule[] }
 
 export default function Formules() {
@@ -89,6 +89,9 @@ export default function Formules() {
                     {/* Détail affiché uniquement si cette formule est ouverte ET que les données sont chargées */}
                     {openFormule === formule.id && details[formule.id] && (
                       <div className="formule-detail">
+                        {formule.description && (
+                          <p className="formule-description">{formule.description}</p>
+                        )}
                         {details[formule.id].slots.map((slot) => (
                           <div key={slot.id} className="formule-slot">
                             <strong>{slot.nom}</strong>

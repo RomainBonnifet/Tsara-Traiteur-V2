@@ -26,6 +26,7 @@ type SlotArticle = {
 type Slot = {
   id: number
   nom: string
+  capacite: number
   formuleId: number
   articles: SlotArticle[]
 }
@@ -35,6 +36,8 @@ type Formule = {
   nom: string
   prix: number
   description: string | null
+  minPersonnes: number
+  pasPersonnes: number
   categorieId: number
   categorie: { id: number; nom: string }
   slots: Slot[]
@@ -50,7 +53,7 @@ export default function EditFormulePage() {
   const [loading, setLoading] = useState(true)
 
   // Champs pour la section "Infos de base"
-  const [infoData, setInfoData] = useState({ nom: "", prix: "", description: "" })
+  const [infoData, setInfoData] = useState({ nom: "", prix: "", description: "", minPersonnes: "1", pasPersonnes: "1" })
   const [infoSaving, setInfoSaving] = useState(false)
   const [infoMessage, setInfoMessage] = useState("")
 
@@ -60,11 +63,18 @@ export default function EditFormulePage() {
 
   // Pour chaque slot, on garde l'état du champ "renommer" dans un objet { [slotId]: string }
   const [slotNames, setSlotNames] = useState<Record<number, string>>({})
+  // Pour chaque slot, la capacité éditable
+  const [slotCapacites, setSlotCapacites] = useState<Record<number, string>>({})
 
   // Pour chaque slot, l'article sélectionné dans le <select> d'ajout
   const [selectedArticle, setSelectedArticle] = useState<Record<number, string>>({})
 
-  const [message, setMessage] = useState("")
+  const [toast, setToast] = useState("")
+
+  function showToast(msg: string) {
+    setToast(msg)
+    setTimeout(() => setToast(""), 3000)
+  }
 
   // Chargement initial : on récupère la formule ET tous les articles en parallèle
   useEffect(() => {
@@ -79,11 +89,18 @@ export default function EditFormulePage() {
         nom: formulaData.nom,
         prix: String(formulaData.prix),
         description: formulaData.description || "",
+        minPersonnes: String(formulaData.minPersonnes ?? 1),
+        pasPersonnes: String(formulaData.pasPersonnes ?? 1),
       })
-      // On initialise les champs de renommage avec le nom actuel de chaque slot
+      // On initialise les champs de renommage et capacité avec les valeurs actuelles de chaque slot
       const names: Record<number, string> = {}
-      formulaData.slots.forEach((s: Slot) => { names[s.id] = s.nom })
+      const caps: Record<number, string> = {}
+      formulaData.slots.forEach((s: Slot) => {
+        names[s.id] = s.nom
+        caps[s.id] = String(s.capacite ?? 1)
+      })
       setSlotNames(names)
+      setSlotCapacites(caps)
       setLoading(false)
     })
   }, [id])
@@ -100,6 +117,8 @@ export default function EditFormulePage() {
         nom: infoData.nom,
         prix: parseFloat(infoData.prix),
         description: infoData.description,
+        minPersonnes: parseInt(infoData.minPersonnes),
+        pasPersonnes: parseInt(infoData.pasPersonnes),
       }),
     })
 
@@ -122,7 +141,7 @@ export default function EditFormulePage() {
     const res = await fetch(`/api/admin/slots/${slotId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nom }),
+      body: JSON.stringify({ nom, capacite: slotCapacites[slotId] ?? "1" }),
     })
 
     if (res.ok) {
@@ -135,9 +154,9 @@ export default function EditFormulePage() {
           slots: prev.slots.map((s) => s.id === slotId ? { ...s, nom: updated.nom } : s),
         }
       })
-      setMessage("Slot renommé.")
+      showToast("Slot modifié.")
     } else {
-      setMessage("Erreur lors du renommage.")
+      showToast("Erreur lors du renommage.")
     }
   }
 
@@ -152,9 +171,9 @@ export default function EditFormulePage() {
         if (!prev) return prev
         return { ...prev, slots: prev.slots.filter((s) => s.id !== slotId) }
       })
-      setMessage("Slot supprimé.")
+      showToast("Slot supprimé.")
     } else {
-      setMessage("Erreur lors de la suppression du slot.")
+      showToast("Erreur lors de la suppression du slot.")
     }
   }
 
@@ -177,7 +196,7 @@ export default function EditFormulePage() {
         }
       })
     } else {
-      setMessage("Erreur lors du retrait de l'article.")
+      showToast("Erreur lors du retrait de l'article.")
     }
   }
 
@@ -211,7 +230,7 @@ export default function EditFormulePage() {
       // On remet le select à vide pour ce slot
       setSelectedArticle((prev) => ({ ...prev, [slotId]: "" }))
     } else {
-      setMessage("Erreur lors de l'ajout de l'article.")
+      showToast("Erreur lors de l'ajout de l'article.")
     }
   }
 
@@ -235,9 +254,9 @@ export default function EditFormulePage() {
       // On ajoute ce slot dans l'état de renommage aussi
       setSlotNames((prev) => ({ ...prev, [newSlot.id]: newSlot.nom }))
       setNewSlotNom("")
-      setMessage("Slot ajouté.")
+      showToast("Slot ajouté.")
     } else {
-      setMessage("Erreur lors de l'ajout du slot.")
+      showToast("Erreur lors de l'ajout du slot.")
     }
     setSlotAdding(false)
   }
@@ -246,6 +265,7 @@ export default function EditFormulePage() {
   if (!formule) return <div className="dash-loading">Formule introuvable.</div>
 
   return (
+    <>
     <div>
       {/* Lien retour */}
       <Link href="/dashboard/formules" style={{ color: "var(--vert-clair)", fontSize: ".85rem", textDecoration: "none" }}>
@@ -256,7 +276,6 @@ export default function EditFormulePage() {
         Éditer : {formule.nom}
       </h1>
 
-      {message && <p className="dash-message">{message}</p>}
 
       {/* ── Section 1 : Infos de base ── */}
       <div className="dash-section">
@@ -289,6 +308,28 @@ export default function EditFormulePage() {
               value={infoData.description}
               onChange={(e) => setInfoData({ ...infoData, description: e.target.value })}
             />
+          </div>
+          <div className="dash-form-row">
+            <div className="dash-field">
+              <label className="dash-label">Personnes minimum</label>
+              <input
+                className="dash-input"
+                type="number"
+                min="1"
+                value={infoData.minPersonnes}
+                onChange={(e) => setInfoData({ ...infoData, minPersonnes: e.target.value })}
+              />
+            </div>
+            <div className="dash-field">
+              <label className="dash-label">Pas d&apos;incrémentation</label>
+              <input
+                className="dash-input"
+                type="number"
+                min="1"
+                value={infoData.pasPersonnes}
+                onChange={(e) => setInfoData({ ...infoData, pasPersonnes: e.target.value })}
+              />
+            </div>
           </div>
           {infoMessage && <p className="dash-message">{infoMessage}</p>}
           <button className="dash-btn" onClick={handleSaveInfo} disabled={infoSaving}>
@@ -328,11 +369,24 @@ export default function EditFormulePage() {
                     setSlotNames((prev) => ({ ...prev, [slot.id]: e.target.value }))
                   }
                 />
+                <div className="dash-field" style={{ flexShrink: 0 }}>
+                  <label className="dash-label" style={{ fontSize: ".7rem" }}>Capacité (pers./unité)</label>
+                  <input
+                    className="dash-input"
+                    type="number"
+                    min="1"
+                    style={{ width: "70px" }}
+                    value={slotCapacites[slot.id] ?? "1"}
+                    onChange={(e) =>
+                      setSlotCapacites((prev) => ({ ...prev, [slot.id]: e.target.value }))
+                    }
+                  />
+                </div>
                 <button
                   className="dash-btn dash-btn-sm"
                   onClick={() => handleRenameSlot(slot.id)}
                 >
-                  Renommer
+                  Sauver
                 </button>
                 <button
                   className="dash-btn dash-btn-sm dash-btn-danger"
@@ -415,5 +469,12 @@ export default function EditFormulePage() {
         </div>
       </div>
     </div>
+
+    {toast && (
+      <div className="dash-toast">
+        <span>✓</span> {toast}
+      </div>
+    )}
+    </>
   )
 }
