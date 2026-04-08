@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Non connecté" }, { status: 401 })
   }
 
-  const { items, livraison }: { items: CartItem[]; livraison: { telephone: string; date: string; adresse: string } } = await req.json()
+  const { items, livraison }: { items: CartItem[]; livraison: { telephone: string; date: string; adresse: string; creneau: string } } = await req.json()
 
   if (!items || items.length === 0) {
     return NextResponse.json({ error: "Panier vide" }, { status: 400 })
@@ -51,6 +51,7 @@ export async function POST(req: NextRequest) {
         statut: "en_attente",
         telephone: livraison.telephone,
         dateLivraison: new Date(livraison.date),
+        creneauLivraison: livraison.creneau,
         adresse: livraison.adresse,
         // On aplatit les sélections : une OrderItem par slot/article par personne
         items: {

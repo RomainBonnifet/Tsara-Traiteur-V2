@@ -44,8 +44,8 @@ h4 {
   z-index: 100;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 clamp(1.5rem, 5vw, 5rem);
+  justify-content: space-around;
+  /* padding: 0 clamp(1.5rem, 5vw, 5rem); */
   height: 70px;
   background: transparent;
   transition: background .4s, border-color .4s;
@@ -82,6 +82,7 @@ nav.scrolled .nav-logo {
 
 ul.nav-links {
   display: flex;
+  justify-content: center;
   gap: 2rem;
   list-style: none;
   align-items: center;
@@ -369,21 +370,14 @@ h1 em {
 }
 
 .about-img {
-  background: linear-gradient(160deg, var(--beige) 0%, var(--creme) 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  gap: .5rem;
-  color: var(--brun-clair);
-  font-size: .75rem;
-  letter-spacing: .1em;
-  text-transform: uppercase;
+  position: relative;
+  overflow: hidden;
   min-height: 350px;
 }
 
 .about-img.dark {
-  background: linear-gradient(160deg, var(--vert) 0%, #1a3008 100%);
+  /* le fond disparaît derrière la photo, conservé en fallback */
+  background: #1a3008;
 }
 
 .about-text-wrap {
@@ -788,6 +782,7 @@ h1 em {
 }
 
 .galerie-item {
+  position: relative;
   background: var(--beige);
   overflow: hidden;
   border-radius: 2px;
@@ -813,6 +808,145 @@ h1 em {
 }
 
 /* PARTENAIRES */
+/* PAGE GALERIE COMPLÈTE */
+.galerie-page {
+  padding: clamp(3rem, 6vw, 6rem) clamp(1.5rem, 8vw, 7rem);
+  background: var(--blanc);
+  min-height: 100vh;
+}
+
+.galerie-page-header {
+  margin-bottom: 3rem;
+}
+
+.galerie-page-header h1 {
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  color: var(--brun);
+  margin-top: .5rem;
+}
+
+.galerie-page-header h1 em {
+  font-style: italic;
+  color: var(--vert);
+}
+
+.galerie-page-empty {
+  color: var(--brun-clair);
+  font-size: .95rem;
+}
+
+/* Maçonnerie : CSS columns — les images gardent leur ratio naturel */
+.galerie-page-grid {
+  columns: 3;
+  column-gap: 10px;
+}
+
+.galerie-page-item {
+  break-inside: avoid;       /* empêche une photo d'être coupée entre deux colonnes */
+  margin-bottom: 10px;
+  background: var(--beige);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.galerie-page-item img {
+  display: block;
+  width: 100%;
+  height: auto;
+  transition: transform .4s ease;
+}
+
+.galerie-page-item:hover img {
+  transform: scale(1.03);
+}
+
+.galerie-page-caption {
+  padding: .6rem .8rem;
+  font-size: .75rem;
+  color: var(--brun-clair);
+  letter-spacing: .05em;
+}
+
+/* DASHBOARD GALERIE */
+.galerie-upload-form {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+.galerie-upload-preview {
+  width: 180px;
+  height: 180px;
+  flex-shrink: 0;
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--beige);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.galerie-upload-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.galerie-upload-placeholder {
+  font-size: .75rem;
+  color: var(--brun-clair);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  opacity: .5;
+}
+
+.galerie-upload-fields {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.galerie-admin-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1rem;
+}
+
+.galerie-admin-item {
+  display: flex;
+  flex-direction: column;
+  gap: .4rem;
+}
+
+.galerie-admin-img {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--beige);
+}
+
+.galerie-admin-alt {
+  font-size: .75rem;
+  color: var(--brun-clair);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* responsive page galerie */
+@media (max-width: 900px) {
+  .galerie-page-grid { columns: 2; }
+  .galerie-upload-form { flex-direction: column; }
+  .galerie-upload-preview { width: 100%; height: 200px; }
+}
+
+@media (max-width: 500px) {
+  .galerie-page-grid { columns: 1; }
+}
+
 .partenaires {
   padding: clamp(4rem, 8vw, 6rem) clamp(1.5rem, 8vw, 7rem);
   background: var(--vert);
@@ -1092,6 +1226,104 @@ footer {
 .social-btn:hover {
   border-color: var(--lime);
   color: var(--lime);
+}
+
+.footer-legal {
+  width: 100%;
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(253, 250, 244, .08);
+}
+
+.footer-legal a {
+  color: rgba(253, 250, 244, .2);
+  text-decoration: none;
+  font-size: .72rem;
+  letter-spacing: .1em;
+  transition: color .3s;
+}
+
+.footer-legal a:hover {
+  color: rgba(253, 250, 244, .6);
+}
+
+/* PAGES LÉGALES */
+.legal-page {
+  background: var(--blanc);
+  min-height: 100vh;
+  padding: clamp(3rem, 6vw, 6rem) clamp(1.5rem, 8vw, 7rem);
+}
+
+.legal-container {
+  max-width: 780px;
+}
+
+.legal-page h1 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  color: var(--brun);
+  margin: 1.5rem 0 3rem;
+}
+
+.legal-chapter {
+  font-size: 1.5rem;
+  color: var(--vert);
+  margin: 1rem 0 2rem;
+  font-style: italic;
+}
+
+.legal-section {
+  margin-bottom: 2.5rem;
+}
+
+.legal-section h2 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--brun);
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+.legal-section h3 {
+  font-size: .9rem;
+  font-weight: 600;
+  color: var(--brun-clair);
+  margin: 1.2rem 0 .6rem;
+}
+
+.legal-section p {
+  font-size: .92rem;
+  line-height: 1.85;
+  color: var(--brun-clair);
+  font-weight: 300;
+  margin-bottom: .6rem;
+}
+
+.legal-section ul {
+  padding-left: 1.2rem;
+  margin-bottom: .6rem;
+}
+
+.legal-section ul li {
+  font-size: .92rem;
+  line-height: 1.85;
+  color: var(--brun-clair);
+  font-weight: 300;
+  margin-bottom: .2rem;
+}
+
+.legal-section a {
+  color: var(--vert);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.legal-divider {
+  border: none;
+  border-top: 1px solid var(--beige);
+  margin: 3rem 0;
 }
 
 /* REVEAL ANIMATION */
@@ -2075,6 +2307,7 @@ nav.scrolled .nav-admin:hover {
   background: var(--creme);
 }
 
+/* ── Sidebar (desktop) ── */
 .dashboard-sidebar {
   width: 240px;
   min-height: 100vh;
@@ -2088,9 +2321,16 @@ nav.scrolled .nav-admin:hover {
   flex-shrink: 0;
 }
 
+/* Contient logo + burger — sur desktop le burger est caché */
+.dashboard-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(253, 250, 244, .1);
+}
+
 .dashboard-brand {
   padding: 1.5rem 1.25rem 1rem;
-  border-bottom: 1px solid rgba(253, 250, 244, .1);
 }
 
 .dashboard-brand a {
@@ -2100,6 +2340,39 @@ nav.scrolled .nav-admin:hover {
   color: var(--lime);
   text-decoration: none;
   letter-spacing: .05em;
+}
+
+/* Burger — masqué sur desktop */
+.dashboard-burger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 1rem 1.25rem;
+  margin-top: .4rem;
+}
+
+.dashboard-burger span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: rgba(253, 250, 244, .7);
+  border-radius: 2px;
+  transition: transform .25s, opacity .25s;
+}
+
+/* Croix quand menu ouvert */
+.dashboard-sidebar.menu-open .dashboard-burger span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+.dashboard-sidebar.menu-open .dashboard-burger span:nth-child(2) {
+  opacity: 0;
+}
+.dashboard-sidebar.menu-open .dashboard-burger span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
 }
 
 .dashboard-nav {
@@ -2138,11 +2411,77 @@ nav.scrolled .nav-admin:hover {
   border-top: 1px solid rgba(253, 250, 244, .1);
 }
 
+/* Overlay sombre derrière le menu mobile */
+.dashboard-overlay {
+  display: none;
+}
+
 .dashboard-content {
   flex: 1;
   padding: 2rem 2.5rem;
   max-width: 1100px;
   overflow-x: auto;
+}
+
+/* ── Mobile ── */
+@media (max-width: 768px) {
+  .dashboard-layout {
+    flex-direction: column;
+  }
+
+  /* La sidebar = uniquement la topbar, hauteur auto */
+  .dashboard-sidebar {
+    width: 100%;
+    min-height: 0;
+    height: auto;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    overflow: visible; /* le menu doit pouvoir déborder en dessous */
+  }
+
+  .dashboard-burger {
+    display: flex;
+  }
+
+  /* Le wrapper nav+footer devient un dropdown absolu sous la topbar */
+  .dashboard-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--brun);
+    border-top: 1px solid rgba(253, 250, 244, .1);
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-6px);
+    transition: opacity .2s ease, transform .2s ease, visibility .2s;
+  }
+
+  .dashboard-sidebar.menu-open .dashboard-menu {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  /* Overlay visible sur mobile quand menu ouvert */
+  .dashboard-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .4);
+    z-index: 99;
+  }
+
+  /* Le contenu descend sous la topbar */
+  .dashboard-content {
+    padding: 5rem 1.25rem 2rem;
+    max-width: 100%;
+  }
 }
 
 /* Titres */

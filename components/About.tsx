@@ -1,18 +1,17 @@
-const PlaceholderSvg = () => (
-  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="0.8">
-    <rect x="3" y="3" width="18" height="18" rx="2" />
-    <circle cx="8.5" cy="8.5" r="1.5" />
-    <polyline points="21 15 16 10 5 21" />
-  </svg>
-)
+import Image from "next/image"
 
 export default function About() {
   return (
     <section id="about">
       <div className="about-block reveal">
         <div className="about-img">
-          <PlaceholderSvg />
-          Photo portrait
+          <Image
+            src="/img/Photos/portrait.jpg"
+            alt="Portrait Tsara Traiteur"
+            fill
+            style={{ objectFit: "cover" }}
+            sizes="(max-width: 768px) 100vw, 50vw"
+          />
         </div>
         <div className="about-text-wrap">
           <div className="section-label">Qui sommes-nous</div>
@@ -53,12 +52,13 @@ export default function About() {
 
       <div className="about-block reveal">
         <div className="about-img dark">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(253,250,244,0.3)" strokeWidth="0.8">
-            <rect x="3" y="3" width="18" height="18" rx="2" />
-            <circle cx="8.5" cy="8.5" r="1.5" />
-            <polyline points="21 15 16 10 5 21" />
-          </svg>
-          <span style={{ color: 'rgba(253,250,244,0.3)' }}>Photo séminaire</span>
+          <Image
+            src="/img/Photos/seminaire-hotel.jpg"
+            alt="Prestation séminaire Tsara"
+            fill
+            style={{ objectFit: "cover" }}
+            sizes="(max-width: 768px) 100vw, 50vw"
+          />
         </div>
         <div className="about-text-wrap">
           <div className="section-label">Nos prestations</div>

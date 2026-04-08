@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Footer() {
   return (
@@ -27,6 +28,10 @@ export default function Footer() {
             height={32}
           />
         </a>
+      </div>
+      <div className="footer-legal">
+        <Link href="/cgv">Conditions Générales de Vente</Link>
+        <Link href="/mentions-legales">Mentions légales</Link>
       </div>
     </footer>
   );

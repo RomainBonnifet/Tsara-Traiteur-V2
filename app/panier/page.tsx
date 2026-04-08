@@ -10,7 +10,9 @@ export default function PanierPage() {
   const { user } = useAuth()
   const router = useRouter()
   const [loading, setLoading] = useState(false)
-  const [livraison, setLivraison] = useState({ telephone: "", date: "", adresse: "" })
+  const CRENEAUX = ["7h30 – 8h30", "8h30 – 9h30", "9h30 – 10h30", "10h30 – 11h30"]
+
+  const [livraison, setLivraison] = useState({ telephone: "", date: "", adresse: "", creneau: "" })
   const [adresseStatut, setAdresseStatut] = useState<"idle" | "checking" | "ok" | "error">("idle")
   const [adresseMessage, setAdresseMessage] = useState("")
 
@@ -19,6 +21,7 @@ export default function PanierPage() {
   const livraisonValide =
     livraison.telephone.trim() !== "" &&
     livraison.date !== "" &&
+    livraison.creneau !== "" &&
     (hasIndividuel ? adresseStatut === "ok" : livraison.adresse.trim() !== "")
 
   async function validerAdresse() {
@@ -160,6 +163,19 @@ export default function PanierPage() {
                 value={livraison.date}
                 onChange={e => setLivraison({ ...livraison, date: e.target.value })}
               />
+            </div>
+            <div className="livraison-field">
+              <label className="livraison-label">Créneau de livraison</label>
+              <select
+                className="livraison-input"
+                value={livraison.creneau}
+                onChange={e => setLivraison({ ...livraison, creneau: e.target.value })}
+              >
+                <option value="">-- Choisir un créneau --</option>
+                {CRENEAUX.map(c => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
             </div>
             <div className="livraison-field">
               <label className="livraison-label">Adresse de livraison</label>

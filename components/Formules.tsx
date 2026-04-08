@@ -60,6 +60,7 @@ export default function Formules() {
           Choisissez votre <em>formule</em>
         </h2>
         <p>Conçues pour s&apos;adapter à chaque occasion</p>
+        <p>Commande & paiement en ligne sécurisé</p>
       </div>
 
       <div className="formules-grid">

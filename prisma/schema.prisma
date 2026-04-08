@@ -72,13 +72,21 @@ model Order {
   montantTotal  Float
   userId        Int
   formuleId     Int
-  telephone     String?
-  dateLivraison DateTime?
-  adresse       String?
+  telephone        String?
+  dateLivraison    DateTime?
+  adresse          String?
+  creneauLivraison String?
   user          User         @relation(fields: [userId], references: [id])
   formule       Formule      @relation(fields: [formuleId], references: [id])
   items         OrderItem[]
   extras        OrderExtra[]
+}
+
+model Photo {
+  id        Int      @id @default(autoincrement())
+  url       String
+  alt       String   @default("")
+  createdAt DateTime @default(now())
 }
 
 model Extra {

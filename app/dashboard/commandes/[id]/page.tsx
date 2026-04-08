@@ -27,6 +27,7 @@ type Commande = {
   nbPersonnes: number
   telephone: string | null
   dateLivraison: string | null
+  creneauLivraison: string | null
   adresse: string | null
   user: { email: string }
   formule: { nom: string; prix: number }
@@ -121,6 +122,8 @@ export default function CommandeDetailPage() {
                 ? new Date(commande.dateLivraison).toLocaleDateString("fr-FR", { day: "2-digit", month: "long", year: "numeric" })
                 : "—"}
             </dd>
+            <dt>Créneau</dt>
+            <dd>{commande.creneauLivraison || "—"}</dd>
             <dt>Adresse</dt>
             <dd>{commande.adresse || "—"}</dd>
             <dt>Statut actuel</dt>

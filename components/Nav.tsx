@@ -12,10 +12,15 @@ export default function Nav() {
   const { user, logout } = useAuth();
 
   useEffect(() => {
-    const handler = () => setScrolled(window.scrollY > 40);
-    handler(); // vérifie la position dès le montage, sans attendre un scroll
+    const isMobile = () => window.innerWidth < 768;
+    const handler = () => setScrolled(isMobile() || window.scrollY > 40);
+    handler(); // vérifie dès le montage
     window.addEventListener("scroll", handler);
-    return () => window.removeEventListener("scroll", handler);
+    window.addEventListener("resize", handler); // recalcule si on redimensionne
+    return () => {
+      window.removeEventListener("scroll", handler);
+      window.removeEventListener("resize", handler);
+    };
   }, []);
 
   return (
@@ -43,7 +48,7 @@ export default function Nav() {
         </li>
         <li>
           <a href="#contact" className="nav-cta" onClick={() => setMenuOpen(false)}>
-            Réserver
+            Contact
           </a>
         </li>
       </ul>

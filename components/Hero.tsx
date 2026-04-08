@@ -5,14 +5,14 @@ export default function Hero() {
       <div className="hero-content">
         <div className="hero-eyebrow">Traiteur artisanal · Gironde</div>
         <h1>
-          Votre <em>petit-<br />déjeuner</em> livré
+          Votre<br /> <em>petit-déjeuner</em> <strong>livré</strong>
         </h1>
         <p className="hero-sub">
           Des produits locaux, frais et de saison. Pour vos matins en famille, en gîte ou en séminaire.
         </p>
         <div className="hero-actions">
-          <a href="#contact" className="btn-lime">Réserver maintenant</a>
-          <a href="#formules" className="btn-ghost">Voir les formules</a>
+          <a href="#contact" className="btn-lime">Demander un devis</a>
+          <a href="#formules" className="btn-ghost">Commander en ligne</a>
         </div>
       </div>
       <div className="scroll-cue">
