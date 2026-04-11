@@ -1,9 +1,9 @@
 "use client"
-import { useState } from "react"
+import { Suspense, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 
-export default function ConnexionPage() {
+function ConnexionForm() {
   const searchParams = useSearchParams()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -83,5 +83,13 @@ export default function ConnexionPage() {
         </p>
       </div>
     </main>
+  )
+}
+
+export default function ConnexionPage() {
+  return (
+    <Suspense>
+      <ConnexionForm />
+    </Suspense>
   )
 }
