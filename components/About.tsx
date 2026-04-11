@@ -9,7 +9,7 @@ export default function About() {
             src="/img/Photos/portrait.jpg"
             alt="Portrait Tsara Traiteur"
             fill
-            style={{ objectFit: "cover" }}
+            className="about-portrait"
             sizes="(max-width: 768px) 100vw, 50vw"
           />
         </div>
@@ -36,14 +36,14 @@ export default function About() {
               <div className="about-value-dot"></div>
               <div className="about-value-text">
                 <h4>Livraison flexible</h4>
-                <p>À domicile, en gîte ou en séminaire</p>
+                <p>À domicile, en gîte, chambre d'hôte ou en séminaire</p>
               </div>
             </div>
             <div className="about-value">
               <div className="about-value-dot"></div>
               <div className="about-value-text">
                 <h4>Artisanal &amp; responsable</h4>
-                <p>Pains, confitures et produits de la ferme</p>
+                <p>Pains, jus et produits de la ferme</p>
               </div>
             </div>
           </div>
@@ -53,7 +53,7 @@ export default function About() {
       <div className="about-block reveal">
         <div className="about-img dark">
           <Image
-            src="/img/Photos/seminaire-hotel.jpg"
+            src="/img/Photos/seminaire2.png"
             alt="Prestation séminaire Tsara"
             fill
             style={{ objectFit: "cover" }}

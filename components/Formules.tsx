@@ -16,14 +16,11 @@ type Categorie = { id: number; nom: string; formules: Formule[] }
 export default function Formules() {
   // Liste des catégories récupérées au chargement (tableau vide par défaut)
   const [categories, setCategories] = useState<Categorie[]>([])
-
   // L'id de la formule actuellement ouverte (null = aucune)
   const [openFormule, setOpenFormule] = useState<number | null>(null)
-
   // Cache des détails déjà chargés : { 1: {...}, 3: {...} }
   // Évite de re-fetcher si l'user ouvre/ferme plusieurs fois la même formule
   const [details, setDetails] = useState<Record<number, FormuleDetail>>({})
-
   // useEffect avec [] = s'exécute une seule fois, au montage du composant
   // C'est ici qu'on charge la liste initiale des catégories + formules
   useEffect(() => {
@@ -31,7 +28,6 @@ export default function Formules() {
       .then((res) => res.json())
       .then((data) => setCategories(data))
   }, [])
-
   // Appelé quand l'user clique sur une formule
   async function toggleFormule(id: number) {
     // Si la formule cliquée est déjà ouverte, on la ferme
@@ -39,10 +35,8 @@ export default function Formules() {
       setOpenFormule(null)
       return
     }
-
     // Sinon on l'ouvre
     setOpenFormule(id)
-
     // Et si on n'a pas encore chargé son détail, on le fetch maintenant (lazy loading)
     if (!details[id]) {
       const res = await fetch(`/api/formules/${id}`)
@@ -51,7 +45,6 @@ export default function Formules() {
       setDetails((prev) => ({ ...prev, [id]: data }))
     }
   }
-
   return (
     <section className="formules reveal" id="formules">
       <div className="formules-header">
@@ -62,17 +55,14 @@ export default function Formules() {
         <p>Conçues pour s&apos;adapter à chaque occasion</p>
         <p>Commande & paiement en ligne sécurisé</p>
       </div>
-
       <div className="formules-grid">
         {categories.map((cat) => (
           <div key={cat.id} className="formule-card">
             <div className="formule-body">
               <h3>{cat.nom}</h3>
-
               <ul className="formule-list">
                 {cat.formules.map((formule) => (
                   <li key={formule.id} className="formule-item">
-
                     {/* Bouton qui ouvre/ferme le détail de la formule */}
                     <button
                       className={`formule-toggle ${openFormule === formule.id ? "open" : ""}`}
@@ -86,7 +76,6 @@ export default function Formules() {
                         {openFormule === formule.id ? "▲" : "▼"}
                       </span>
                     </button>
-
                     {/* Détail affiché uniquement si cette formule est ouverte ET que les données sont chargées */}
                     {openFormule === formule.id && details[formule.id] && (
                       <div className="formule-detail">
@@ -103,7 +92,6 @@ export default function Formules() {
                             </ul>
                           </div>
                         ))}
-
                         <Link
                           href={`/commander/${formule.id}`}
                           className="formule-cta"

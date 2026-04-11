@@ -1,10 +1,15 @@
 import { NextRequest, NextResponse } from "next/server"
-import { unlink } from "fs/promises"
-import path from "path"
+import { v2 as cloudinary } from "cloudinary"
 import { prisma } from "@/lib/prisma"
 import { getCurrentUser } from "@/lib/auth"
 
-// DELETE — supprime la photo en base ET le fichier sur disque
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+})
+
+// DELETE — supprime la photo sur Cloudinary ET en base
 export async function DELETE(
   _req: NextRequest,
   { params }: { params: { id: string } }
@@ -17,12 +22,9 @@ export async function DELETE(
   const photo = await prisma.photo.findUnique({ where: { id: Number(params.id) } })
   if (!photo) return NextResponse.json({ error: "Photo introuvable" }, { status: 404 })
 
-  // Supprime le fichier physique (on ignore l'erreur si le fichier n'existe plus)
-  try {
-    const filePath = path.join(process.cwd(), "public", photo.url)
-    await unlink(filePath)
-  } catch {
-    // fichier déjà absent, on continue quand même
+  // Supprime sur Cloudinary si on a le publicId
+  if (photo.publicId) {
+    await cloudinary.uploader.destroy(photo.publicId)
   }
 
   await prisma.photo.delete({ where: { id: Number(params.id) } })

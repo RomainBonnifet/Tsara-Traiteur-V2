@@ -1,11 +1,11 @@
 import Image from "next/image"
 
 const PHOTOS = [
-  { src: "/img/Photos/P1046625.jpg", alt: "Plateau petit-déjeuner Tsara" },
-  { src: "/img/Photos/P1046661.jpg", alt: "Viennoiseries artisanales" },
-  { src: "/img/Photos/P1046684.jpg", alt: "Produits locaux" },
-  { src: "/img/Photos/P1046721.jpg", alt: "Préparation plateau" },
-  { src: "/img/Photos/P1046794.jpg", alt: "Petit-déjeuner en gîte" },
+  { src: "/img/Photos/pdj.jpg", alt: "Plateau petit-déjeuner Tsara" },
+  { src: "/img/Photos/potyahourt.png", alt: "Viennoiseries artisanales" },
+  { src: "/img/Photos/charcut.jpg", alt: "Produits locaux" },
+  { src: "/img/Photos/viennoiserie.jpg", alt: "Préparation plateau" },
+  { src: "/img/Photos/plateau-fruit.jpg", alt: "Petit-déjeuner en gîte" },
 ]
 
 export default function Galerie() {
@@ -25,7 +25,6 @@ export default function Galerie() {
               src={photo.src}
               alt={photo.alt}
               fill
-              style={{ objectFit: "cover" }}
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
           </div>

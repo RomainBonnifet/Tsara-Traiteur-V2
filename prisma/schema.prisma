@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -85,6 +85,7 @@ model Order {
 model Photo {
   id        Int      @id @default(autoincrement())
   url       String
+  publicId  String?
   alt       String   @default("")
   createdAt DateTime @default(now())
 }

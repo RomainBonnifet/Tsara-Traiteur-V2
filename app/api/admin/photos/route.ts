@@ -1,16 +1,21 @@
 import { NextRequest, NextResponse } from "next/server"
-import { writeFile } from "fs/promises"
-import path from "path"
+import { v2 as cloudinary } from "cloudinary"
 import { prisma } from "@/lib/prisma"
 import { getCurrentUser } from "@/lib/auth"
 
-// GET — liste toutes les photos (pour le dashboard)
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+})
+
+// GET — liste toutes les photos
 export async function GET() {
   const photos = await prisma.photo.findMany({ orderBy: { createdAt: "desc" } })
   return NextResponse.json(photos)
 }
 
-// POST — reçoit un fichier via FormData, l'enregistre sur disque + en base
+// POST — upload vers Cloudinary + sauvegarde en base
 export async function POST(req: NextRequest) {
   const currentUser = await getCurrentUser()
   if (!currentUser || currentUser.role !== "admin") {
@@ -25,18 +30,24 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Aucun fichier fourni" }, { status: 400 })
   }
 
-  // On génère un nom de fichier unique avec le timestamp pour éviter les collisions
-  const ext = file.name.split(".").pop()
-  const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
-  const uploadDir = path.join(process.cwd(), "public", "uploads", "galerie")
-  const filePath = path.join(uploadDir, filename)
-
-  // Convertit le File en Buffer pour l'écrire sur disque
+  // Convertit le File en Buffer pour l'envoyer à Cloudinary
   const bytes = await file.arrayBuffer()
-  await writeFile(filePath, Buffer.from(bytes))
+  const buffer = Buffer.from(bytes)
+
+  // Upload via le stream Cloudinary (la méthode qui accepte un Buffer)
+  const result = await new Promise<{ secure_url: string; public_id: string }>(
+    (resolve, reject) => {
+      cloudinary.uploader
+        .upload_stream({ folder: "tsara/galerie" }, (error, res) => {
+          if (error || !res) reject(error)
+          else resolve(res)
+        })
+        .end(buffer)
+    }
+  )
 
   const photo = await prisma.photo.create({
-    data: { url: `/uploads/galerie/${filename}`, alt },
+    data: { url: result.secure_url, publicId: result.public_id, alt },
   })
 
   return NextResponse.json(photo)
