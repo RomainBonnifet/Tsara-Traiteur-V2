@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from "next/server"
-import { writeFile } from "fs/promises"
-import path from "path"
+import { v2 as cloudinary } from "cloudinary"
 import { getCurrentUser } from "@/lib/auth"
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+})
 
 export async function POST(req: NextRequest) {
   const user = await getCurrentUser()
@@ -16,17 +21,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Aucun fichier" }, { status: 400 })
   }
 
-  // On génère un nom unique pour éviter les collisions
-  const ext = file.name.split(".").pop()
-  const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
-
   const bytes = await file.arrayBuffer()
   const buffer = Buffer.from(bytes)
 
-  // On sauvegarde dans /public/uploads/ — servi directement par Next.js
-  const uploadPath = path.join(process.cwd(), "public", "uploads", filename)
-  await writeFile(uploadPath, buffer)
+  const result = await new Promise<{ secure_url: string }>((resolve, reject) => {
+    cloudinary.uploader
+      .upload_stream({ folder: "tsara/articles" }, (error, res) => {
+        if (error || !res) reject(error)
+        else resolve(res)
+      })
+      .end(buffer)
+  })
 
-  // On retourne le chemin public accessible depuis le navigateur
-  return NextResponse.json({ url: `/uploads/${filename}` })
+  return NextResponse.json({ url: result.secure_url })
 }
