@@ -71,18 +71,16 @@ export async function DELETE(
 
   const { id } = await params
 
-  // On vérifie qu'aucune commande n'est liée à cette formule
-  const ordersCount = await prisma.order.count({
-    where: { formuleId: parseInt(id) },
-  })
+  // Suppression en cascade dans l'ordre des dépendances :
+  // OrderItems → OrderExtras → Orders → SlotArticles → Slots → Formule
+  const slots = await prisma.slot.findMany({ where: { formuleId: parseInt(id) } })
+  const slotIds = slots.map(s => s.id)
 
-  if (ordersCount > 0) {
-    return NextResponse.json(
-      { error: "Impossible de supprimer : des commandes utilisent cette formule" },
-      { status: 409 }
-    )
-  }
-
+  await prisma.orderItem.deleteMany({ where: { slotId: { in: slotIds } } })
+  await prisma.orderExtra.deleteMany({ where: { order: { formuleId: parseInt(id) } } })
+  await prisma.order.deleteMany({ where: { formuleId: parseInt(id) } })
+  await prisma.slotArticle.deleteMany({ where: { slotId: { in: slotIds } } })
+  await prisma.slot.deleteMany({ where: { formuleId: parseInt(id) } })
   await prisma.formule.delete({ where: { id: parseInt(id) } })
 
   return NextResponse.json({ success: true })
