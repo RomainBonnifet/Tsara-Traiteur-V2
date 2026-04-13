@@ -18,7 +18,7 @@ export async function GET(
     include: {
       categorie: true,
       slots: {
-        orderBy: { id: "asc" },
+        orderBy: { position: "asc" },
         include: {
           articles: { include: { article: true } },
         },

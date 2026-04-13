@@ -12,7 +12,7 @@ export async function GET(
     include: {
       categorie: true,
       slots: {
-        orderBy: { id: "asc" },
+        orderBy: { position: "asc" },
         include: {
           articles: {
             where: { article: { disponible: true } },
