@@ -142,6 +142,7 @@ nav.scrolled .nav-cta:hover {
 
 .hero h1 {
   text-transform: capitalize;
+  font-size: clamp(2rem, min(9vw, 10vh), 8rem);
 }
 
 .hero-bg {
@@ -3137,5 +3138,18 @@ nav.scrolled .nav-admin:hover {
 @media (max-width: 600px) {
   .articles-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Hero : réduction des marges sur écrans courts (laptop bas, paysage mobile) */
+@media (max-height: 700px) {
+  .hero-eyebrow {
+    margin-bottom: 1.2rem;
+  }
+  h1 {
+    margin-bottom: 1rem;
+  }
+  .hero-sub {
+    margin-bottom: 1.5rem;
   }
 }
