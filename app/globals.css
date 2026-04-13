@@ -509,6 +509,9 @@ h1 em {
   background: transparent;
   transition: background .3s;
   text-align: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .service-card:hover {
@@ -538,7 +541,7 @@ h1 em {
 }
 
 .service-pill {
-  display: inline-block;
+  display: inline;
   margin-top: 1.2rem;
   background: rgba(184, 217, 74, .15);
   color: var(--lime);
@@ -548,6 +551,7 @@ h1 em {
   text-transform: uppercase;
   padding: 4px 12px;
   border-radius: 100px;
+  width: fit-content;
 }
 
 /* FORMULES */
