@@ -692,6 +692,22 @@ h1 em {
 .formule-toggle-arrow {
   font-size: .65rem;
   color: var(--brun-clair);
+  display: flex;
+  align-items: center;
+}
+
+.formule-spinner {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border: 2px solid rgba(100, 80, 60, .25);
+  border-top-color: var(--brun-clair);
+  border-radius: 50%;
+  animation: formule-spin .7s linear infinite;
+}
+
+@keyframes formule-spin {
+  to { transform: rotate(360deg); }
 }
 
 .formule-description {

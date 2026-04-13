@@ -21,6 +21,7 @@ export default function Formules() {
   // Cache des détails déjà chargés : { 1: {...}, 3: {...} }
   // Évite de re-fetcher si l'user ouvre/ferme plusieurs fois la même formule
   const [details, setDetails] = useState<Record<number, FormuleDetail>>({})
+  const [loadingId, setLoadingId] = useState<number | null>(null)
   // useEffect avec [] = s'exécute une seule fois, au montage du composant
   // C'est ici qu'on charge la liste initiale des catégories + formules
   useEffect(() => {
@@ -39,10 +40,12 @@ export default function Formules() {
     setOpenFormule(id)
     // Et si on n'a pas encore chargé son détail, on le fetch maintenant (lazy loading)
     if (!details[id]) {
+      setLoadingId(id)
       const res = await fetch(`/api/formules/${id}`)
       const data = await res.json()
       // On ajoute au cache sans écraser les autres : { ...prev, [id]: data }
       setDetails((prev) => ({ ...prev, [id]: data }))
+      setLoadingId(null)
     }
   }
   return (
@@ -72,7 +75,10 @@ export default function Formules() {
                         {formule.prix.toFixed(2)} € / pers.
                       </span>
                       <span className="formule-toggle-arrow">
-                        {openFormule === formule.id ? "▲" : "▼"}
+                        {loadingId === formule.id
+                          ? <span className="formule-spinner" />
+                          : openFormule === formule.id ? "▲" : "▼"
+                        }
                       </span>
                     </button>
                     {/* Détail affiché uniquement si cette formule est ouverte ET que les données sont chargées */}
