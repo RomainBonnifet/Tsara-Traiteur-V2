@@ -32,6 +32,7 @@ model Slot {
   id         Int           @id @default(autoincrement())
   nom        String
   capacite   Int           @default(1)
+  position   Int           @default(0)
   formuleId  Int
   formule    Formule       @relation(fields: [formuleId], references: [id])
   articles   SlotArticle[]

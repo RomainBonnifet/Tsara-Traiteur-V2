@@ -27,6 +27,7 @@ type Slot = {
   id: number
   nom: string
   capacite: number
+  position: number
   formuleId: number
   articles: SlotArticle[]
 }
@@ -131,6 +132,20 @@ export default function EditFormulePage() {
       setInfoMessage("Erreur lors de la sauvegarde.")
     }
     setInfoSaving(false)
+  }
+
+  // --- Section 2 : Déplacer un slot ---
+  async function handleMoveSlot(slotId: number, direction: "up" | "down") {
+    const res = await fetch(`/api/admin/slots/${slotId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ direction }),
+    })
+    if (res.ok) {
+      // On recharge la formule pour avoir le nouvel ordre
+      const updated = await fetch(`/api/admin/formules/${id}`).then(r => r.json())
+      setFormule(updated)
+    }
   }
 
   // --- Section 2 : Renommer un slot ---
@@ -361,6 +376,16 @@ export default function EditFormulePage() {
             <div key={slot.id} className="slot-card">
               {/* En-tête : champ renommage + boutons */}
               <div className="slot-card-header">
+                <button
+                  className="dash-btn dash-btn-sm dash-btn-neutral"
+                  onClick={() => handleMoveSlot(slot.id, "up")}
+                  title="Monter"
+                >▲</button>
+                <button
+                  className="dash-btn dash-btn-sm dash-btn-neutral"
+                  onClick={() => handleMoveSlot(slot.id, "down")}
+                  title="Descendre"
+                >▼</button>
                 <input
                   className="dash-input"
                   style={{ flex: 1, minWidth: 0 }}

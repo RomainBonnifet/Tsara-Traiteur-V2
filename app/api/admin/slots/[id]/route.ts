@@ -33,6 +33,42 @@ export async function PUT(
   return NextResponse.json(slot)
 }
 
+// PATCH /api/admin/slots/[id]
+// Déplace le slot vers le haut ou vers le bas dans sa formule
+// Body : { direction: "up" | "down" }
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const auth = await requireAdmin()
+  if (auth instanceof NextResponse) return auth
+
+  const { id } = await params
+  const { direction } = await req.json()
+
+  const slot = await prisma.slot.findUnique({ where: { id: parseInt(id) } })
+  if (!slot) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
+
+  const voisin = await prisma.slot.findFirst({
+    where: {
+      formuleId: slot.formuleId,
+      position: direction === "up"
+        ? { lt: slot.position }
+        : { gt: slot.position },
+    },
+    orderBy: { position: direction === "up" ? "desc" : "asc" },
+  })
+
+  if (!voisin) return NextResponse.json({ ok: true })
+
+  await prisma.$transaction([
+    prisma.slot.update({ where: { id: slot.id }, data: { position: voisin.position } }),
+    prisma.slot.update({ where: { id: voisin.id }, data: { position: slot.position } }),
+  ])
+
+  return NextResponse.json({ ok: true })
+}
+
 // DELETE /api/admin/slots/[id]
 // Supprime un slot et toutes ses SlotArticle associées
 // On doit d'abord supprimer les SlotArticle car elles dépendent du slot (clé étrangère)
