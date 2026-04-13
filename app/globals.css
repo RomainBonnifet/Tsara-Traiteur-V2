@@ -142,7 +142,7 @@ nav.scrolled .nav-cta:hover {
 
 .hero h1 {
   text-transform: capitalize;
-  font-size: clamp(2rem, min(9vw, 10vh), 8rem);
+  font-size: clamp(3rem, min(9vw, 16vh), 10rem);
 }
 
 .hero-bg {

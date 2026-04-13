@@ -5,7 +5,7 @@ export default function Hero() {
       <div className="hero-content">
         <div className="hero-eyebrow">Traiteur artisanal · Gironde</div>
         <h1>
-          Votre<br /> <em>petit-déjeuner</em> <strong>livré</strong>
+          Votre<br /> <em>petit-déjeuner</em><br /> <strong>Livré</strong>
         </h1>
         <p className="hero-sub">
           Des petits-déjeuners gourmands, composés de produits locaux, frais et de saison.
