@@ -8,7 +8,7 @@ export default function Hero() {
           Votre<br /> <em>petit-déjeuner</em> <strong>livré</strong>
         </h1>
         <p className="hero-sub">
-          Des petits-déjeuners gourmands, composés de produits locaux, frais et de saison, pensés aussi bien pour vos moments en famille que pour offrir une expérience soignée à vos hôtes en gîte, chambre d’hôtes ou lors de vos séminaires professionnels.
+          Des petits-déjeuners gourmands, composés de produits locaux, frais et de saison.
         </p>
         <div className="hero-actions">
           <a href="#contact" className="btn-lime">Demander un devis</a>

@@ -69,7 +69,7 @@ export default function About() {
         <div className="about-text-wrap">
           <div className="section-label">Nos prestations</div>
           <h2>
-            Pour vos évènements privés ou <em>professionnels</em>
+            Pour vos <em>évènements privés</em> ou <em>professionnels</em>
           </h2>
           <p>
             Pour un lendemain de mariage, un baptême, un anniversaire, EVG ou
