@@ -2,6 +2,8 @@ import Image from "next/image"
 import Link from "next/link"
 import { prisma } from "@/lib/prisma"
 
+export const dynamic = 'force-dynamic'
+
 // Page serveur : on interroge directement Prisma, pas besoin de route API
 export default async function GaleriePage() {
   const photos = await prisma.photo.findMany({ orderBy: { createdAt: "desc" } })
