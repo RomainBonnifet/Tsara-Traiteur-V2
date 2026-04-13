@@ -61,6 +61,47 @@ export async function PUT(
   return NextResponse.json(formule)
 }
 
+// PATCH /api/admin/formules/[id]
+// Déplace la formule vers le haut ou vers le bas dans sa catégorie
+// Body : { direction: "up" | "down" }
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const auth = await requireAdmin()
+  if (auth instanceof NextResponse) return auth
+
+  const { id } = await params
+  const { direction } = await req.json()
+
+  const formule = await prisma.formule.findUnique({ where: { id: parseInt(id) } })
+  if (!formule) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
+
+  // On cherche la formule voisine dans la même catégorie
+  const voisine = await prisma.formule.findFirst({
+    where: {
+      categorieId: formule.categorieId,
+      position: direction === "up"
+        ? { lt: formule.position }
+        : { gt: formule.position },
+    },
+    orderBy: { position: direction === "up" ? "desc" : "asc" },
+  })
+
+  if (!voisine) {
+    // Déjà en haut ou en bas, rien à faire
+    return NextResponse.json({ ok: true })
+  }
+
+  // Swap des positions entre les deux formules
+  await prisma.$transaction([
+    prisma.formule.update({ where: { id: formule.id }, data: { position: voisine.position } }),
+    prisma.formule.update({ where: { id: voisine.id }, data: { position: formule.position } }),
+  ])
+
+  return NextResponse.json({ ok: true })
+}
+
 // DELETE /api/admin/formules/[id]
 // Supprime une formule (attention : la formule ne doit pas avoir de commandes liées)
 export async function DELETE(

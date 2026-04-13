@@ -10,7 +10,7 @@ export async function GET() {
 
   const formules = await prisma.formule.findMany({
     include: { categorie: true },
-    orderBy: { id: "asc" },
+    orderBy: [{ categorieId: "asc" }, { position: "asc" }],
   })
 
   return NextResponse.json(formules)

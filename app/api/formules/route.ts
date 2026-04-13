@@ -6,7 +6,9 @@ export const dynamic = 'force-dynamic'
 export async function GET() {
   const categories = await prisma.categorie.findMany({
     include: {
-      formules: true
+      formules: {
+        orderBy: { position: "asc" }
+      }
     }
   })
 

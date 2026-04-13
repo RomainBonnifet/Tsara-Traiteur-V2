@@ -21,6 +21,7 @@ model Formule {
   image        String?
   minPersonnes Int       @default(1)
   pasPersonnes Int       @default(1)
+  position     Int       @default(0)
   categorieId  Int
   categorie    Categorie @relation(fields: [categorieId], references: [id])
   slots        Slot[]

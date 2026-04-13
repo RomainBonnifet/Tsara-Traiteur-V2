@@ -103,6 +103,19 @@ export default function FormulesPage() {
     setSaving(false)
   }
 
+  async function handleMove(id: number, direction: "up" | "down") {
+    const res = await fetch(`/api/admin/formules/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ direction }),
+    })
+    if (res.ok) {
+      // Recharge la liste pour refléter le nouvel ordre
+      const updated = await fetch("/api/admin/formules").then(r => r.json())
+      setFormules(updated)
+    }
+  }
+
   async function handleDelete(id: number) {
     if (!confirm("Supprimer cette formule ? Cette action est irréversible.")) return
     setMessage("")
@@ -284,6 +297,16 @@ export default function FormulesPage() {
                 <td>{f.description || "—"}</td>
                 <td className="dash-actions">
                   <button
+                    className="dash-btn dash-btn-sm dash-btn-neutral"
+                    onClick={() => handleMove(f.id, "up")}
+                    title="Monter"
+                  >▲</button>
+                  <button
+                    className="dash-btn dash-btn-sm dash-btn-neutral"
+                    onClick={() => handleMove(f.id, "down")}
+                    title="Descendre"
+                  >▼</button>
+                  <button
                     className="dash-btn dash-btn-sm"
                     onClick={() => startEdit(f)}
                   >
@@ -295,7 +318,6 @@ export default function FormulesPage() {
                   >
                     X
                   </button>
-                  {/* Lien vers la page d'édition des slots */}
                   <Link
                     href={`/dashboard/formules/${f.id}`}
                     className="dash-btn dash-btn-sm dash-btn-neutral"
