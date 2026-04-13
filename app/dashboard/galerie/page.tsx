@@ -32,13 +32,36 @@ export default function DashboardGaleriePage() {
     setPreview(URL.createObjectURL(f))
   }
 
+  // Redimensionne l'image côté navigateur avant upload
+  // Évite les erreurs 413 (trop lourd) imposées par Vercel (limite 4.5 MB)
+  function compressImage(file: File, maxWidth = 2000, quality = 0.85): Promise<File> {
+    return new Promise((resolve) => {
+      const img = new window.Image()
+      img.onload = () => {
+        // On calcule les nouvelles dimensions en gardant le ratio
+        const ratio = Math.min(1, maxWidth / img.width)
+        const canvas = document.createElement("canvas")
+        canvas.width = img.width * ratio
+        canvas.height = img.height * ratio
+        canvas.getContext("2d")!.drawImage(img, 0, 0, canvas.width, canvas.height)
+        canvas.toBlob(
+          (blob) => resolve(new File([blob!], file.name, { type: "image/jpeg" })),
+          "image/jpeg",
+          quality
+        )
+      }
+      img.src = URL.createObjectURL(file)
+    })
+  }
+
   async function handleUpload(e: React.FormEvent) {
     e.preventDefault()
     if (!file) return
     setUploading(true)
 
+    const compressed = await compressImage(file)
     const formData = new FormData()
-    formData.append("photo", file)
+    formData.append("photo", compressed)
     formData.append("alt", alt)
 
     const res = await fetch("/api/admin/photos", { method: "POST", body: formData })

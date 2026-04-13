@@ -236,10 +236,20 @@ h1 em {
   flex-wrap: wrap;
 }
 
+.hero-actions .btn-lime,
+.hero-actions .btn-ghost {
+  width: 230px;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.btn-lime, .btn-ghost {
+  padding: 15px;
+}
+
 .btn-lime {
   background: var(--lime);
   color: var(--brun);
-  padding: 14px 36px;
   text-decoration: none;
   font-size: .8rem;
   font-weight: 500;
@@ -256,7 +266,6 @@ h1 em {
 .btn-ghost {
   border: 1px solid rgba(253, 250, 244, .4);
   color: var(--blanc);
-  padding: 13px 32px;
   text-decoration: none;
   font-size: .8rem;
   font-weight: 500;
