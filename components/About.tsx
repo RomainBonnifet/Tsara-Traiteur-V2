@@ -1,4 +1,4 @@
-import Image from "next/image"
+import Image from "next/image";
 
 export default function About() {
   return (
@@ -15,14 +15,18 @@ export default function About() {
         </div>
         <div className="about-text-wrap">
           <div className="section-label">Qui sommes-nous</div>
-          <h2>Un traiteur au service des <em>saveurs locales</em></h2>
+          <h2>
+            Un traiteur au service des <em>saveurs locales</em>
+          </h2>
           <p>
-            Tsara est un traiteur spécialisé dans les petits-déjeuners fermiers artisanaux,
-            élaborés à partir de produits locaux, frais et de saison.
+            Tsara est un traiteur spécialisé dans les petits-déjeuners fermiers
+            artisanaux, élaborés à partir de produits locaux, frais et de
+            saison, directement issus de fermes et artisans partenaires.
           </p>
           <p>
-            Chaque composition est pensée pour garantir qualité, goût et équilibre, tout en
-            respectant les circuits courts et une démarche responsable.
+            Chaque composition est 100 % faite maison, pensée pour garantir
+            qualité, goût et équilibre, tout en valorisant les circuits courts
+            et une démarche responsable.
           </p>
           <div className="about-values">
             <div className="about-value">
@@ -36,14 +40,16 @@ export default function About() {
               <div className="about-value-dot"></div>
               <div className="about-value-text">
                 <h4>Livraison flexible</h4>
-                <p>À domicile, en gîte, chambre d'hôte ou en séminaire</p>
+                <p>
+                  À domicile, en gîte, en chambre d'hôtes ou pour vos séminaires
+                </p>
               </div>
             </div>
             <div className="about-value">
               <div className="about-value-dot"></div>
               <div className="about-value-text">
                 <h4>Artisanal &amp; responsable</h4>
-                <p>Pains, jus et produits de la ferme</p>
+                <p>Viennoiseries maison, jus local et produits de la ferme</p>
               </div>
             </div>
           </div>
@@ -62,17 +68,22 @@ export default function About() {
         </div>
         <div className="about-text-wrap">
           <div className="section-label">Nos prestations</div>
-          <h2>À domicile ou pour vos <em>séminaires</em></h2>
+          <h2>
+            Pour vos évènements privés ou <em>professionnels</em>
+          </h2>
           <p>
-            En famille, entre amis ou entre collègues — Tsara s&apos;adapte à chaque occasion.
-            Livraison clé en main pour que vous profitiez pleinement.
+            Pour un lendemain de mariage, un baptême, un anniversaire, EVG ou
+            bien au bureau ou en séminaire entre collègues, Tsara s’adapte à
+            chaque occasion. Profitez d’une livraison clé en main, pensée pour
+            vous simplifier l’organisation et vous laisser savourer pleinement
+            le moment.
           </p>
           <p>
-            Basés à Saint-Médard-de-Guizières, nous intervenons sur le Libournais, Bordeaux
-            et toute la région girondine.
+            Basés à Saint-Médard-de-Guizières, nous intervenons sur le
+            Libournais, Bordeaux et l’ensemble de la région girondine.
           </p>
         </div>
       </div>
     </section>
-  )
+  );
 }
