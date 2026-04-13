@@ -381,7 +381,20 @@ h1 em {
 
 .about-portrait {
   object-fit: cover;
-  object-position: center 67%;
+  object-position: center 65%;
+}
+
+  @media (max-width:900px) {
+    .about-portrait {
+    object-fit: cover;
+    object-position: center 85%;
+  }
+    @media (max-width: 600px) {
+    .about-portrait {
+    object-fit: cover;
+    object-position: center 90%;
+  }
+}
 }
 
 .about-img.dark {
