@@ -26,7 +26,7 @@ export default function CommanderPage() {
   const [selections, setSelections]         = useState<Array<Record<number, number>>>([{}])
   const [activePersonne, setActivePersonne] = useState(0)
 
-  // Pour GROUPE uniquement : nombre de plateaux (découplé des sélections)
+  // Pour GROUPE uniquement : nombre de paniers (découplé des sélections)
   const [nbGroupePersonnes, setNbGroupePersonnes] = useState(10)
 
   const [extraQty, setExtraQty] = useState<Record<number, number>>({})
@@ -198,7 +198,7 @@ export default function CommanderPage() {
             <p className="article-card-desc">{sa.article.description}</p>
           )}
           {autoSelected && (
-            <p className="article-card-auto-label">Identique au plateau {(leaderIndex ?? 0) + 1}</p>
+            <p className="article-card-auto-label">Identique au panier {(leaderIndex ?? 0) + 1}</p>
           )}
         </div>
       </button>
@@ -260,8 +260,8 @@ export default function CommanderPage() {
 
           {isGroupe ? (
             <>
-              <h2>Composez le plateau</h2>
-              <p className="extras-subtitle">Une composition commune pour tous les plateaux</p>
+              <h2>Composez le panier</h2>
+              <p className="extras-subtitle">Une composition commune pour tous les paniers</p>
 
               {formule.slots.map(slot => (
                 <div key={slot.id} className="slot-group">
@@ -282,7 +282,7 @@ export default function CommanderPage() {
           ) : (
             <>
               <div className="personnes-header">
-                <h2>Composez les plateaux</h2>
+                <h2>Composez les paniers</h2>
                 <div className="personnes-counter">
                   <button onClick={() => changeNbPersonnes(-1)} disabled={selections.length <= formule.minPersonnes}>−</button>
                   <span>{selections.length} personne{selections.length > 1 ? "s" : ""}</span>
@@ -297,7 +297,7 @@ export default function CommanderPage() {
                     className={`personne-tab ${activePersonne === i ? "active" : ""} ${isPersonneComplete(i) ? "complete" : ""}`}
                     onClick={() => setActivePersonne(i)}
                   >
-                    Plateau {i + 1}
+                    Panier {i + 1}
                     {isPersonneComplete(i) && <span className="tab-check">✓</span>}
                   </button>
                 ))}
@@ -317,7 +317,7 @@ export default function CommanderPage() {
                         <span className="slot-shared-badge">
                           {isLeader
                             ? `1 choix pour ${groupSize} personne${groupSize > 1 ? "s" : ""}`
-                            : `Même choix que le plateau ${leader + 1}`
+                            : `Même choix que le panier ${leader + 1}`
                           }
                         </span>
                       )}
@@ -361,7 +361,7 @@ export default function CommanderPage() {
 
           {isGroupe && (
             <div className="summary-personnes">
-              <label>Nombre de plateaux</label>
+              <label>Nombre de paniers</label>
               <div className="personnes-counter">
                 <button onClick={() => setNbGroupePersonnes(n => Math.max(10, n - 1))}>−</button>
                 <span>{nbGroupePersonnes}</span>
@@ -387,13 +387,13 @@ export default function CommanderPage() {
             </div>
           ) : (
             // Dans le récap, on affiche un bloc par groupe (pas par personne) pour les slots partagés
-            // On utilise le premier plateau de chaque groupe comme représentant
+            // On utilise le premier panier de chaque groupe comme représentant
             Array.from({ length: selections.length }, (_, i) => i)
               .filter(() => true)
               .map((i) => (
                 <div key={i} className="summary-selections">
                   <p className="summary-section-title">
-                    {selections.length > 1 ? `Plateau ${i + 1}` : "Votre plateau"}
+                    {selections.length > 1 ? `Plateau ${i + 1}` : "Votre panier"}
                   </p>
                   {formule.slots.map(slot => {
                     const leader   = getGroupLeader(i, slot.capacite)
@@ -405,7 +405,7 @@ export default function CommanderPage() {
                           {selections[i]?.[slot.id]
                             ? <>
                                 {slot.articles.find(sa => sa.article.id === selections[i][slot.id])?.article.nom}
-                                {!isLeader && <em style={{ fontSize: ".75rem", marginLeft: ".3rem", opacity: .6 }}>(plateau {leader + 1})</em>}
+                                {!isLeader && <em style={{ fontSize: ".75rem", marginLeft: ".3rem", opacity: .6 }}>(panier {leader + 1})</em>}
                               </>
                             : <em>Non choisi</em>
                           }
@@ -453,7 +453,7 @@ export default function CommanderPage() {
             <p className="summary-warning">
               {isGroupe
                 ? "Veuillez choisir un article pour chaque slot"
-                : "Veuillez compléter le plateau de chaque personne"
+                : "Veuillez compléter le panier de chaque personne"
               }
             </p>
           )}

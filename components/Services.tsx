@@ -8,19 +8,19 @@ export default function Services() {
         <div className="service-card">
           <div className="service-num">01</div>
           <h3>Livraison à domicile</h3>
-          <p>Petit-déjeuner livré chez vous. Pas de courses, pas de préparation, juste le plaisir.</p>
+          <p>Nous assurons la livraison dans toute la Gironde. Nous nous adaptons à vos horaires et au lieu de livraison pour vous offrir un service flexible et sur mesure</p>
           <span className="service-pill">Rayon de 20km autour de Coutras</span>
         </div>
         <div className="service-card">
           <div className="service-num">02</div>
           <h3>Séminaires &amp; pro</h3>
-          <p>Solution clé en main pour vos pauses professionnelles et moments de cohésion.</p>
+          <p>Nous prenons en charge l'installation des buffets, la mise en place ainsi que le service; afin que vous puissiez profiter pleinement de vos invités</p>
           <span className="service-pill">Dans toute la région</span>
         </div>
         <div className="service-card">
           <div className="service-num">03</div>
           <h3>Location de vaisselle</h3>
-          <p>Pour sublimer votre buffet, location de vaisselle assortie à votre événement.</p>
+          <p>Vous manquez de vaisselle ou de matériel pour votre réception ? <br />Nous proposons un service de location avec livraison et installation directement sur le lieu de l'événement.</p>
           <span className="service-pill">Sur demande</span>
         </div>
       </div>

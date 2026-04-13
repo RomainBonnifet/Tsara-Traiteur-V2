@@ -90,7 +90,7 @@ export default function PanierPage() {
               {item.selections.map((personSel, i) => (
                 <div key={i} className="panier-item-details">
                   <p className="summary-section-title">
-                    {item.nbPersonnes > 1 ? `Personne ${i + 1}` : "Plateau"}
+                    {item.nbPersonnes > 1 ? `Personne ${i + 1}` : "Panier"}
                   </p>
                   {Object.values(personSel).map((sel, j) => (
                     <div key={j} className="summary-line">
