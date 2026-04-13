@@ -72,8 +72,7 @@ export default function About() {
             Pour vos <em>évènements privés</em> ou <em>professionnels</em>
           </h2>
           <p>
-            Pour un lendemain de mariage, un baptême, un anniversaire, EVG ou
-            bien au bureau ou en séminaire entre collègues, Tsara s’adapte à
+            Pour un lendemain de mariage, un baptême, un anniversaire, EVG, au bureau ou en séminaire entre collègues, Tsara s’adapte à
             chaque occasion. Profitez d’une livraison clé en main, pensée pour
             vous simplifier l’organisation et vous laisser savourer pleinement
             le moment.
