@@ -8,7 +8,7 @@ export default function Services() {
         <div className="service-card">
           <div className="service-num">01</div>
           <h3>Livraison de petits-déjeuners</h3>
-          <p>Nous assurons la livraison dans toute la Gironde. Nous nous adaptons à vos horaires et au lieu de livraison pour vous offrir un service flexible et sur mesure</p>
+          <p>Nous assurons la livraison aux alentours de Coutras, notamment à Libourne, Saint-Émilion, Castillon la Bataille et Montpon-Ménestérol. Nous nous adaptons à vos horaires et au lieu de livraison pour vous offrir un service flexible et sur mesure</p>
           <span className="service-pill">Rayon de 20km autour de Coutras</span>
         </div>
         <div className="service-card">
