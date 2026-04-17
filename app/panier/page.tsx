@@ -189,7 +189,7 @@ export default function PanierPage() {
                   setAdresseStatut("idle")
                   setAdresseMessage("")
                 }}
-                onBlur={hasIndividuel ? validerAdresse : undefined}
+                onKeyDown={hasIndividuel ? (e) => { if (e.key === "Enter") { e.preventDefault(); validerAdresse() } } : undefined}
               />
               {hasIndividuel && adresseStatut === "checking" && (
                 <span className="livraison-hint">Vérification en cours...</span>

@@ -534,8 +534,9 @@ h1 em {
   text-align: left;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
 }
+
 
 .service-card:hover {
   background: rgba(253, 250, 244, .06);
@@ -561,11 +562,12 @@ h1 em {
   color: rgba(253, 250, 244, .55);
   line-height: 1.8;
   font-weight: 300;
+  padding: 20px 0;
 }
 
 .service-pill {
   display: inline;
-  margin-top: 1.2rem;
+  margin-top: auto;
   background: rgba(184, 217, 74, .15);
   color: var(--lime);
   font-size: .68rem;
@@ -724,6 +726,22 @@ h1 em {
   color: var(--brun-clair);
   font-style: italic;
   margin-bottom: .75rem;
+}
+
+/* Wrapper animé — grid-template-rows permet une transition sur hauteur inconnue */
+.formule-detail-wrapper {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.35s ease;
+}
+
+.formule-detail-wrapper.open {
+  grid-template-rows: 1fr;
+}
+
+/* overflow: hidden requis sur l'enfant direct pour que 0fr fonctionne */
+.formule-detail-inner {
+  overflow: hidden;
 }
 
 /* Panneau de détail déroulant */

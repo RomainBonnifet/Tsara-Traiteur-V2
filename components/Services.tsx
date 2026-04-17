@@ -14,12 +14,12 @@ export default function Services() {
         <div className="service-card">
           <div className="service-num">02</div>
           <h3>Service Traiteur</h3>
-          <p>Nous prenons en charge l'installation des buffets, la mise en place ainsi que le service; afin que vous puissiez profiter pleinement de vos invités</p>
+          <p>Nous prenons en charge l'installation des buffets, la mise en place ainsi que le service, afin que vous puissiez profiter pleinement de vos invités</p>
           <span className="service-pill">Dans toute la région</span>
         </div>
         <div className="service-card">
           <div className="service-num">03</div>
-          <h3>Location de vaisselles & mobiliers</h3>
+          <h3>Location de vaisselles</h3>
           <p>Vous manquez de vaisselle ou de matériel pour votre réception ? <br />Nous proposons un service de location avec livraison et installation directement sur le lieu de l'événement.</p>
           <span className="service-pill">Sur demande</span>
         </div>
