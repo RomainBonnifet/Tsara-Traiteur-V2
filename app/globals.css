@@ -534,8 +534,9 @@ h1 em {
   text-align: left;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
 }
+
 
 .service-card:hover {
   background: rgba(253, 250, 244, .06);
@@ -561,11 +562,12 @@ h1 em {
   color: rgba(253, 250, 244, .55);
   line-height: 1.8;
   font-weight: 300;
+  padding: 20px 0;
 }
 
 .service-pill {
   display: inline;
-  margin-top: 1.2rem;
+  margin-top: auto;
   background: rgba(184, 217, 74, .15);
   color: var(--lime);
   font-size: .68rem;
