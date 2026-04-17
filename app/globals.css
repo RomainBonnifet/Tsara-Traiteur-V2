@@ -726,6 +726,22 @@ h1 em {
   margin-bottom: .75rem;
 }
 
+/* Wrapper animé — grid-template-rows permet une transition sur hauteur inconnue */
+.formule-detail-wrapper {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.35s ease;
+}
+
+.formule-detail-wrapper.open {
+  grid-template-rows: 1fr;
+}
+
+/* overflow: hidden requis sur l'enfant direct pour que 0fr fonctionne */
+.formule-detail-inner {
+  overflow: hidden;
+}
+
 /* Panneau de détail déroulant */
 .formule-detail {
   padding: 1rem 1.1rem 1.2rem;

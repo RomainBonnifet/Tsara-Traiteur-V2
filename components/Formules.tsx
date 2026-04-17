@@ -61,7 +61,10 @@ export default function Formules() {
         {categories.map((cat) => (
           <div key={cat.id} className="formule-card">
             <div className="formule-body">
-              <h3>{cat.nom}</h3>
+              <h3>{{
+                "Individuel": "Paniers individuels",
+                "Groupe": "Buffet de groupe",
+              }[cat.nom] ?? cat.nom}</h3>
               <ul className="formule-list">
                 {cat.formules.map((formule) => (
                   <li key={formule.id} className="formule-item">
@@ -81,30 +84,34 @@ export default function Formules() {
                         }
                       </span>
                     </button>
-                    {/* Détail affiché uniquement si cette formule est ouverte ET que les données sont chargées */}
-                    {openFormule === formule.id && details[formule.id] && (
-                      <div className="formule-detail">
-                        {formule.description && (
-                          <p className="formule-description">{formule.description}</p>
-                        )}
-                        {details[formule.id].slots.map((slot) => (
-                          <div key={slot.id} className="formule-slot">
-                            <strong>{slot.nom}</strong>
-                            <ul>
-                              {slot.articles.map((sa) => (
-                                <li key={sa.article.id}>{sa.article.nom}</li>
-                              ))}
-                            </ul>
+                    {/* Wrapper toujours dans le DOM — transition CSS sur grid-template-rows */}
+                    <div className={`formule-detail-wrapper ${openFormule === formule.id && details[formule.id] ? "open" : ""}`}>
+                      <div className="formule-detail-inner">
+                        {details[formule.id] && (
+                          <div className="formule-detail">
+                            {formule.description && (
+                              <p className="formule-description">{formule.description}</p>
+                            )}
+                            {details[formule.id].slots.map((slot) => (
+                              <div key={slot.id} className="formule-slot">
+                                <strong>{slot.nom}</strong>
+                                <ul>
+                                  {slot.articles.map((sa) => (
+                                    <li key={sa.article.id}>{sa.article.nom}</li>
+                                  ))}
+                                </ul>
+                              </div>
+                            ))}
+                            <Link
+                              href={`/commander/${formule.id}`}
+                              className="formule-cta"
+                            >
+                              Choisir cette formule
+                            </Link>
                           </div>
-                        ))}
-                        <Link
-                          href={`/commander/${formule.id}`}
-                          className="formule-cta"
-                        >
-                          Choisir cette formule
-                        </Link>
+                        )}
                       </div>
-                    )}
+                    </div>
                   </li>
                 ))}
               </ul>
