@@ -6,7 +6,7 @@ export default function About() {
       <div className="about-block reveal">
         <div className="about-img">
           <Image
-            src="/img/Photos/portrait.jpg"
+            src="/img/Photos/about.jpg"
             alt="Portrait Tsara Traiteur"
             fill
             className="about-portrait"

@@ -44,7 +44,7 @@ h4 {
   z-index: 100;
   display: flex;
   align-items: center;
-  justify-content: space-around;
+  justify-content: space-evenly;
   /* padding: 0 clamp(1.5rem, 5vw, 5rem); */
   height: 70px;
   background: transparent;
@@ -142,7 +142,7 @@ nav.scrolled .nav-cta:hover {
 
 .hero h1 {
   text-transform: capitalize;
-  font-size: clamp(3rem, min(9vw, 16vh), 10rem);
+  font-size: clamp(3rem, min(9vw, 14vh), 10rem);
 }
 
 .hero-bg {
@@ -391,21 +391,16 @@ h1 em {
 
 .about-portrait {
   object-fit: cover;
-  object-position: center 65%;
+  object-position: center 90%;
 }
 
-  @media (max-width:900px) {
+@media (max-width:900px) {
     .about-portrait {
     object-fit: cover;
-    object-position: center 85%;
-  }
-    @media (max-width: 600px) {
-    .about-portrait {
-    object-fit: cover;
-    object-position: center 90%;
+    object-position: center;
   }
 }
-}
+
 
 .about-img.dark {
   /* le fond disparaît derrière la photo, conservé en fallback */
