@@ -1,6 +1,6 @@
 "use client"
 import Link from "next/link"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useCart } from "@/context/CartContext"
 import { useAuth } from "@/context/AuthContext"
@@ -42,6 +42,17 @@ export default function PanierPage() {
       setAdresseMessage(data.message)
     }
   }
+
+  useEffect(() => {
+    if (!hasIndividuel) return
+    if (!livraison.adresse.trim()) {
+      setAdresseStatut("idle")
+      setAdresseMessage("")
+      return
+    }
+    const timer = setTimeout(() => validerAdresse(), 500)
+    return () => clearTimeout(timer)
+  }, [livraison.adresse])
 
   if (items.length === 0) {
     return (
@@ -189,7 +200,6 @@ export default function PanierPage() {
                   setAdresseStatut("idle")
                   setAdresseMessage("")
                 }}
-                onKeyDown={hasIndividuel ? (e) => { if (e.key === "Enter") { e.preventDefault(); validerAdresse() } } : undefined}
               />
               {hasIndividuel && adresseStatut === "checking" && (
                 <span className="livraison-hint">Vérification en cours...</span>

@@ -4,7 +4,7 @@ import { useState } from "react"
 
 export default function Contact() {
   const [form, setForm] = useState({
-    nom: "", telephone: "", prestation: "", date: "", nbPersonnes: "", message: ""
+    nom: "", telephone: "", email: "", prestation: "", date: "", nbPersonnes: "", message: ""
   })
   const [statut, setStatut] = useState<"idle" | "loading" | "ok" | "error">("idle")
 
@@ -66,6 +66,13 @@ export default function Contact() {
                   value={form.telephone} onChange={handleChange} required
                 />
               </div>
+            </div>
+            <div className="form-row">
+              <label>Email</label>
+              <input
+                type="email" name="email" placeholder="marie@exemple.fr"
+                value={form.email} onChange={handleChange}
+              />
             </div>
             <div className="form-row">
               <label>Type de prestation</label>
