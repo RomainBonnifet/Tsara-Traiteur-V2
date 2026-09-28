@@ -117,6 +117,24 @@ const EN: Record<string, string> = {
   "Pot de riz au lait 430ml": "Tub of rice pudding, 430ml",
   "Sachet chocolat": "Sachet of drinking chocolate",
 
+  // ── Contenu present en production mais absent de la base de travail ──
+  // Le traiteur modifie son catalogue en ligne : ces chaines ont ete
+  // relevees par prisma/verifie-traductions.mjs lance sur la production.
+  "À PARTIR DE 4 PERSONNES, COMMANDE AVANT 18H POUR UNE LIVRAISON LE LENDEMAIN MATIN":
+    "FROM 4 PEOPLE, ORDER BEFORE 6PM FOR DELIVERY THE NEXT MORNING",
+  "À PARTIR DE 6 PERSONNES, COMMANDE 48H AVANT": "FROM 6 PEOPLE, ORDER 48H IN ADVANCE",
+  "À PARTIR DE 10 PERSONNES, COMMANDE 24H AVANT": "FROM 10 PEOPLE, ORDER 24H IN ADVANCE",
+  "À PARTIR DE 10 PERSONNES, COMMANDE 48H AVANT": "FROM 10 PEOPLE, ORDER 48H IN ADVANCE",
+  "Plateaux de fromages & charcuteries": "Cheese & charcuterie boards",
+  "Plateau fromages & charcuteries": "Cheese & charcuterie board",
+  // Formules de groupe : masquees du site public, mais leurs noms
+  // apparaissent encore dans le dashboard et dans les emails des commandes
+  // deja passees.
+  "Boissons chaudes en thermos": "Hot drinks in flasks",
+  "Mini viennoiseries artisanales": "Mini artisan pastries",
+  "Jus de fruits local": "Local fruit juice",
+  "Eaux": "Water",
+
   // ── Créneaux de livraison (Categorie.creneaux) ──
   "7h30 – 8h30": "7.30am – 8.30am",
   "8h30 – 9h30": "8.30am – 9.30am",

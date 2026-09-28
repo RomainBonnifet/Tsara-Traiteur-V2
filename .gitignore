@@ -42,3 +42,5 @@ CLAUDE.md
 
 # Maquette de reference (Claude Design) : sert a concevoir, pas a executer.
 maquette/
+
+.env*

@@ -19,6 +19,16 @@ model Categorie {
   // en base pour que les categories existantes recoivent un tableau vide.
   // Sans cette annotation, Prisma considererait ce DEFAULT comme une derive.
   creneaux String[] @default([])
+  // La categorie est-elle proposee sur le site public ?
+  //
+  // « Groupe » ne l est pas : les buffets se vendent sur devis, via le
+  // formulaire de contact. Ses formules restent en base (le dashboard les
+  // gere, les anciennes commandes y renvoient) mais ne sont ni listees ni
+  // commandables en ligne.
+  //
+  // Un booleen plutot qu un nom exclu en dur dans le code : masquer une
+  // categorie devient une decision de DONNEE, modifiable sans deploiement.
+  visiblePublic Boolean @default(true)
   formules Formule[]
   extras   Extra[]
 }

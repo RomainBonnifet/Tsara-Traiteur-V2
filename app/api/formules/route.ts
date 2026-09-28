@@ -5,12 +5,15 @@ export const dynamic = 'force-dynamic'
 
 export async function GET() {
   const categories = await prisma.categorie.findMany({
-    // On excluait ici la catégorie "Groupe" par son nom ; elle a été
-    // supprimée (buffets vendus uniquement sur devis). Le filtre est
-    // remplacé par une règle structurelle plutôt que par un autre nom en
-    // dur : une catégorie sans aucune formule n'a rien à montrer, et
-    // afficherait un titre de section suivi d'une grille vide.
-    where: { formules: { some: {} } },
+    // Deux conditions, pour deux raisons distinctes :
+    //
+    // visiblePublic : décision commerciale, portée par la DONNÉE. Les buffets
+    //   de groupe se vendent sur devis, leur catégorie est donc masquée —
+    //   sans nom de catégorie codé en dur dans cette route.
+    //
+    // formules: some : une catégorie vide n'a rien à montrer, et afficherait
+    //   un titre de section suivi d'une grille vide.
+    where: { visiblePublic: true, formules: { some: {} } },
     // Ordre explicite : sans orderBy, PostgreSQL ne garantit aucun ordre,
     // et les onglets de la page d'accueil pourraient s'inverser.
     orderBy: { id: "asc" },

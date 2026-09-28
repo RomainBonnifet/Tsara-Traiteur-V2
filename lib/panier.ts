@@ -75,7 +75,7 @@ export async function validerPanier(itemsRecus: unknown): Promise<Resultat> {
       include: {
         // La catégorie est de nouveau jointe : ses créneaux de livraison
         // sont nécessaires pour valider celui que le client a choisi.
-        categorie: { select: { id: true, nom: true, creneaux: true } },
+        categorie: { select: { id: true, nom: true, creneaux: true, visiblePublic: true } },
         slots: {
           include: {
             articles: { where: { article: { disponible: true } }, select: { articleId: true } },
@@ -96,6 +96,14 @@ export async function validerPanier(itemsRecus: unknown): Promise<Resultat> {
     const formule = formuleParId.get(item.formuleId as number)
     if (!formule) {
       return aActualiser("Une formule de votre panier n'est plus proposée. Retirez-la de votre panier.")
+    }
+
+    // Les deux contrôles ci-dessus (liste et détail) sont du confort
+    // d'interface. Celui-ci est le seul qui empêche réellement de commander
+    // une formule retirée de la vente : rien n'oblige à passer par le site
+    // pour appeler /api/checkout.
+    if (!formule.categorie.visiblePublic) {
+      return aActualiser("Une formule de votre panier n'est plus proposée à la vente en ligne. Retirez-la de votre panier.")
     }
 
     const nom = formule.nom.trim()

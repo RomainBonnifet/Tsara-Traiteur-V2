@@ -25,7 +25,11 @@ export async function GET(
     }
   })
 
-  if (!formule) {
+  // Une catégorie masquée n'est pas seulement absente de la liste : ses
+  // formules ne doivent pas non plus être atteignables par une URL devinée
+  // ou un ancien lien partagé. On répond 404 comme pour une formule
+  // inexistante — ne pas révéler qu'elle existe est ici un bonus.
+  if (!formule || !formule.categorie.visiblePublic) {
     return NextResponse.json({ error: 'Formule introuvable' }, { status: 404 })
   }
 
