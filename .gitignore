@@ -19,9 +19,13 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# local env files
-.env*.local
+# Fichiers d environnement : TOUTES les variantes sont ignorees.
+# L ancienne regle ne couvrait que .env et .env*.local : un .env.production
+# ou un .env.prod aurait ete commite avec l URL de la base dedans.
+# La negation !.env.example garde l exemple, qui ne contient aucun secret.
 .env
+.env.*
+!.env.example
 
 # vercel
 .vercel
