@@ -6,6 +6,7 @@
 import { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
 import Link from "next/link"
+import { UNITES_FORMULE, libelleUnite } from "@/lib/formule"
 
 // --- Types ---
 // On décrit la forme des données qu'on reçoit de l'API
@@ -27,6 +28,7 @@ type Slot = {
   id: number
   nom: string
   capacite: number
+  quantiteParUnite: number
   position: number
   formuleId: number
   articles: SlotArticle[]
@@ -39,6 +41,8 @@ type Formule = {
   description: string | null
   minPersonnes: number
   pasPersonnes: number
+  unite: string
+  miseEnAvant: boolean
   categorieId: number
   categorie: { id: number; nom: string }
   slots: Slot[]
@@ -54,7 +58,7 @@ export default function EditFormulePage() {
   const [loading, setLoading] = useState(true)
 
   // Champs pour la section "Infos de base"
-  const [infoData, setInfoData] = useState({ nom: "", prix: "", description: "", minPersonnes: "1", pasPersonnes: "1" })
+  const [infoData, setInfoData] = useState({ nom: "", prix: "", description: "", minPersonnes: "1", pasPersonnes: "1", unite: "personne", miseEnAvant: false })
   const [infoSaving, setInfoSaving] = useState(false)
   const [infoMessage, setInfoMessage] = useState("")
 
@@ -66,6 +70,9 @@ export default function EditFormulePage() {
   const [slotNames, setSlotNames] = useState<Record<number, string>>({})
   // Pour chaque slot, la capacité éditable
   const [slotCapacites, setSlotCapacites] = useState<Record<number, string>>({})
+  // Et le nombre d'exemplaires par personne / par formule.
+  const [slotQuantites, setSlotQuantites] = useState<Record<number, string>>({})
+  const [slotsSaving, setSlotsSaving] = useState(false)
 
   // Pour chaque slot, l'article sélectionné dans le <select> d'ajout
   const [selectedArticle, setSelectedArticle] = useState<Record<number, string>>({})
@@ -83,8 +90,8 @@ export default function EditFormulePage() {
       fetch(`/api/admin/formules/${id}`).then((r) => r.json()),
       fetch("/api/admin/articles").then((r) => r.json()),
     ]).then(([formulaData, articlesData]) => {
-      setFormule(formulaData)
       setAllArticles(articlesData)
+      appliquerFormule(formulaData)
       // On pré-remplit les champs infos avec les valeurs actuelles
       setInfoData({
         nom: formulaData.nom,
@@ -92,19 +99,35 @@ export default function EditFormulePage() {
         description: formulaData.description || "",
         minPersonnes: String(formulaData.minPersonnes ?? 1),
         pasPersonnes: String(formulaData.pasPersonnes ?? 1),
+        unite: formulaData.unite ?? "personne",
+        miseEnAvant: Boolean(formulaData.miseEnAvant),
       })
-      // On initialise les champs de renommage et capacité avec les valeurs actuelles de chaque slot
-      const names: Record<number, string> = {}
-      const caps: Record<number, string> = {}
-      formulaData.slots.forEach((s: Slot) => {
-        names[s.id] = s.nom
-        caps[s.id] = String(s.capacite ?? 1)
-      })
-      setSlotNames(names)
-      setSlotCapacites(caps)
       setLoading(false)
     })
   }, [id])
+
+  // Recharge l'écran à partir d'une formule fraîchement lue en base.
+  //
+  // Les trois tables d'état (noms, quantités, partage) sont des COPIES
+  // éditables des valeurs de la base. On les réinitialise ensemble, sinon un
+  // champ garderait une valeur que la base ne contient plus.
+  //
+  // Volontairement PAS appelé après un déplacement de créneau : cela
+  // effacerait les saisies en cours, pas encore enregistrées.
+  function appliquerFormule(data: Formule) {
+    setFormule(data)
+    const names: Record<number, string> = {}
+    const caps: Record<number, string> = {}
+    const qtes: Record<number, string> = {}
+    data.slots.forEach((s) => {
+      names[s.id] = s.nom
+      caps[s.id] = String(s.capacite ?? 1)
+      qtes[s.id] = String(s.quantiteParUnite ?? 1)
+    })
+    setSlotNames(names)
+    setSlotCapacites(caps)
+    setSlotQuantites(qtes)
+  }
 
   // --- Section 1 : Sauvegarder les infos de base ---
   async function handleSaveInfo() {
@@ -120,13 +143,15 @@ export default function EditFormulePage() {
         description: infoData.description,
         minPersonnes: parseInt(infoData.minPersonnes),
         pasPersonnes: parseInt(infoData.pasPersonnes),
+        unite: infoData.unite,
+        miseEnAvant: infoData.miseEnAvant,
       }),
     })
 
     if (res.ok) {
       const updated = await res.json()
       // On met à jour localement : on garde les slots, on remplace juste les infos de base
-      setFormule((prev) => prev ? { ...prev, nom: updated.nom, prix: updated.prix, description: updated.description } : prev)
+      setFormule((prev) => prev ? { ...prev, nom: updated.nom, prix: updated.prix, description: updated.description, unite: updated.unite, miseEnAvant: updated.miseEnAvant } : prev)
       setInfoMessage("Formule sauvegardée.")
     } else {
       setInfoMessage("Erreur lors de la sauvegarde.")
@@ -148,31 +173,68 @@ export default function EditFormulePage() {
     }
   }
 
-  // --- Section 2 : Renommer un slot ---
-  async function handleRenameSlot(slotId: number) {
-    const nom = slotNames[slotId]
-    if (!nom?.trim()) return
+  // --- Section 2 : Enregistrer TOUS les créneaux modifiés ---
+  //
+  // Remplace le bouton « Sauver » que portait chaque créneau : après avoir
+  // corrigé trois noms, il fallait penser à cliquer sur les trois bons
+  // boutons, et une modification oubliée disparaissait sans avertissement.
+  async function handleSaveSlots() {
+    if (!formule) return
 
-    const res = await fetch(`/api/admin/slots/${slotId}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nom, capacite: slotCapacites[slotId] ?? "1" }),
+    // Valeur affichée d'un créneau : la saisie en cours si elle existe,
+    // sinon celle de la base. Le repli DOIT venir du créneau et non d'un "1"
+    // en dur : un créneau absent des tables d'état verrait sinon sa capacité
+    // réelle écrasée par 1.
+    const saisie = (slot: Slot) => ({
+      nom: slotNames[slot.id] ?? slot.nom,
+      capacite: slotCapacites[slot.id] ?? String(slot.capacite ?? 1),
+      quantiteParUnite: slotQuantites[slot.id] ?? String(slot.quantiteParUnite ?? 1),
     })
 
-    if (res.ok) {
-      const updated = await res.json()
-      // On met à jour ce slot dans la liste
-      setFormule((prev) => {
-        if (!prev) return prev
-        return {
-          ...prev,
-          slots: prev.slots.map((s) => s.id === slotId ? { ...s, nom: updated.nom } : s),
-        }
-      })
-      showToast("Slot modifié.")
-    } else {
-      showToast("Erreur lors du renommage.")
+    // On n'envoie que ce qui a changé : autant de requêtes épargnées qu'il y
+    // a de créneaux intacts.
+    const modifies = formule.slots.filter((slot) => {
+      const v = saisie(slot)
+      return v.nom !== slot.nom ||
+        v.capacite !== String(slot.capacite ?? 1) ||
+        v.quantiteParUnite !== String(slot.quantiteParUnite ?? 1)
+    })
+
+    if (modifies.length === 0) {
+      showToast("Aucune modification à enregistrer.")
+      return
     }
+
+    if (modifies.some((slot) => !saisie(slot).nom.trim())) {
+      showToast("Un créneau ne peut pas avoir un nom vide.")
+      return
+    }
+
+    setSlotsSaving(true)
+
+    // Promise.all : les requêtes partent ensemble au lieu de s'enchaîner.
+    const reponses = await Promise.all(
+      modifies.map((slot) =>
+        fetch(`/api/admin/slots/${slot.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(saisie(slot)),
+        })
+      )
+    )
+    const echecs = reponses.filter((r) => !r.ok).length
+
+    // On relit la formule au lieu de recomposer l'état à la main : l'écran
+    // affiche alors exactement ce que contient la base, y compris ce que le
+    // serveur a corrigé (une quantité à 0 est ramenée à 1).
+    const rechargee = await fetch(`/api/admin/formules/${id}`).then((r) => r.json())
+    appliquerFormule(rechargee)
+
+    setSlotsSaving(false)
+    const n = modifies.length - echecs
+    showToast(echecs === 0
+      ? `${n} créneau${n > 1 ? "x" : ""} enregistré${n > 1 ? "s" : ""}.`
+      : `${echecs} créneau(x) n'ont pas pu être enregistrés.`)
   }
 
   // --- Section 2 : Supprimer un slot ---
@@ -266,8 +328,12 @@ export default function EditFormulePage() {
         if (!prev) return prev
         return { ...prev, slots: [...prev.slots, newSlot] }
       })
-      // On ajoute ce slot dans l'état de renommage aussi
+      // Le nouveau créneau entre dans les TROIS tables d'état, pas
+      // seulement celle des noms : sinon ses champs Qté et Partagé
+      // afficheraient un repli au lieu de sa valeur réelle.
       setSlotNames((prev) => ({ ...prev, [newSlot.id]: newSlot.nom }))
+      setSlotCapacites((prev) => ({ ...prev, [newSlot.id]: String(newSlot.capacite ?? 1) }))
+      setSlotQuantites((prev) => ({ ...prev, [newSlot.id]: String(newSlot.quantiteParUnite ?? 1) }))
       setNewSlotNom("")
       showToast("Slot ajouté.")
     } else {
@@ -326,7 +392,23 @@ export default function EditFormulePage() {
           </div>
           <div className="dash-form-row">
             <div className="dash-field">
-              <label className="dash-label">Personnes minimum</label>
+              <label className="dash-label">Vendue par</label>
+              <select
+                className="dash-input"
+                value={infoData.unite}
+                onChange={(e) => setInfoData({ ...infoData, unite: e.target.value })}
+              >
+                {UNITES_FORMULE.map((u) => (
+                  <option key={u} value={u}>
+                    {u}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="dash-field">
+              <label className="dash-label">
+                Minimum ({libelleUnite(infoData.unite, 2)})
+              </label>
               <input
                 className="dash-input"
                 type="number"
@@ -346,6 +428,19 @@ export default function EditFormulePage() {
               />
             </div>
           </div>
+          {/* Une seule formule mise en avant par catégorie : l&apos;API retire
+              automatiquement la mise en avant des autres à la sauvegarde. */}
+          <label className="dash-checkbox">
+            <input
+              type="checkbox"
+              checked={infoData.miseEnAvant}
+              onChange={(e) => setInfoData({ ...infoData, miseEnAvant: e.target.checked })}
+            />
+            <span>
+              Mettre en avant sur la page d&apos;accueil (badge « La plus choisie »)
+              <small>Une seule formule par catégorie : cocher celle-ci retire la mise en avant des autres.</small>
+            </span>
+          </label>
           {infoMessage && <p className="dash-message">{infoMessage}</p>}
           <button className="dash-btn" onClick={handleSaveInfo} disabled={infoSaving}>
             {infoSaving ? "Sauvegarde..." : "Sauvegarder"}
@@ -395,24 +490,37 @@ export default function EditFormulePage() {
                   }
                 />
                 <div className="dash-field" style={{ flexShrink: 0 }}>
-                  <label className="dash-label" style={{ fontSize: ".7rem" }}>Capacité (pers./unité)</label>
+                  <label className="dash-label" style={{ fontSize: ".7rem" }} title="Nombre d'exemplaires par personne ou par formule. 3 = trois saucissons par formule.">
+                    Qté / unité
+                  </label>
                   <input
                     className="dash-input"
                     type="number"
                     min="1"
                     style={{ width: "70px" }}
-                    value={slotCapacites[slot.id] ?? "1"}
+                    title="Nombre d'exemplaires par personne ou par formule. 3 = trois saucissons par formule."
+                    value={slotQuantites[slot.id] ?? String(slot.quantiteParUnite ?? 1)}
+                    onChange={(e) =>
+                      setSlotQuantites((prev) => ({ ...prev, [slot.id]: e.target.value }))
+                    }
+                  />
+                </div>
+                <div className="dash-field" style={{ flexShrink: 0 }}>
+                  <label className="dash-label" style={{ fontSize: ".7rem" }} title="Nombre de personnes servies par une unité. 4 = une bouteille d'un litre pour quatre personnes. Laisser à 1 dans le doute.">
+                    Partagé entre
+                  </label>
+                  <input
+                    className="dash-input"
+                    type="number"
+                    min="1"
+                    style={{ width: "70px" }}
+                    title="Nombre de personnes servies par une unité. 4 = une bouteille d'un litre pour quatre personnes. Laisser à 1 dans le doute."
+                    value={slotCapacites[slot.id] ?? String(slot.capacite ?? 1)}
                     onChange={(e) =>
                       setSlotCapacites((prev) => ({ ...prev, [slot.id]: e.target.value }))
                     }
                   />
                 </div>
-                <button
-                  className="dash-btn dash-btn-sm"
-                  onClick={() => handleRenameSlot(slot.id)}
-                >
-                  Sauver
-                </button>
                 <button
                   className="dash-btn dash-btn-sm dash-btn-danger"
                   onClick={() => handleDeleteSlot(slot.id)}
@@ -468,6 +576,22 @@ export default function EditFormulePage() {
             </div>
           )
         })}
+
+        {formule.slots.length > 0 && (
+          <div className="dash-slots-actions">
+            <button
+              className="dash-btn"
+              onClick={handleSaveSlots}
+              disabled={slotsSaving}
+            >
+              {slotsSaving ? "Enregistrement..." : "Enregistrer les créneaux"}
+            </button>
+            <span className="dash-slots-note">
+              Enregistre les noms, quantités et partages de tous les créneaux.
+              L&apos;ordre (▲ ▼) est enregistré immédiatement, sans ce bouton.
+            </span>
+          </div>
+        )}
       </div>
 
       {/* ── Section 3 : Ajouter un slot ── */}

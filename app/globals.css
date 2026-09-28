@@ -21,7 +21,7 @@ html {
 }
 
 body {
-  font-family: 'Jost', sans-serif;
+  font-family: var(--font-jost), sans-serif;
   background: var(--blanc);
   color: var(--brun);
   overflow-x: hidden;
@@ -31,7 +31,7 @@ h1,
 h2,
 h3,
 h4 {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: var(--font-cormorant), serif;
   font-weight: 300;
 }
 
@@ -59,7 +59,7 @@ h4 {
 }
 
 .nav-logo {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: var(--font-cormorant), serif;
   font-size: 1.4rem;
   font-style: italic;
   color: var(--blanc);
@@ -142,7 +142,7 @@ nav.scrolled .nav-cta:hover {
 
 .hero h1 {
   text-transform: capitalize;
-  font-size: clamp(3rem, min(9vw, 14vh), 10rem);
+  font-size: clamp(3rem, min(7vw, 14vh), 10rem);
 }
 
 .hero-bg {
@@ -219,7 +219,7 @@ h1 em {
 }
 
 .hero-sub {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: var(--font-cormorant), serif;
   font-style: italic;
   font-size: clamp(1rem, 2vw, 1.4rem);
   font-weight: 300;
@@ -464,7 +464,7 @@ h1 em {
 }
 
 .about-value-text h4 {
-  font-family: 'Jost', sans-serif;
+  font-family: var(--font-jost), sans-serif;
   font-size: .82rem;
   font-weight: 500;
   margin-bottom: 2px;
@@ -475,6 +475,183 @@ h1 em {
   color: var(--brun-clair);
   margin: 0;
   line-height: 1.6;
+}
+
+/* ABOUT — variante AFTERWORK
+   Placée APRÈS les règles .about-block:nth-child(even) : à spécificité égale,
+   c'est la dernière règle du fichier qui l'emporte. Ne pas remonter ce bloc. */
+.about-block.afterwork .about-text-wrap {
+  background: var(--vert);
+}
+
+.about-block.afterwork .about-img {
+  background: var(--vert);
+  padding: clamp(1.5rem, 4vw, 4rem);
+}
+
+/* Ce wrapper porte le position:relative exigé par <Image fill>.
+   Sans lui, l'image (inset:0) se calerait sur la padding-box du parent
+   et ignorerait donc le padding ci-dessus. */
+.afterwork-img-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 320px;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+/* Textes : on repasse sur du clair, le fond est devenu foncé */
+.about-block.afterwork .section-label {
+  color: var(--lime);
+}
+
+.about-block.afterwork .section-label::before {
+  background: var(--lime);
+}
+
+.about-block.afterwork .about-text-wrap h2 {
+  color: var(--blanc);
+}
+
+.about-block.afterwork .about-text-wrap h2 em {
+  color: var(--lime);
+}
+
+/* Le combinateur enfant direct « > » limite la règle au paragraphe
+   d'introduction : les <p> à l'intérieur des cartes gardent leur propre style. */
+.about-block.afterwork .about-text-wrap > p {
+  color: rgba(253, 250, 244, .75);
+}
+
+/* Étiquettes produits */
+.afterwork-tags {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: .6rem;
+  margin-top: 1.8rem;
+}
+
+.afterwork-tags li {
+  border: 1px solid rgba(253, 250, 244, .35);
+  border-radius: 999px;
+  padding: .5rem 1.05rem;
+  font-size: .78rem;
+  font-weight: 300;
+  color: var(--blanc);
+}
+
+/* Les deux cartes */
+.afterwork-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 1.8rem;
+}
+
+.afterwork-card {
+  border: 1px solid rgba(253, 250, 244, .22);
+  border-radius: 10px;
+  padding: 1.2rem;
+}
+
+/* color: le <svg> a stroke="currentColor", il hérite donc de cette valeur */
+.afterwork-card-icon {
+  display: block;
+  width: 20px;
+  height: 20px;
+  color: var(--lime);
+  margin-bottom: .8rem;
+}
+
+.afterwork-card h4 {
+  font-family: var(--font-jost), sans-serif;
+  font-size: .85rem;
+  font-weight: 500;
+  color: var(--blanc);
+  margin-bottom: .35rem;
+}
+
+.afterwork-card p {
+  font-size: .78rem;
+  line-height: 1.65;
+  color: rgba(253, 250, 244, .7);
+  margin: 0;
+}
+
+/* Bouton : l'apparence vient de .btn-lime (couleurs, typo, radius, hover).
+   Ici on ne gère QUE la mise en page propre à cette section.
+   align-self car .about-text-wrap est un flex column : sans ça le lien
+   s'étirerait sur toute la largeur de la colonne. */
+/* CTA d'un bloc de la section À propos. Anciennement .afterwork-cta :
+   le style n'a jamais rien eu de propre à l'afterwork (alignement, espacement,
+   flèche animée), et il sert désormais aussi au bloc « Nos prestations ».
+   Un nom de classe qui décrit le mauvais contenu est un piège pour la suite. */
+.about-cta {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: .7rem;
+  margin-top: 2rem;
+  /* .btn-lime pose padding:15px, suffisant dans le hero où le bouton est
+     contraint à 230px. Ici il est dimensionné par son texte : on respire. */
+  padding: 15px 28px;
+}
+
+.about-cta svg {
+  width: 16px;
+  height: 16px;
+  transition: transform .3s;
+}
+
+.about-cta:hover svg {
+  transform: translateX(3px);
+}
+
+/* Badge posé sur la photo */
+.afterwork-badge {
+  position: absolute;
+  left: clamp(1rem, 2.5vw, 2rem);
+  bottom: clamp(1rem, 2.5vw, 2rem);
+  background: var(--lime);
+  color: var(--brun);
+  border-radius: 10px;
+  padding: .7rem 1.2rem .75rem;
+  box-shadow: 0 6px 22px rgba(0, 0, 0, .2);
+}
+
+.afterwork-badge-main {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  font-family: var(--font-cormorant), serif;
+  font-size: 1.4rem;
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.afterwork-badge-main svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.afterwork-badge-sub {
+  font-size: .68rem;
+  letter-spacing: .03em;
+  opacity: .7;
+  margin-top: 3px;
+}
+
+@media(max-width:900px) {
+  .afterwork-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .afterwork-img-inner {
+    min-height: 260px;
+  }
 }
 
 /* SERVICES */
@@ -505,93 +682,133 @@ h1 em {
 }
 
 .services-sub {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: var(--font-cormorant), serif;
   font-style: italic;
   font-size: 1.1rem;
   color: rgba(253, 250, 244, .6);
   margin-bottom: 4rem;
 }
 
-.services-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1px;
-  background: rgba(253, 250, 244, .08);
+/* Liste des services : une ligne pleine largeur par service, plutôt que
+   des cartes en grille. border-top ferme la ligne juste sous le sous-titre,
+   chaque ligne ajoute ensuite la sienne en bas : pas de double trait entre
+   deux lignes consécutives. */
+.services-list {
   max-width: 1100px;
   margin: 0 auto;
-  border: 1px solid rgba(253, 250, 244, .08);
-}
-
-.service-card {
-  padding: 2.5rem 2rem;
-  background: transparent;
-  transition: background .3s;
+  border-top: 1px solid rgba(253, 250, 244, .12);
   text-align: left;
+}
+
+.service-row {
   display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
+  align-items: flex-start;
+  gap: clamp(1.2rem, 3vw, 2.5rem);
+  padding: clamp(1.8rem, 4vw, 2.6rem) 0;
+  border-bottom: 1px solid rgba(253, 250, 244, .12);
 }
 
-
-.service-card:hover {
-  background: rgba(253, 250, 244, .06);
-}
-
+/* Largeur figée : le numéro ne doit ni rétrécir, ni pousser le contenu
+   d'une ligne à l'autre selon que "01" ou "04" est plus ou moins large. */
 .service-num {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 3.5rem;
-  color: rgba(184, 217, 74, .2);
-  font-weight: 300;
+  flex-shrink: 0;
+  width: 3.5rem;
+  font-family: var(--font-cormorant), serif;
+  font-style: italic;
+  font-size: clamp(2.2rem, 4vw, 2.8rem);
+  color: var(--lime);
   line-height: 1;
-  margin-bottom: 1.5rem;
 }
 
-.service-card h3 {
-  font-size: 1.5rem;
+/* flex: 1 = prend toute la place restante entre le numéro (largeur fixe) et
+   la pastille (largeur naturelle) : c'est ce qui pousse la pastille à
+   droite, sans le moindre positionnement ni margin-left:auto à lui poser. */
+.service-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.service-content h3 {
+  font-size: clamp(1.25rem, 2.2vw, 1.55rem);
   color: var(--blanc);
-  margin-bottom: .7rem;
+  margin-bottom: .6rem;
 }
 
-.service-card p {
-  font-size: .85rem;
-  color: rgba(253, 250, 244, .55);
-  line-height: 1.8;
+.service-content p {
+  font-size: .92rem;
+  color: rgba(253, 250, 244, .75);
+  line-height: 1.75;
   font-weight: 300;
-  padding: 20px 0;
+  margin: 0;
+}
+
+/* Mention légale obligatoire (Loi Évin) sur la vente de boissons alcoolisées.
+   Volontairement plus discrète que le texte principal, mais jamais masquée
+   ni retirée : le fond légal ne se négocie pas. */
+.service-content .service-disclaimer {
+  margin-top: .6rem;
+  font-style: italic;
+  font-size: .78rem;
+  color: rgba(253, 250, 244, .5);
 }
 
 .service-pill {
-  display: inline;
-  margin-top: auto;
-  background: rgba(184, 217, 74, .15);
+  flex-shrink: 0;
+  align-self: flex-start;
+  background: transparent;
+  border: 1px solid rgba(184, 217, 74, .4);
   color: var(--lime);
   font-size: .68rem;
   font-weight: 500;
-  letter-spacing: .15em;
+  letter-spacing: .12em;
   text-transform: uppercase;
-  padding: 4px 12px;
+  padding: 8px 16px;
   border-radius: 100px;
-  width: fit-content;
+  white-space: nowrap;
 }
 
-/* FORMULES */
+@media (max-width: 700px) {
+  .service-row {
+    flex-direction: column;
+    gap: .9rem;
+  }
+}
+
+/* FORMULES — onglets par catégorie, cartes générées depuis la base */
 .formules {
-  padding: clamp(5rem, 10vw, 9rem) clamp(1.5rem, 8vw, 7rem);
+  padding: clamp(5rem, 10vw, 8rem) clamp(1.5rem, 8vw, 7rem);
   background: var(--creme);
 }
 
+/* En-tête sur 2 colonnes : titre à gauche, texte d'intro aligné en bas à droite */
+/* Fond alterné : deux sections de formules qui se suivent se liraient comme
+   un seul bloc. Le composant pose cette classe un index sur deux. */
+.formules-blanc {
+  background: var(--blanc);
+}
+
 .formules-header {
-  text-align: center;
-  margin-bottom: 5rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: end;
+  gap: 2rem clamp(2rem, 6vw, 6rem);
+  max-width: 1150px;
+  margin: 0 auto 3rem;
 }
 
 .formules-header .section-label {
-  justify-content: center;
+  color: var(--vert);
+}
+
+.formules-header .section-label::before {
+  display: none;
 }
 
 .formules-header h2 {
-  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-size: clamp(2.4rem, 5vw, 3.8rem);
+  line-height: 1.05;
   color: var(--brun);
+  margin: 0;
 }
 
 .formules-header h2 em {
@@ -600,183 +817,212 @@ h1 em {
 }
 
 .formules-header p {
-  font-family: 'Cormorant Garamond', serif;
-  font-style: italic;
-  font-size: 1.1rem;
-  color: var(--brun-clair);
-  margin-top: .8rem;
-}
-
-.formules-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2.5rem;
-  max-width: 960px;
-  margin: 0 auto;
-}
-
-.formule-card {
-  background: var(--blanc);
-  border-radius: 4px;
-  overflow: hidden;
-  box-shadow: 0 4px 30px rgba(46, 34, 21, .06);
-  transition: transform .3s, box-shadow .3s;
-}
-
-.formule-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 20px 50px rgba(46, 34, 21, .12);
-}
-
-
-.formule-body {
-  padding: 2rem 2.5rem;
-}
-
-.formule-body h3 {
-  font-size: 1.8rem;
-  color: var(--brun);
-  margin-bottom: .6rem;
-}
-
-.formule-body p {
-  font-size: .88rem;
-  color: var(--brun-clair);
-  line-height: 1.9;
+  font-size: .92rem;
+  line-height: 1.8;
   font-weight: 300;
+  color: var(--brun-clair);
+  margin: 0;
 }
 
-/* Liste des formules dans une card */
-.formule-list {
+/* Informations communes (livraison, paiement). Fond transparent et simple
+   liseré : elles restent en retrait des cartes blanches, qui sont le sujet
+   principal de la section. */
+.formules-infos {
   list-style: none;
-  padding: 0;
-  margin: 1.2rem 0 0;
   display: flex;
-  flex-direction: column;
-  gap: .4rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+  max-width: 1150px;
+  margin: 0 auto 2.5rem;
+  padding: 0;
 }
 
-.formule-item {
+.formules-info {
+  flex: 1 1 320px;
+  display: flex;
+  align-items: flex-start;
+  gap: .9rem;
+  padding: 1.1rem 1.3rem;
   border: 1px solid var(--beige);
-  border-radius: 4px;
-  overflow: hidden;
+  border-radius: 14px;
 }
 
-/* Bouton qui ouvre/ferme le détail */
-.formule-toggle {
-  width: 100%;
+/* Même pastille teintée que les coches des cartes */
+.formules-info-icone {
   display: flex;
   align-items: center;
-  gap: .8rem;
-  padding: .9rem 1.1rem;
-  background: none;
-  border: none;
-  cursor: pointer;
-  text-align: left;
-  transition: background .2s;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: rgba(58, 90, 28, .12);
+  color: var(--vert);
 }
 
-.formule-toggle:hover,
-.formule-toggle.open {
-  background: var(--creme);
+.formules-info-icone svg {
+  width: 18px;
+  height: 18px;
 }
 
-.formule-toggle-nom {
-  flex: 1;
-  font-size: .95rem;
+.formules-info-titre {
+  margin: 0 0 .2rem;
+  font-size: .9rem;
   font-weight: 500;
   color: var(--brun);
 }
 
-.formule-toggle-prix {
-  font-size: .9rem;
-  color: var(--vert);
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.formule-toggle-arrow {
-  font-size: .65rem;
+.formules-info-texte {
+  margin: 0;
+  font-size: .82rem;
+  line-height: 1.6;
+  font-weight: 300;
   color: var(--brun-clair);
-  display: flex;
-  align-items: center;
 }
 
-.formule-spinner {
-  display: inline-block;
-  width: 12px;
-  height: 12px;
-  border: 2px solid rgba(100, 80, 60, .25);
-  border-top-color: var(--brun-clair);
-  border-radius: 50%;
-  animation: formule-spin .7s linear infinite;
-}
-
-@keyframes formule-spin {
-  to { transform: rotate(360deg); }
-}
-
-.formule-description {
-  font-size: .9rem;
-  color: var(--brun-clair);
-  font-style: italic;
-  margin-bottom: .75rem;
-}
-
-/* Wrapper animé — grid-template-rows permet une transition sur hauteur inconnue */
-.formule-detail-wrapper {
-  display: grid;
-  grid-template-rows: 0fr;
-  transition: grid-template-rows 0.35s ease;
-}
-
-.formule-detail-wrapper.open {
-  grid-template-rows: 1fr;
-}
-
-/* overflow: hidden requis sur l'enfant direct pour que 0fr fonctionne */
-.formule-detail-inner {
-  overflow: hidden;
-}
-
-/* Panneau de détail déroulant */
-.formule-detail {
-  padding: 1rem 1.1rem 1.2rem;
-  background: var(--creme);
-  border-top: 1px solid var(--beige);
-  display: flex;
-  flex-direction: column;
-  gap: .8rem;
-}
-
-/* Un slot (ex: "Boisson chaude") avec ses articles */
-.formule-slot strong {
-  display: block;
-  font-size: .75rem;
-  text-transform: uppercase;
-  letter-spacing: .1em;
-  color: var(--brun-clair);
-  margin-bottom: .3rem;
-}
-
-.formule-slot ul {
-  list-style: none;
-  padding: 0;
+/* Flex et non grid : le nombre de formules par catégorie dépend du
+   dashboard. Une ligne incomplète reste centrée au lieu de pendre à gauche. */
+.formules-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: .3rem;
+  justify-content: center;
+  gap: 1.4rem;
+  max-width: 1150px;
+  margin: 0 auto;
 }
 
-.formule-slot li {
-  font-size: .82rem;
-  color: var(--brun);
+.formule-card {
+  position: relative;
+  flex: 1 1 300px;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  padding: clamp(1.6rem, 3vw, 2.2rem);
   background: var(--blanc);
   border: 1px solid var(--beige);
-  padding: 2px 10px;
-  border-radius: 20px;
+  border-radius: 18px;
+  color: var(--brun);
 }
 
-/* Bouton CTA vers la page commande */
+.formule-card.mise-en-avant {
+  background: var(--vert);
+  border-color: var(--vert);
+  color: var(--blanc);
+  box-shadow: 0 18px 45px rgba(46, 34, 21, .16);
+}
+
+.formule-badge {
+  position: absolute;
+  top: 1.2rem;
+  right: 1.2rem;
+  padding: .3rem .75rem;
+  background: var(--lime);
+  color: var(--vert);
+  border-radius: 999px;
+  font-size: .62rem;
+  font-weight: 500;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.formule-eyebrow {
+  font-size: .68rem;
+  font-weight: 500;
+  line-height: 1.6;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--vert);
+  margin: 0 0 1.2rem;
+}
+
+/* Laisse la place au badge positionné en absolu dans le coin */
+.mise-en-avant .formule-eyebrow {
+  color: var(--lime);
+  padding-right: 7.5rem;
+}
+
+.formule-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1.4rem;
+  margin-bottom: 1.4rem;
+  border-bottom: 1px solid var(--beige);
+}
+
+.mise-en-avant .formule-head {
+  border-bottom-color: rgba(253, 250, 244, .25);
+}
+
+.formule-nom {
+  font-size: clamp(2rem, 3.2vw, 2.6rem);
+  line-height: 1.05;
+  margin: 0;
+}
+
+.formule-prix {
+  flex-shrink: 0;
+  margin: 0;
+  text-align: right;
+  white-space: nowrap;
+  font-size: 1.5rem;
+  font-weight: 500;
+  line-height: 1.1;
+}
+
+.formule-prix span {
+  display: block;
+  font-size: .72rem;
+  font-weight: 300;
+  color: var(--brun-clair);
+}
+
+.mise-en-avant .formule-prix span {
+  color: rgba(253, 250, 244, .7);
+}
+
+.formule-produits {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: .85rem;
+}
+
+.formule-produits li {
+  display: flex;
+  align-items: flex-start;
+  gap: .7rem;
+  font-size: .88rem;
+  line-height: 1.45;
+}
+
+/* Les couleurs de l'icône sont pilotées ici plutôt que dans le JSX :
+   la même icône s'adapte au fond clair ou foncé de la carte. */
+.formule-check {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.formule-check circle {
+  fill: rgba(58, 90, 28, .12);
+}
+
+.formule-check path {
+  stroke: var(--vert);
+}
+
+.mise-en-avant .formule-check circle {
+  fill: var(--lime);
+}
+
+/* Bouton vert. Aussi utilisé par le lien du panier vide (panier/page.tsx) :
+   ne pas supprimer. Doit rester AVANT .formule-card-cta, qui surcharge sa
+   mise en page à spécificité égale. */
 .formule-cta {
   display: inline-block;
   margin-top: .4rem;
@@ -796,6 +1042,37 @@ h1 em {
 .formule-cta:hover {
   opacity: .85;
 }
+
+/* Mise en page du bouton dans une carte. L'apparence vient de .formule-cta
+   ou .btn-lime. margin-top:auto pousse le bouton en bas : les boutons d'une
+   même ligne restent alignés même si les listes n'ont pas la même longueur. */
+.formule-card-cta {
+  margin-top: auto;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .6rem;
+  padding: 15px 20px;
+}
+
+.formule-card-cta svg {
+  width: 15px;
+  height: 15px;
+  transition: transform .3s;
+}
+
+.formule-card-cta:hover svg {
+  transform: translateX(3px);
+}
+
+@media (max-width: 900px) {
+  .formules-header {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+}
+
 
 /* GALERIE */
 .galerie {
@@ -1021,73 +1298,288 @@ h1 em {
   .galerie-page-grid { columns: 1; }
 }
 
+/* PARTENAIRES — cartes cliquables vers le site du producteur */
 .partenaires {
   padding: clamp(4rem, 8vw, 6rem) clamp(1.5rem, 8vw, 7rem);
   background: var(--vert);
-  text-align: center;
 }
 
-.partenaires .section-label {
-  color: var(--lime);
-  justify-content: center;
-}
-
-.partenaires .section-label::before {
-  background: var(--lime);
-}
-
-.partenaires h2 {
-  font-size: clamp(2rem, 4vw, 3rem);
-  color: var(--blanc);
-  margin-bottom: .5rem;
-}
-
-.partenaires h2 em {
-  font-style: italic;
-  color: var(--lime);
-}
-
-.partenaires>p {
-  font-family: 'Cormorant Garamond', serif;
-  font-style: italic;
-  color: rgba(253, 250, 244, .6);
+/* En-tête sur 2 colonnes : titre à gauche, baseline à droite.
+   align-items: end aligne les deux blocs sur leur BASE, pas sur leur haut :
+   la baseline reste collée au bas du titre quelle que soit sa hauteur. */
+.partenaires-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2rem;
   margin-bottom: 3rem;
 }
 
-.partenaires-logos {
+/* La maquette n'a pas le tiret devant le label : on le neutralise ici
+   sans toucher au .section-label global, utilisé par les autres sections. */
+.partenaires .section-label::before {
+  display: none;
+}
+
+/* Fond vert foncé => tous les textes de l'en-tête repassent en clair.
+   Le lime sur le vert donne un contraste d'environ 6:1, bien au-dessus
+   du minimum WCAG AA de 4.5:1 pour du texte. */
+.partenaires .section-label {
+  color: var(--lime);
+}
+
+.partenaires h2 {
+  font-size: clamp(1.8rem, 3.4vw, 2.6rem);
+  color: var(--blanc);
+  margin: 0;
+}
+
+.partenaires-baseline {
+  flex: 0 1 380px;
+  text-align: right;
+  font-size: .82rem;
+  line-height: 1.7;
+  font-weight: 300;
+  color: rgba(253, 250, 244, .7);
+  margin: 0;
+}
+
+/* Grid et non flex : ici on veut IMPOSER 5 colonnes sur une seule ligne.
+   Flexbox ne sait pas exprimer ça (il déduit le nombre de colonnes d'une
+   largeur mini), Grid si. Le nombre de colonnes descend par paliers,
+   en réutilisant les points de rupture déjà présents dans le fichier. */
+.partenaires-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1.2rem;
+}
+
+.partner-card {
   display: flex;
-  flex-wrap: wrap;
-  gap: 3rem;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
+  gap: 1.2rem;
+  padding: 1.6rem 1.2rem 1.2rem;
+  background: var(--blanc);
+  border: 1px solid var(--beige);
+  border-radius: 10px;
+  text-decoration: none;
+  transition: border-color .3s, box-shadow .3s, transform .3s;
 }
 
-.partner-logo {
-  width: 100px;
-  height: 65px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  /* opacity: .35; */
-  /* filter: grayscale(1) invert(1); */
-  transition: opacity .3s;
+/* Sur fond vert foncé, une ombre brune claire ne se voit pas :
+   on passe sur du noir plus dense, et le lime prend le relais du liseré. */
+.partner-card:hover {
+  border-color: var(--lime);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, .25);
+  transform: translateY(-3px);
 }
 
-.partner-logo:hover {
-  opacity: .7;
+/* PAS de flex:1 ici : dans un flex column, flex-basis écrase height.
+   La boîte doit garder une hauteur DÉFINIE, sinon le height:100%
+   de l'image ci-dessous n'a rien contre quoi se calculer. */
+.partner-card-logo {
+  width: 100%;
+  height: 130px;
 }
 
-.partner-logo img {
-  max-width: 100%;
-  max-height: 100%;
+/* L'image occupe exactement la boîte (100% x 100%), et object-fit:contain
+   redimensionne le visuel à l'intérieur en conservant ses proportions.
+   Résultat : tous les logos, quel que soit leur format de fichier, sont
+   ramenés au même gabarit — les petits sont agrandis, les grands réduits. */
+.partner-card-logo img {
+  width: 100%;
+  height: 100%;
   object-fit: contain;
 }
 
-.partner-ph {
-  font-size: .65rem;
-  color: rgba(253, 250, 244, .3);
-  letter-spacing: .1em;
+/* margin-top:auto pousse le nom en bas de la carte : les libellés restent
+   alignés entre eux même si l'un d'eux passe sur deux lignes. */
+.partner-card-name {
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  font-size: .82rem;
+  font-weight: 500;
+  color: var(--vert);
+  text-align: center;
+}
+
+.partner-card-name svg {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+  transition: transform .3s;
+}
+
+.partner-card:hover .partner-card-name svg {
+  transform: translate(2px, -2px);
+}
+
+@media(max-width:1200px) {
+  .partenaires-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media(max-width:900px) {
+  .partenaires-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .partenaires-baseline {
+    flex-basis: auto;
+    text-align: left;
+  }
+}
+
+@media(max-width:600px) {
+  .partenaires-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .partner-card-logo {
+    height: 100px;
+  }
+}
+
+/* AVIS — texte à gauche, carte note à droite */
+.avis {
+  padding: clamp(4rem, 8vw, 6rem) clamp(1.5rem, 8vw, 7rem);
+  background: var(--creme);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: clamp(2.5rem, 5vw, 5rem);
+}
+
+.avis .section-label {
+  color: var(--vert);
+}
+
+.avis .section-label::before {
+  display: none;
+}
+
+.avis h2 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  color: var(--brun);
+  margin-bottom: 1.3rem;
+}
+
+.avis h2 em {
+  font-style: italic;
+  color: var(--vert);
+}
+
+.avis-intro p {
+  max-width: 460px;
+  font-size: .88rem;
+  line-height: 1.9;
+  font-weight: 300;
+  color: var(--brun-clair);
+  margin: 0;
+}
+
+/* justify-self centre la carte DANS sa colonne de grille,
+   sans quoi elle s'étirerait sur toute la moitié droite. */
+.avis-card {
+  justify-self: center;
+  width: 100%;
+  max-width: 430px;
+  padding: clamp(2rem, 4vw, 2.8rem);
+  background: var(--blanc);
+  border-radius: 14px;
+  box-shadow: 0 14px 40px rgba(46, 34, 21, .08);
+  text-align: center;
+}
+
+.avis-card-label {
+  font-size: .7rem;
+  font-weight: 500;
+  letter-spacing: .2em;
   text-transform: uppercase;
+  color: var(--vert);
+  margin-bottom: 1.4rem;
+}
+
+/* align-items: baseline aligne le « / 5 » sur la ligne d'écriture du
+   grand chiffre, et non sur le haut ou le centre de sa boîte. */
+.avis-note {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: .35rem;
+  margin-bottom: .9rem;
+}
+
+.avis-note-valeur {
+  font-family: var(--font-cormorant), serif;
+  font-size: clamp(3.2rem, 7vw, 4.4rem);
+  line-height: 1;
+  color: var(--vert);
+}
+
+.avis-note-max {
+  font-size: 1rem;
+  font-weight: 300;
+  color: var(--brun-clair);
+}
+
+.avis-etoiles {
+  display: flex;
+  justify-content: center;
+  gap: .28rem;
+  margin-bottom: 1.7rem;
+}
+
+/* Doré volontairement hors palette de marque : c'est la convention
+   universelle des notations, un visiteur la décode sans y penser. */
+.avis-etoile {
+  width: 22px;
+  height: 22px;
+  color: #f0b429;
+}
+
+.avis-etoile.vide {
+  color: var(--beige);
+}
+
+.avis-lien {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  padding: .65rem 1.15rem;
+  background: var(--creme);
+  color: var(--vert);
+  border-radius: 999px;
+  text-decoration: none;
+  font-size: .78rem;
+  font-weight: 500;
+  transition: background .3s;
+}
+
+.avis-lien:hover {
+  background: var(--beige);
+}
+
+.avis-lien svg {
+  width: 12px;
+  height: 12px;
+  transition: transform .3s;
+}
+
+.avis-lien:hover svg {
+  transform: translate(2px, -2px);
+}
+
+@media(max-width:900px) {
+  .avis {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* CONTACT */
@@ -1186,7 +1678,7 @@ h1 em {
   border: 1px solid rgba(253, 250, 244, .1);
   border-radius: 2px;
   color: var(--blanc);
-  font-family: 'Jost', sans-serif;
+  font-family: var(--font-jost), sans-serif;
   font-size: .9rem;
   outline: none;
   transition: border-color .3s;
@@ -1219,7 +1711,7 @@ h1 em {
   background: var(--lime);
   color: var(--brun);
   border: none;
-  font-family: 'Jost', sans-serif;
+  font-family: var(--font-jost), sans-serif;
   font-size: .8rem;
   font-weight: 500;
   letter-spacing: .15em;
@@ -1263,14 +1755,6 @@ footer {
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 2rem;
-}
-
-.footer-logo {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.6rem;
-  font-style: italic;
-  color: var(--blanc);
-  text-decoration: none;
 }
 
 .footer-links {
@@ -1467,14 +1951,6 @@ footer {
     min-height: 220px;
   }
 
-  .services-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .formules-grid {
-    grid-template-columns: 1fr;
-  }
-
   .cta {
     grid-template-columns: 1fr;
   }
@@ -1629,10 +2105,6 @@ nav.scrolled .nav-admin:hover {
   padding: 3rem clamp(1.5rem, 6vw, 5rem) 5rem;
 }
 
-.commander-header {
-  margin-bottom: 3rem;
-}
-
 .commander-back {
   display: inline-block;
   margin-bottom: 1.2rem;
@@ -1644,230 +2116,6 @@ nav.scrolled .nav-admin:hover {
 
 .commander-back:hover {
   color: var(--vert);
-}
-
-.commander-header h1 {
-  font-size: clamp(2rem, 4vw, 3rem);
-  color: var(--brun);
-  margin-bottom: .3rem;
-}
-
-.commander-description {
-  margin-top: .5rem;
-  font-size: .95rem;
-  color: var(--brun-clair);
-  font-style: italic;
-  max-width: 60ch;
-}
-
-.commander-header p {
-  color: var(--vert);
-  font-size: 1rem;
-  font-weight: 600;
-}
-
-/* Layout deux colonnes */
-.commander-body {
-  display: grid;
-  grid-template-columns: 1fr 360px;
-  gap: 3rem;
-  align-items: start;
-}
-
-/* ── Colonne gauche ── */
-.commander-slots h2,
-.extras-section h2 {
-  font-size: 1.3rem;
-  color: var(--brun);
-  margin-bottom: 1.5rem;
-}
-
-.slot-group {
-  margin-bottom: 2rem;
-}
-
-.slot-group h3 {
-    font-size: 1rem;
-    text-transform: uppercase;
-    letter-spacing: .12em;
-    color: var(--brun-clair);
-    margin-bottom: .8rem;
-    font-weight: bold;
-}
-
-.slot-articles {
-  display: flex;
-  flex-wrap: wrap;
-  gap: .5rem;
-}
-
-/* Label stylisé comme un bouton — l'input radio est caché */
-.article-option {
-  display: inline-flex;
-  align-items: center;
-  gap: .5rem;
-  padding: .5rem 1.1rem;
-  border: 1.5px solid var(--beige);
-  border-radius: 30px;
-  font-size: .88rem;
-  color: var(--brun);
-  background: var(--blanc);
-  cursor: pointer;
-  transition: border-color .2s, background .2s;
-}
-
-.article-option input[type="radio"] {
-  display: none;
-}
-
-.article-option:hover {
-  border-color: var(--vert);
-}
-
-.article-option.selected {
-  border-color: var(--vert);
-  background: var(--vert);
-  color: var(--blanc);
-}
-
-/* ── Header nombre de personnes + onglets ── */
-.personnes-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-bottom: 1.2rem;
-}
-
-.personnes-header h2 {
-  font-size: 1.3rem;
-  color: var(--brun);
-  margin: 0;
-}
-
-.personnes-tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: .5rem;
-  margin-bottom: 1.8rem;
-}
-
-.personne-tab {
-  display: flex;
-  align-items: center;
-  gap: .4rem;
-  padding: .45rem 1rem;
-  border: 1.5px solid var(--beige);
-  border-radius: 30px;
-  background: var(--blanc);
-  font-size: .85rem;
-  color: var(--brun-clair);
-  cursor: pointer;
-  transition: border-color .2s, color .2s, background .2s;
-}
-
-.personne-tab:hover {
-  border-color: var(--vert);
-  color: var(--brun);
-}
-
-.personne-tab.active {
-  border-color: var(--brun);
-  color: var(--brun);
-  background: var(--creme);
-  font-weight: 500;
-}
-
-.personne-tab.complete {
-  border-color: var(--vert);
-}
-
-.tab-check {
-  font-size: .7rem;
-  color: var(--vert);
-}
-
-/* ── Extras ── */
-.extras-section {
-  margin-top: 3rem;
-  padding-top: 2rem;
-  border-top: 1px solid var(--beige);
-}
-
-.extras-subtitle {
-  font-size: .85rem;
-  color: var(--brun-clair);
-  margin-top: -.8rem;
-  margin-bottom: 1.2rem;
-}
-
-.extras-list {
-  display: flex;
-  flex-direction: column;
-  gap: .6rem;
-}
-
-.extra-item {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: .8rem 1rem;
-  background: var(--blanc);
-  border: 1px solid var(--beige);
-  border-radius: 4px;
-}
-
-.extra-nom {
-  flex: 1;
-  font-size: .9rem;
-  color: var(--brun);
-}
-
-.extra-prix {
-  font-size: .88rem;
-  color: var(--vert);
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.extra-counter {
-  display: flex;
-  align-items: center;
-  gap: .6rem;
-}
-
-.extra-counter button {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  border: 1.5px solid var(--beige);
-  background: none;
-  cursor: pointer;
-  font-size: 1rem;
-  color: var(--brun);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: border-color .2s;
-}
-
-.extra-counter button:hover:not(:disabled) {
-  border-color: var(--vert);
-  color: var(--vert);
-}
-
-.extra-counter button:disabled {
-  opacity: .3;
-  cursor: default;
-}
-
-.extra-counter span {
-  min-width: 20px;
-  text-align: center;
-  font-size: .9rem;
-  font-weight: 600;
-  color: var(--brun);
 }
 
 /* ── Colonne droite : récapitulatif ── */
@@ -1888,64 +2136,12 @@ nav.scrolled .nav-admin:hover {
   color: var(--brun);
 }
 
-.summary-personnes {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.summary-personnes label {
-  font-size: .85rem;
-  color: var(--brun-clair);
-}
-
-.personnes-counter {
-  display: flex;
-  align-items: center;
-  gap: .8rem;
-}
-
-.personnes-counter button {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  border: 1.5px solid var(--beige);
-  background: none;
-  cursor: pointer;
-  font-size: 1.1rem;
-  color: var(--brun);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: border-color .2s;
-}
-
-.personnes-counter button:hover {
-  border-color: var(--vert);
-  color: var(--vert);
-}
-
-.personnes-counter span {
-  min-width: 24px;
-  text-align: center;
-  font-weight: 600;
-  color: var(--brun);
-}
-
 .summary-section-title {
   font-size: .7rem;
   text-transform: uppercase;
   letter-spacing: .12em;
   color: var(--brun-clair);
   margin-bottom: .5rem;
-}
-
-.summary-selections,
-.summary-extras {
-  display: flex;
-  flex-direction: column;
-  gap: .4rem;
 }
 
 .summary-line {
@@ -1980,6 +2176,137 @@ nav.scrolled .nav-admin:hover {
   font-weight: 700;
   color: var(--brun);
   margin-top: .3rem;
+}
+
+/* Choix du mode de paiement. <fieldset> et <legend> regroupent les deux
+   boutons radio sous un même intitulé : un lecteur d'écran annonce
+   « Paiement, groupe » avant de lire les options. */
+/* Sélection de plusieurs dates de livraison : champ natif + bouton, puis la
+   liste de ce qui a été ajouté. Le champ date natif garde le sélecteur du
+   système, bien plus confortable sur mobile qu'un calendrier maison. */
+.dates-ajout {
+  display: flex;
+  gap: .5rem;
+}
+
+.dates-ajout .livraison-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.dates-ajout-btn {
+  flex-shrink: 0;
+  padding: 0 1rem;
+  background: var(--vert);
+  color: var(--blanc);
+  border: none;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: .8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity .2s;
+}
+
+.dates-ajout-btn:hover:not(:disabled) {
+  opacity: .85;
+}
+
+.dates-ajout-btn:disabled {
+  opacity: .4;
+  cursor: not-allowed;
+}
+
+.dates-liste {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: .35rem;
+  padding: 0;
+  margin: .5rem 0 0;
+}
+
+.dates-liste li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem;
+  padding: .45rem .7rem;
+  background: rgba(58, 90, 28, .07);
+  border-radius: 6px;
+  font-size: .85rem;
+  color: var(--brun);
+}
+
+.dates-liste button {
+  flex-shrink: 0;
+  padding: 2px 4px;
+  background: none;
+  border: none;
+  font-size: .9rem;
+  line-height: 1;
+  color: var(--brun-clair);
+  cursor: pointer;
+}
+
+.dates-liste button:hover {
+  color: #c0392b;
+}
+
+.paiement-choix {
+  margin: 0 0 1.25rem;
+  padding: 0;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+}
+
+.paiement-choix legend {
+  padding: 0;
+  margin-bottom: .5rem;
+}
+
+.paiement-option {
+  display: flex;
+  align-items: flex-start;
+  gap: .7rem;
+  padding: .75rem .9rem;
+  background: var(--blanc);
+  border: 1px solid var(--beige);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+}
+
+.paiement-option:hover {
+  border-color: var(--vert-clair);
+}
+
+/* :has() sélectionne l'option dont la radio est cochée : elle prend le
+   liseré vert sans JavaScript ni classe à ajouter à la main. */
+.paiement-option:has(input:checked) {
+  border-color: var(--vert);
+  background: rgba(58, 90, 28, .05);
+}
+
+.paiement-option input {
+  margin-top: 3px;
+  flex-shrink: 0;
+  accent-color: var(--vert);
+}
+
+.paiement-option strong {
+  display: block;
+  font-size: .9rem;
+  font-weight: 500;
+  color: var(--brun);
+}
+
+.paiement-option small {
+  display: block;
+  font-size: .78rem;
+  color: var(--brun-clair);
 }
 
 .summary-cta {
@@ -2071,18 +2398,8 @@ nav.scrolled .nav-admin:hover {
   color: #e53935;
 }
 
-.summary-warning {
-  font-size: .75rem;
-  color: var(--brun-clair);
-  text-align: center;
-}
-
 /* Responsive */
 @media (max-width: 900px) {
-  .commander-body {
-    grid-template-columns: 1fr;
-  }
-
   .commander-summary {
     position: static;
   }
@@ -2113,41 +2430,6 @@ nav.scrolled .nav-admin:hover {
   z-index: 1000;
 }
 
-.toast {
-  position: fixed;
-  bottom: 2rem;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  background: var(--brun);
-  color: var(--blanc);
-  padding: 1rem 1.8rem;
-  border-radius: 6px;
-  box-shadow: 0 8px 30px rgba(0,0,0,.2);
-  animation: toast-in .3s ease;
-  z-index: 1000;
-  white-space: nowrap;
-}
-
-.toast-icon {
-  font-size: 1.2rem;
-  color: var(--vert);
-  font-weight: 700;
-}
-
-.toast strong {
-  display: block;
-  font-size: .95rem;
-}
-
-.toast p {
-  font-size: .78rem;
-  opacity: .75;
-  margin: 0;
-}
-
 /* ============================================================
    PAGE PANIER
    ============================================================ */
@@ -2158,8 +2440,12 @@ nav.scrolled .nav-admin:hover {
   padding: 7rem clamp(1.5rem, 6vw, 5rem) 5rem;
 }
 
+/* Même contrainte que la page de commande : la grille du panier est
+   bâtie sur le même modèle 1fr + 360px et s'étirerait pareil sur un
+   écran très large. */
 .panier-header {
-  margin-bottom: 3rem;
+  max-width: 1440px;
+  margin: 0 auto 3rem;
 }
 
 .panier-header h1 {
@@ -2180,6 +2466,8 @@ nav.scrolled .nav-admin:hover {
   grid-template-columns: 1fr 360px;
   gap: 3rem;
   align-items: start;
+  max-width: 1440px;
+  margin: 0 auto;
 }
 
 /* ── Un item du panier ── */
@@ -2428,7 +2716,7 @@ nav.scrolled .nav-admin:hover {
 }
 
 .dashboard-brand a {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: var(--font-cormorant), serif;
   font-size: 1.2rem;
   font-style: italic;
   color: var(--lime);
@@ -2580,7 +2868,7 @@ nav.scrolled .nav-admin:hover {
 
 /* Titres */
 .dash-title {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: var(--font-cormorant), serif;
   font-size: 2rem;
   font-weight: 300;
   color: var(--brun);
@@ -2588,7 +2876,7 @@ nav.scrolled .nav-admin:hover {
 }
 
 .dash-subtitle {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: var(--font-cormorant), serif;
   font-size: 1.4rem;
   font-weight: 300;
   color: var(--brun);
@@ -2628,6 +2916,7 @@ nav.scrolled .nav-admin:hover {
 
 .dash-card-attente .dash-card-value { color: #d97706; }
 .dash-card-payee .dash-card-value   { color: var(--vert); }
+.dash-card-regler .dash-card-value  { color: #1e40af; }
 
 /* Sections */
 .dash-section {
@@ -2771,6 +3060,10 @@ nav.scrolled .nav-admin:hover {
 }
 
 /* Badge cliquable (toggle disponibilité) */
+.badge-a_regler {
+  background: #dbeafe;
+  color: #1e40af;
+}
 .badge-toggle {
   border: none;
   cursor: pointer;
@@ -2858,6 +3151,35 @@ nav.scrolled .nav-admin:hover {
   color: var(--brun-clair);
 }
 
+/* Case à cocher du dashboard. Le <label> englobe l'<input> : cliquer sur le
+   texte coche la case, sans avoir besoin de relier un id et un htmlFor. */
+.dash-checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: .6rem;
+  cursor: pointer;
+  font-size: .88rem;
+  color: var(--brun);
+}
+
+/* accent-color colore la case native aux couleurs du site, sans avoir à
+   la redessiner entièrement (et sans perdre son accessibilité native). */
+.dash-checkbox input {
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  flex-shrink: 0;
+  accent-color: var(--vert);
+  cursor: pointer;
+}
+
+.dash-checkbox small {
+  display: block;
+  margin-top: 2px;
+  font-size: .76rem;
+  color: var(--brun-clair);
+}
+
 .dash-input {
   padding: .55rem .75rem;
   border: 1px solid var(--beige);
@@ -2940,170 +3262,6 @@ nav.scrolled .nav-admin:hover {
   margin-bottom: 1.5rem;
 }
 
-/* ── Grille de cartes articles / extras ──────────────────────────────────── */
-
-.articles-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 1rem;
-  margin-top: .6rem;
-}
-
-/* Carte article (sélectionnable) */
-.article-card {
-  background: var(--blanc);
-  border: 2px solid var(--beige);
-  border-radius: 10px;
-  overflow: hidden;
-  cursor: pointer;
-  text-align: left;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  transition: border-color .2s, box-shadow .2s;
-  width: 100%;
-}
-
-.article-card:hover {
-  border-color: var(--vert-clair);
-  box-shadow: 0 2px 12px rgba(58,90,28,.1);
-}
-
-.article-card.selected {
-  border-color: var(--vert);
-  box-shadow: 0 0 0 3px rgba(58,90,28,.12);
-}
-
-/* Carte extra (avec compteur) */
-.extra-card {
-  background: var(--blanc);
-  border: 2px solid var(--beige);
-  border-radius: 10px;
-  overflow: hidden;
-  transition: border-color .2s, box-shadow .2s;
-}
-
-.extra-card.selected {
-  border-color: var(--vert);
-  box-shadow: 0 0 0 3px rgba(58,90,28,.12);
-}
-
-/* Image commune aux deux types de cartes */
-.article-card-img {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  background: var(--beige);
-  overflow: hidden;
-}
-
-.article-card-placeholder {
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, var(--beige) 0%, var(--creme) 100%);
-}
-
-/* Coche de sélection sur l'image (articles) — en haut à droite */
-.article-card-check {
-  position: absolute;
-  top: .5rem;
-  right: .5rem;
-  width: 1.6rem;
-  height: 1.6rem;
-  background: var(--vert);
-  color: #fff;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: .85rem;
-  font-weight: 700;
-}
-
-/* Quantité extras — pastille verte en haut à gauche */
-.extra-card-qty {
-  right: auto;
-  left: .5rem;
-}
-
-/* Bouton retrait extras — pastille rouge en haut à droite */
-.extra-card-remove {
-  position: absolute;
-  top: .5rem;
-  right: .5rem;
-  width: 1.6rem;
-  height: 1.6rem;
-  background: #c0392b;
-  color: #fff;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: .75rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background .15s;
-}
-
-.extra-card-remove:hover {
-  background: #a93226;
-}
-
-/* Corps de la carte */
-.article-card-body {
-  padding: .7rem .8rem .8rem;
-}
-
-.article-card-nom {
-  font-size: .9rem;
-  font-weight: 600;
-  color: var(--brun);
-  margin: 0 0 .25rem;
-}
-
-.article-card-desc {
-  font-size: .78rem;
-  color: var(--brun-clair);
-  margin: 0;
-  line-height: 1.4;
-}
-
-/* Carte auto-sélectionnée (slot partagé, non-chef de groupe) */
-.article-card-auto {
-  opacity: .7;
-}
-.article-card-auto:hover {
-  transform: none;
-  box-shadow: none;
-}
-.article-card-auto-label {
-  font-size: .7rem;
-  color: var(--vert);
-  font-style: italic;
-  margin: .2rem 0 0;
-}
-
-/* Badge sur le titre d'un slot partagé */
-.slot-shared-badge {
-  display: inline-block;
-  margin-left: .6rem;
-  font-size: .72rem;
-  font-weight: 500;
-  background: rgba(58, 90, 28, .1);
-  color: var(--vert);
-  padding: .15rem .5rem;
-  border-radius: 20px;
-  vertical-align: middle;
-}
-
-/* Prix et compteur spécifiques aux extras */
-.extra-card-prix {
-  font-size: .95rem;
-  font-weight: 700;
-  color: var(--vert);
-  margin: .4rem 0 .5rem;
-}
-
 
 /* ── Gestion slots dashboard ── */
 
@@ -3173,11 +3331,6 @@ nav.scrolled .nav-admin:hover {
   flex-wrap: wrap;
 }
 
-@media (max-width: 600px) {
-  .articles-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
 
 /* Hero : réduction des marges sur écrans courts (laptop bas, paysage mobile) */
 @media (max-height: 700px) {
@@ -3189,5 +3342,780 @@ nav.scrolled .nav-admin:hover {
   }
   .hero-sub {
     margin-bottom: 1.5rem;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   ÉTAPE « VOS CHOIX » — répartition par quantités
+   Remplace l'ancienne grille de cartes cliquables (.articles-grid /
+   .article-card) et les onglets par personne (.personnes-tabs).
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* Tokens locaux : le gris de texte de la maquette n'existait pas dans la
+   palette du site. Déclaré sur la carte plutôt que sur :root, il reste
+   confiné à cet écran tant qu'on ne s'en sert pas ailleurs. */
+.choix-carte {
+  --choix-gris: #7b7566;
+  --choix-bord: var(--beige);
+
+  max-width: 900px;
+  margin: 0 auto;
+  background: var(--blanc);
+  border-radius: 16px;
+  padding: 2rem 2.2rem 2.2rem;
+  box-shadow: 0 18px 50px rgba(20, 32, 10, .16);
+  color: var(--brun);
+  line-height: 1.5;
+}
+
+/* La barre flottante recouvre le bas de page : sans cette réserve, le
+   dernier bouton du pied de carte se retrouverait dessous, inatteignable. */
+.commander:has(.choix-flottante) {
+  padding-bottom: 8rem;
+}
+
+@media (max-width: 600px) {
+  .choix-carte {
+    padding: 1.4rem 1.1rem 1.6rem;
+    border-radius: 14px;
+  }
+}
+
+/* ── En-tête ── */
+.choix-entete {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.choix-titre {
+  font-size: clamp(1.7rem, 3.4vw, 2.4rem);
+  color: var(--brun);
+  margin: 0;
+}
+
+.choix-titre em {
+  font-style: italic;
+  color: var(--vert);
+}
+
+.choix-badge {
+  background: var(--creme);
+  border: 1px solid var(--choix-bord);
+  border-radius: 999px;
+  padding: .45rem .95rem;
+  font-size: .82rem;
+  color: var(--vert);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ── Indicateur d'étape ── */
+.choix-stepper {
+  margin: 1.6rem 0 .3rem;
+}
+
+.choix-rail {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--beige);
+  overflow: hidden;
+}
+
+.choix-rail span {
+  display: block;
+  height: 100%;
+  background: var(--vert);
+  border-radius: 2px;
+  transition: width .3s ease;
+}
+
+.choix-etapes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin: .75rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.choix-et {
+  text-align: center;
+  font-size: .72rem;
+  color: var(--choix-gris);
+  line-height: 1.3;
+}
+
+.choix-rond {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  margin: 0 auto .35rem;
+  display: grid;
+  place-items: center;
+  font-size: .75rem;
+  background: var(--beige);
+  color: var(--choix-gris);
+}
+
+.choix-et-faite .choix-rond {
+  background: var(--vert);
+  color: #fff;
+}
+
+.choix-et-active {
+  color: var(--vert);
+  font-weight: 500;
+}
+
+.choix-et-active .choix-rond {
+  background: var(--vert);
+  color: #fff;
+  box-shadow: 0 0 0 4px rgba(58, 90, 28, .16);
+}
+
+/* ── Titres de section ── */
+.choix-section {
+  font-family: var(--font-cormorant), serif;
+  font-size: 2rem;
+  font-weight: 400;
+  margin: 1.6rem 0 .35rem;
+}
+
+.choix-chapeau {
+  font-size: .88rem;
+  color: var(--choix-gris);
+  margin: 0;
+  max-width: 62ch;
+}
+
+.choix-astuce {
+  font-size: .84rem;
+  color: var(--vert);
+  background: rgba(184, 217, 74, .16);
+  border-left: 2px solid var(--lime);
+  padding: .55rem .8rem;
+  border-radius: 0 8px 8px 0;
+  margin: 1rem 0 .25rem;
+  max-width: 66ch;
+}
+
+/* ── Barre « nombre de personnes » ── */
+.choix-quantite {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .9rem;
+  flex-wrap: wrap;
+  background: var(--creme);
+  border: 1px solid var(--choix-bord);
+  border-radius: 12px;
+  padding: .8rem 1rem;
+  margin: 1.25rem 0 .4rem;
+}
+
+.choix-quantite-label {
+  font-size: .9rem;
+  font-weight: 500;
+}
+
+.choix-quantite-label small {
+  display: block;
+  color: var(--choix-gris);
+  font-size: .78rem;
+  font-weight: 400;
+}
+
+/* ── Ce qui est compris d'office ── */
+.choix-inclus {
+  margin-top: 1.6rem;
+  background: var(--creme);
+  border: 1px solid var(--choix-bord);
+  border-radius: 12px;
+  padding: 1rem 1.2rem;
+}
+
+.choix-inclus h3 {
+  font-family: var(--font-jost), sans-serif;
+  font-size: .78rem;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--vert);
+  margin-bottom: .6rem;
+}
+
+.choix-inclus ul {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem 1.4rem;
+}
+
+.choix-inclus li {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  font-size: .88rem;
+  color: var(--brun);
+}
+
+.choix-inclus li svg {
+  width: 15px;
+  height: 15px;
+  flex: none;
+  color: var(--vert-clair);
+}
+
+/* ── Un créneau ── */
+.choix-slot {
+  padding: 1.6rem 0 .25rem;
+  border-top: 1px solid var(--choix-bord);
+  margin-top: 1.6rem;
+  border-radius: 10px;
+}
+
+.choix-slot-tete {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: .9rem;
+}
+
+.choix-slot-tete h3 {
+  font-family: var(--font-jost), sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--brun);
+}
+
+/* tabular-nums : les chiffres ont tous la même largeur, le compteur
+   « 9 / 20 » ne fait donc pas sautiller la ligne en passant à « 10 / 20 ». */
+.choix-quota {
+  font-size: .82rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--choix-gris);
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: .35rem;
+}
+
+.choix-quota-plein {
+  color: var(--vert);
+  font-weight: 600;
+}
+
+.choix-regle {
+  font-size: .82rem;
+  color: var(--choix-gris);
+  margin: .2rem 0 .9rem;
+  max-width: 64ch;
+}
+
+/* ── Une ligne article ── */
+.choix-ligne {
+  display: flex;
+  align-items: center;
+  gap: .9rem;
+  padding: .65rem .9rem;
+  border: 1px solid var(--choix-bord);
+  border-radius: 10px;
+  background: #fff;
+  margin-bottom: .5rem;
+  transition: border-color .18s, background .18s;
+}
+
+.choix-ligne-active {
+  border-color: var(--vert);
+  background: rgba(184, 217, 74, .1);
+}
+
+/* min-width: 0 sur un enfant flex : sans ça, un nom d'article très long
+   refuserait de se réduire et pousserait le compteur hors de la carte. */
+.choix-nom {
+  flex: 1;
+  min-width: 0;
+  font-size: .92rem;
+  line-height: 1.35;
+}
+
+.choix-nom small {
+  display: block;
+  color: var(--choix-gris);
+  font-size: .78rem;
+}
+
+.choix-prix {
+  font-size: .88rem;
+  color: var(--vert);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* ── Compteur ── */
+.choix-compteur {
+  display: flex;
+  align-items: center;
+  gap: .25rem;
+  flex: none;
+}
+
+.choix-compteur button {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--choix-bord);
+  background: var(--creme);
+  color: var(--vert);
+  font-size: 1.05rem;
+  line-height: 1;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-jost), sans-serif;
+  transition: background .15s, transform .1s;
+}
+
+.choix-compteur button:hover:not(:disabled) {
+  background: var(--beige);
+}
+
+.choix-compteur button:active:not(:disabled) {
+  transform: scale(.92);
+}
+
+.choix-compteur button.choix-plus {
+  background: var(--vert);
+  border-color: var(--vert);
+  color: #fff;
+}
+
+.choix-compteur button.choix-plus:hover:not(:disabled) {
+  background: var(--vert-clair);
+}
+
+.choix-compteur button:disabled {
+  opacity: .32;
+  cursor: not-allowed;
+}
+
+.choix-compteur input {
+  width: 42px;
+  height: 32px;
+  text-align: center;
+  border: 1px solid transparent;
+  background: transparent;
+  font-family: var(--font-jost), sans-serif;
+  font-size: .95rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--brun);
+  border-radius: 7px;
+  padding: 0;
+  /* Masque les flèches natives du champ number : elles doublonnent avec
+     nos boutons +/− et cassent l'alignement. */
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.choix-compteur input::-webkit-outer-spin-button,
+.choix-compteur input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.choix-compteur input:hover:not([readonly]) {
+  border-color: var(--choix-bord);
+}
+
+.choix-compteur input:focus {
+  outline: none;
+  border-color: var(--vert);
+  background: #fff;
+}
+
+.choix-compteur input[readonly] {
+  cursor: default;
+  font-weight: 600;
+}
+
+/* ── Extras ── */
+.choix-extras .choix-ligne {
+  background: var(--creme);
+  border-style: dashed;
+}
+
+.choix-extras .choix-ligne-active {
+  background: rgba(184, 217, 74, .14);
+  border-style: solid;
+}
+
+/* ── Pied de carte ── */
+.choix-pied {
+  margin-top: 1.9rem;
+  padding-top: 1.4rem;
+  border-top: 1px solid var(--choix-bord);
+}
+
+.choix-btn-secondaire,
+.choix-btn-principal {
+  font-family: var(--font-jost), sans-serif;
+  font-size: .88rem;
+  border-radius: 999px;
+  padding: .65rem 1.35rem;
+  cursor: pointer;
+  border: 1px solid transparent;
+  text-decoration: none;
+  display: inline-block;
+  transition: background .15s;
+}
+
+.choix-btn-secondaire {
+  background: #fff;
+  border-color: var(--choix-bord);
+  color: var(--brun);
+}
+
+.choix-btn-secondaire:hover {
+  background: var(--creme);
+}
+
+.choix-btn-principal {
+  background: var(--vert);
+  color: #fff;
+  font-weight: 500;
+}
+
+.choix-btn-principal:hover {
+  background: var(--vert-clair);
+}
+
+/* Le bouton reste CLIQUABLE même incomplet : il fait alors défiler jusqu'au
+   créneau à compléter. Un bouton désactivé ne dirait pas ce qui manque. */
+.choix-btn-attente {
+  background: #93a683;
+}
+
+.choix-btn-attente:hover {
+  background: #859875;
+}
+
+/* ── Barre flottante ── */
+.choix-flottante {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 20;
+  background: rgba(46, 34, 21, .96);
+  color: var(--creme);
+  padding: .7rem 1.25rem;
+  display: flex;
+  justify-content: center;
+  box-shadow: 0 -6px 24px rgba(0, 0, 0, .22);
+}
+
+.choix-flottante-in {
+  width: 100%;
+  max-width: 1120px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .9rem;
+  flex-wrap: wrap;
+}
+
+.choix-etat {
+  font-size: .88rem;
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+  margin: 0;
+}
+
+.choix-pastille {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--lime);
+  flex: none;
+}
+
+.choix-pastille-attente {
+  background: #d8c15e;
+}
+
+.choix-flottante-droite {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+}
+
+.choix-somme {
+  font-size: .82rem;
+  color: #cbd3bc;
+  font-variant-numeric: tabular-nums;
+}
+
+.choix-somme b {
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 500;
+  margin-left: .35rem;
+}
+
+@media (max-width: 600px) {
+  .choix-etat {
+    font-size: .8rem;
+    width: 100%;
+  }
+  .choix-flottante-droite {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .choix-et {
+    font-size: .65rem;
+  }
+}
+
+/* ── Signalement d'un créneau incomplet ── */
+.choix-slot-signale {
+  animation: choix-pulse 1.2s ease;
+}
+
+@keyframes choix-pulse {
+  0%, 100% { background: transparent; }
+  25%      { background: rgba(216, 193, 94, .22); }
+}
+
+/* ── Confirmation d'ajout ── */
+.choix-modale {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  background: rgba(46, 34, 21, .55);
+}
+
+.choix-modale-boite {
+  background: var(--blanc);
+  border-radius: 16px;
+  padding: 2rem;
+  max-width: 420px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 24px 60px rgba(20, 32, 10, .3);
+}
+
+.choix-modale-icone {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  margin: 0 auto 1rem;
+  border-radius: 50%;
+  background: var(--lime);
+  color: var(--vert);
+  font-size: 1.3rem;
+}
+
+.choix-modale-boite h2 {
+  font-size: 1.5rem;
+  color: var(--brun);
+  margin-bottom: .3rem;
+}
+
+.choix-modale-boite p {
+  font-size: .88rem;
+  color: var(--choix-gris);
+  margin-bottom: 1.4rem;
+}
+
+.choix-modale-actions {
+  display: flex;
+  justify-content: center;
+  gap: .7rem;
+  flex-wrap: wrap;
+}
+
+/* Respect du réglage système « réduire les animations » : une pulsation
+   ou une transition peut provoquer un malaise chez certaines personnes. */
+@media (prefers-reduced-motion: reduce) {
+  .choix-carte *,
+  .choix-slot-signale {
+    animation-duration: .001ms !important;
+    transition-duration: .001ms !important;
+  }
+}
+
+/* Quantité d'un créneau affichée sur les cartes de l'accueil (« Saucisson
+   × 3 ») et dans la liste des produits compris de la page de commande. */
+.formule-produit-qte,
+.choix-inclus li strong {
+  color: var(--vert);
+  font-weight: 600;
+}
+
+/* Garnitures proposees au choix, sous le nom du creneau. Bloc et non inline :
+   la ligne doit passer SOUS le libelle, pas se coller a sa suite. */
+.formule-produit-choix {
+  display: block;
+  margin-top: .1rem;
+  font-size: .78rem;
+  font-style: italic;
+  color: var(--brun-clair);
+  line-height: 1.35;
+}
+
+/* Barre d action sous la liste des creneaux d une formule. */
+.dash-slots-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 1.5rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid var(--beige);
+}
+
+.dash-slots-note {
+  font-size: .78rem;
+  color: var(--brun-clair);
+  line-height: 1.5;
+  max-width: 46ch;
+}
+
+/* Zone de remarque du panier. resize: vertical seulement : un
+   redimensionnement horizontal deborderait de la colonne. */
+.livraison-textarea {
+  resize: vertical;
+  min-height: 70px;
+  font-family: inherit;
+  line-height: 1.5;
+}
+
+/* Remarque affichee dans le detail d une commande du dashboard. */
+.dash-remarque {
+  margin-top: 2rem;
+  padding: 1rem 1.2rem;
+  border-left: 3px solid var(--lime);
+  background: var(--creme);
+  border-radius: 0 8px 8px 0;
+}
+
+.dash-remarque p {
+  font-size: .9rem;
+  line-height: 1.6;
+  color: var(--brun);
+}
+
+/* Champ de livraison en lecture seule (email d un client connecte).
+   Fond grise et curseur par defaut : l apparence doit dire que le champ
+   ne se modifie pas ici, sans quoi le client tente de le corriger et
+   croit l interface cassee. */
+.livraison-input[readonly] {
+  background: var(--creme);
+  color: var(--brun-clair);
+  cursor: default;
+}
+
+/* ══ Selecteur de langue ══ */
+.lang-switcher {
+  position: relative;
+  flex: none;
+}
+
+.lang-bouton {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .35rem .7rem;
+  border: 1px solid rgba(58, 90, 28, .25);
+  border-radius: 999px;
+  background: rgba(253, 250, 244, .9);
+  color: var(--brun);
+  font-family: var(--font-jost), sans-serif;
+  font-size: .78rem;
+  font-weight: 500;
+  letter-spacing: .04em;
+  cursor: pointer;
+  transition: background .15s, border-color .15s;
+}
+
+.lang-bouton:hover {
+  background: #fff;
+  border-color: var(--vert);
+}
+
+.lang-bouton svg {
+  width: 13px;
+  height: 13px;
+  opacity: .55;
+}
+
+.lang-drapeau {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+/* Menu deroulant. z-index superieur a celui de la nav (100) : sans cela il
+   passerait DERRIERE la barre de navigation, qui est en position fixed. */
+.lang-menu {
+  position: absolute;
+  top: calc(100% + .5rem);
+  right: 0;
+  z-index: 120;
+  min-width: 190px;
+  list-style: none;
+  margin: 0;
+  padding: .4rem;
+  background: var(--blanc);
+  border: 1px solid var(--beige);
+  border-radius: 10px;
+  box-shadow: 0 12px 34px rgba(20, 32, 10, .18);
+}
+
+.lang-option {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  width: 100%;
+  padding: .5rem .6rem;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--brun);
+  font-family: var(--font-jost), sans-serif;
+  font-size: .88rem;
+  text-align: left;
+  cursor: pointer;
+  transition: background .12s;
+}
+
+.lang-option:hover {
+  background: var(--creme);
+}
+
+.lang-nom {
+  flex: 1;
+}
+
+.lang-option-active .lang-nom {
+  font-weight: 600;
+  color: var(--vert);
+}
+
+.lang-coche {
+  color: var(--vert);
+  font-size: .85rem;
+}
+
+@media (max-width: 480px) {
+  .lang-court {
+    display: none;
   }
 }

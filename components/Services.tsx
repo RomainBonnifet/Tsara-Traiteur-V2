@@ -1,27 +1,39 @@
+"use client"
+import { useLang } from "@/context/LangContext"
+
 export default function Services() {
+  const { t } = useLang()
+
   return (
     <section className="services reveal" id="services">
-      <div className="section-label">Ce que nous proposons</div>
-      <h2>Nos <em>services</em></h2>
-      <p className="services-sub">Conçus pour s&apos;adapter à chaque occasion</p>
-      <div className="services-grid">
-        <div className="service-card">
+      <div className="section-label">{t.services.label}</div>
+      <h2>{t.services.titre} <em>{t.services.titreEm}</em></h2>
+      <p className="services-sub">{t.services.sousTitre}</p>
+      <div className="services-list">
+        <div className="service-row">
           <div className="service-num">01</div>
-          <h3>Livraison de petits-déjeuners</h3>
-          <p>Nous assurons la livraison aux alentours de Coutras, notamment à Libourne, Saint-Émilion, Castillon la Bataille et Montpon-Ménestérol. Nous nous adaptons à vos horaires et au lieu de livraison pour vous offrir un service flexible et sur mesure</p>
-          <span className="service-pill">Rayon de 20km autour de Coutras</span>
+          <div className="service-content">
+            <h3>{t.services.s1Titre}</h3>
+            <p>{t.services.s1Texte}</p>
+          </div>
+          <span className="service-pill">{t.services.zoneLocale}</span>
         </div>
-        <div className="service-card">
+        <div className="service-row">
           <div className="service-num">02</div>
-          <h3>Service Traiteur</h3>
-          <p>Nous prenons en charge l'installation des buffets, la mise en place ainsi que le service, afin que vous puissiez profiter pleinement de vos invités</p>
-          <span className="service-pill">Dans toute la région</span>
+          <div className="service-content">
+            <h3>{t.services.s2Titre}</h3>
+            <p>{t.services.s2Texte}</p>
+            <p className="service-disclaimer">{t.services.s2Avertissement}</p>
+          </div>
+          <span className="service-pill">{t.services.zoneLocale}</span>
         </div>
-        <div className="service-card">
+        <div className="service-row">
           <div className="service-num">03</div>
-          <h3>Location de vaisselles</h3>
-          <p>Vous manquez de vaisselle ou de matériel pour votre réception ? <br />Nous proposons un service de location avec livraison et installation directement sur le lieu de l'événement.</p>
-          <span className="service-pill">Sur demande</span>
+          <div className="service-content">
+            <h3>{t.services.s3Titre}</h3>
+            <p>{t.services.s3Texte}</p>
+          </div>
+          <span className="service-pill">{t.services.zoneRegion}</span>
         </div>
       </div>
     </section>

@@ -1,6 +1,27 @@
 import type { Metadata } from 'next'
+import { cookies } from 'next/headers'
+import { COOKIE_LANGUE, LANGUE_DEFAUT, estLangueValide } from '@/lib/i18n/config'
+import { Cormorant_Garamond, Jost } from 'next/font/google'
 import './globals.css'
 import Providers from './providers'
+
+// Les polices sont téléchargées au BUILD et servies depuis notre domaine.
+// `variable` génère une variable CSS que globals.css consomme, plutôt que
+// d'imposer une classe sur chaque élément.
+const cormorant = Cormorant_Garamond({
+  subsets: ['latin'],
+  weight: ['300', '400', '600'],
+  style: ['normal', 'italic'],
+  display: 'swap',
+  variable: '--font-cormorant',
+})
+
+const jost = Jost({
+  subsets: ['latin'],
+  weight: ['300', '400', '500'],
+  display: 'swap',
+  variable: '--font-jost',
+})
 
 export const metadata: Metadata = {
   title: 'Tsara — Traiteur artisanal en Gironde',
@@ -56,21 +77,24 @@ const jsonLd = {
   ]
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+// async : cookies() lit la requete en cours. Consequence a connaitre, la
+// page n est plus pregeneree au build mais rendue a chaque requete. C est le
+// prix d un premier affichage deja dans la bonne langue ; sur un site de cette
+// taille, le cout est negligeable.
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const choix = (await cookies()).get(COOKIE_LANGUE)?.value
+  const langue = estLangueValide(choix) ? choix : LANGUE_DEFAUT
+
   return (
-    <html lang="fr">
-      <head>
-        <link
-          href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Jost:wght@300;400;500&display=swap"
-          rel="stylesheet"
-        />
-      </head>
+    // lang est lu par les lecteurs d ecran (prononciation) et par les moteurs
+    // de recherche. Il doit suivre la langue reellement affichee.
+    <html lang={langue} className={`${cormorant.variable} ${jost.variable}`}>
       <body>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        <Providers>{children}</Providers>
+        <Providers langue={langue}>{children}</Providers>
       </body>
     </html>
   )

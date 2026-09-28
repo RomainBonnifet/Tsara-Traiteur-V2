@@ -35,3 +35,6 @@ app/generated
 
 CLAUDE.md
 .claude
+
+# Maquette de reference (Claude Design) : sert a concevoir, pas a executer.
+maquette/

@@ -1,4 +1,6 @@
+"use client"
 import Image from "next/image"
+import { useLang } from "@/context/LangContext"
 
 const PHOTOS = [
   { src: "/img/Photos/pdj.jpg", alt: "Plateau petit-déjeuner Tsara" },
@@ -9,14 +11,16 @@ const PHOTOS = [
 ]
 
 export default function Galerie() {
+  const { t } = useLang()
+
   return (
     <section className="galerie reveal" id="galerie">
       <div className="galerie-header">
         <div>
-          <div className="section-label">Nos réalisations</div>
-          <h2>La <em>galerie</em></h2>
+          <div className="section-label">{t.galerie.label}</div>
+          <h2>{t.galerie.titre} <em>{t.galerie.titreEm}</em></h2>
         </div>
-        <a href="/galerie" className="galerie-link">Voir toutes les photos →</a>
+        <a href="/galerie" className="galerie-link">{t.galerie.lien}</a>
       </div>
       <div className="galerie-grid">
         {PHOTOS.map((photo, i) => (

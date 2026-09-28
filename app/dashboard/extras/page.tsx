@@ -3,6 +3,8 @@
 import { useEffect, useState, useRef } from "react"
 import Image from "next/image"
 
+type Categorie = { id: number; nom: string }
+
 type Extra = {
   id: number
   nom: string
@@ -10,6 +12,10 @@ type Extra = {
   description: string | null
   image: string | null
   disponible: boolean
+  // null = extra proposé pour toutes les formules, quelle que soit leur
+  // catégorie. C'est la valeur par défaut à la création.
+  categorieId: number | null
+  categorie: Categorie | null
 }
 
 async function uploadImage(file: File): Promise<string> {
@@ -22,10 +28,13 @@ async function uploadImage(file: File): Promise<string> {
 
 export default function ExtrasPage() {
   const [extras, setExtras]   = useState<Extra[]>([])
+  const [categories, setCategories] = useState<Categorie[]>([])
   const [loading, setLoading] = useState(true)
   const [editId, setEditId]   = useState<number | null>(null)
-  const [editData, setEditData] = useState({ nom: "", prix: "", description: "", image: "" })
-  const [newData, setNewData]   = useState({ nom: "", prix: "", description: "", image: "" })
+  // categorieId est stocké en CHAÎNE et non en nombre : la valeur d'un
+  // <select> est toujours une chaîne, et "" représente « aucune catégorie ».
+  const [editData, setEditData] = useState({ nom: "", prix: "", description: "", image: "", categorieId: "" })
+  const [newData, setNewData]   = useState({ nom: "", prix: "", description: "", image: "", categorieId: "" })
   const [saving, setSaving]   = useState(false)
   const [message, setMessage] = useState("")
 
@@ -33,15 +42,28 @@ export default function ExtrasPage() {
   const newFileRef  = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    fetch("/api/admin/extras")
-      .then(r => r.json())
-      .then(setExtras)
+    // Les deux requêtes sont indépendantes : Promise.all les lance en
+    // parallèle au lieu d'attendre la fin de la première.
+    Promise.all([
+      fetch("/api/admin/extras").then(r => r.json()),
+      fetch("/api/admin/categories").then(r => r.json()),
+    ])
+      .then(([listeExtras, listeCategories]) => {
+        setExtras(listeExtras)
+        setCategories(listeCategories)
+      })
       .finally(() => setLoading(false))
   }, [])
 
   function startEdit(ex: Extra) {
     setEditId(ex.id)
-    setEditData({ nom: ex.nom, prix: String(ex.prix), description: ex.description || "", image: ex.image || "" })
+    setEditData({
+      nom: ex.nom,
+      prix: String(ex.prix),
+      description: ex.description || "",
+      image: ex.image || "",
+      categorieId: ex.categorieId ? String(ex.categorieId) : "",
+    })
   }
 
   async function handleEditImage(file: File) {
@@ -60,7 +82,7 @@ export default function ExtrasPage() {
     const res = await fetch(`/api/admin/extras/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nom: editData.nom, prix: parseFloat(editData.prix), description: editData.description, image: editData.image }),
+      body: JSON.stringify({ nom: editData.nom, prix: parseFloat(editData.prix), description: editData.description, image: editData.image, categorieId: editData.categorieId }),
     })
     if (res.ok) {
       const updated = await res.json()
@@ -101,12 +123,12 @@ export default function ExtrasPage() {
     const res = await fetch("/api/admin/extras", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nom: newData.nom, prix: parseFloat(newData.prix), description: newData.description, image: newData.image }),
+      body: JSON.stringify({ nom: newData.nom, prix: parseFloat(newData.prix), description: newData.description, image: newData.image, categorieId: newData.categorieId }),
     })
     if (res.ok) {
       const created = await res.json()
       setExtras([...extras, created])
-      setNewData({ nom: "", prix: "", description: "", image: "" })
+      setNewData({ nom: "", prix: "", description: "", image: "", categorieId: "" })
       if (newFileRef.current) newFileRef.current.value = ""
       setMessage("Extra ajouté.")
     } else {
@@ -127,6 +149,7 @@ export default function ExtrasPage() {
           <tr>
             <th>Photo</th>
             <th>Nom</th>
+            <th>Proposé avec</th>
             <th>Description</th>
             <th>Prix</th>
             <th>Dispo</th>
@@ -152,6 +175,15 @@ export default function ExtrasPage() {
                 <td>
                   <input className="dash-input" value={editData.nom}
                     onChange={e => setEditData({ ...editData, nom: e.target.value })} />
+                </td>
+                <td>
+                  <select className="dash-input" value={editData.categorieId}
+                    onChange={e => setEditData({ ...editData, categorieId: e.target.value })}>
+                    <option value="">Toutes les formules</option>
+                    {categories.map(c => (
+                      <option key={c.id} value={c.id}>{c.nom}</option>
+                    ))}
+                  </select>
                 </td>
                 <td>
                   <input className="dash-input" value={editData.description}
@@ -180,6 +212,7 @@ export default function ExtrasPage() {
                   }
                 </td>
                 <td>{ex.nom}</td>
+                <td>{ex.categorie?.nom ?? "Toutes les formules"}</td>
                 <td>{ex.description || "—"}</td>
                 <td>{ex.prix.toFixed(2)} €</td>
                 <td>
@@ -216,6 +249,16 @@ export default function ExtrasPage() {
               <label className="dash-label">Description</label>
               <input className="dash-input" value={newData.description}
                 onChange={e => setNewData({ ...newData, description: e.target.value })} />
+            </div>
+            <div className="dash-field">
+              <label className="dash-label">Proposé avec</label>
+              <select className="dash-input" value={newData.categorieId}
+                onChange={e => setNewData({ ...newData, categorieId: e.target.value })}>
+                <option value="">Toutes les formules</option>
+                {categories.map(c => (
+                  <option key={c.id} value={c.id}>{c.nom}</option>
+                ))}
+              </select>
             </div>
           </div>
           <div className="dash-field">

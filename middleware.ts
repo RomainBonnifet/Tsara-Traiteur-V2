@@ -1,8 +1,17 @@
 import { NextRequest, NextResponse } from "next/server"
 import { verifyToken } from "@/lib/auth"
 
-// Les routes qui nécessitent d'être connecté
-const PROTECTED = ["/panier", "/commande", "/dashboard"]
+// Les routes qui nécessitent d'être connecté.
+//
+// /panier et /commande en ont été retirés : commander ne demande plus de
+// compte. /commande/succes en particulier DOIT rester ouverte — c'est la
+// page de retour de Stripe, un invité s'y ferait rediriger vers la
+// connexion après avoir payé.
+//
+// Le tunnel de commande reste sûr sans ce garde-fou : /api/checkout
+// revalide tout côté serveur (prix, catégorie de formule, rayon de
+// livraison), et le paiement lui-même est arbitré par Stripe.
+const PROTECTED = ["/dashboard"]
 
 // Les routes réservées à l'admin
 const ADMIN_ONLY = ["/dashboard"]

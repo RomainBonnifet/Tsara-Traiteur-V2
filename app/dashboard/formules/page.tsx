@@ -6,6 +6,7 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
+import { UNITES_FORMULE } from "@/lib/formule"
 
 type Formule = {
   id: number
@@ -49,6 +50,7 @@ export default function FormulesPage() {
     prix: "",
     description: "",
     categorieId: "",
+    unite: "personne",
   })
 
   // Slots à créer en même temps que la formule
@@ -63,7 +65,10 @@ export default function FormulesPage() {
   useEffect(() => {
     Promise.all([
       fetch("/api/admin/formules").then((r) => r.json()),
-      fetch("/api/formules").then((r) => r.json()),
+      // /api/admin/categories (pas /api/formules) : la route publique
+      // masque les catégories vides, or c'est précisément dans une catégorie
+      // vide qu'on a besoin de créer la première formule.
+      fetch("/api/admin/categories").then((r) => r.json()),
       fetch("/api/admin/articles").then((r) => r.json()),
     ]).then(([formulesData, catsData, articlesData]) => {
       setFormules(formulesData)
@@ -185,6 +190,7 @@ export default function FormulesPage() {
         prix: parseFloat(newData.prix),
         description: newData.description,
         categorieId: parseInt(newData.categorieId),
+        unite: newData.unite,
       }),
     })
 
@@ -219,7 +225,7 @@ export default function FormulesPage() {
     }
 
     setFormules([...formules, created])
-    setNewData({ nom: "", prix: "", description: "", categorieId: "" })
+    setNewData({ nom: "", prix: "", description: "", categorieId: "", unite: "personne" })
     setNewSlots([])
     setSlotArticleSelect({})
     setMessage("Formule ajoutée avec ses slots.")
@@ -369,6 +375,20 @@ export default function FormulesPage() {
                 {categories.map((c) => (
                   <option key={c.id} value={c.id}>
                     {c.nom}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="dash-field">
+              <label className="dash-label">Vendue par</label>
+              <select
+                className="dash-input"
+                value={newData.unite}
+                onChange={(e) => setNewData({ ...newData, unite: e.target.value })}
+              >
+                {UNITES_FORMULE.map((u) => (
+                  <option key={u} value={u}>
+                    {u}
                   </option>
                 ))}
               </select>

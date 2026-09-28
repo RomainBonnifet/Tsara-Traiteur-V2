@@ -10,6 +10,9 @@ export async function GET() {
 
   const extras = await prisma.extra.findMany({
     orderBy: { id: "asc" },
+    // La catégorie est jointe pour que le tableau du dashboard affiche son
+    // nom sans avoir à faire une requête supplémentaire par ligne.
+    include: { categorie: { select: { id: true, nom: true } } },
   })
 
   return NextResponse.json(extras)
@@ -22,7 +25,7 @@ export async function POST(req: NextRequest) {
   if (auth instanceof NextResponse) return auth
 
   const body = await req.json()
-  const { nom, prix, description, image } = body
+  const { nom, prix, description, image, categorieId } = body
 
   if (!nom || prix === undefined) {
     return NextResponse.json(
@@ -37,8 +40,12 @@ export async function POST(req: NextRequest) {
       prix: parseFloat(prix),
       description: description || null,
       image: image || null,
+      // Chaîne vide (le <select> sur « Toutes les formules ») et undefined
+      // donnent null : aucune catégorie, donc extra proposé partout.
+      categorieId: categorieId ? Number(categorieId) : null,
       disponible: true,
     },
+    include: { categorie: { select: { id: true, nom: true } } },
   })
 
   return NextResponse.json(extra, { status: 201 })

@@ -100,6 +100,10 @@ export default function DashboardGaleriePage() {
           <form className="galerie-upload-form" onSubmit={handleUpload}>
             <div className="galerie-upload-preview">
               {preview
+                // `preview` est une URL locale (blob) issue du champ fichier :
+                // l'image n'a jamais quitté le navigateur, next/image n'a rien
+                // à optimiser. <img> est ici le choix correct.
+                // eslint-disable-next-line @next/next/no-img-element
                 ? <img src={preview} alt="Aperçu" />
                 : <span className="galerie-upload-placeholder">Aperçu</span>
               }

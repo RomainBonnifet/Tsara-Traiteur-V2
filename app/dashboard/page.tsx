@@ -5,6 +5,7 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
+import { libelleStatut } from "@/lib/statuts"
 
 // On définit les types TypeScript pour les données qu'on attend de l'API.
 // Ça nous aide à éviter les fautes de frappe et à avoir l'autocomplétion.
@@ -12,6 +13,7 @@ type Stats = {
   totalCommandes: number
   chiffreAffaires: number
   commandesEnAttente: number
+  commandesARegler: number
   commandesPayees: number
 }
 
@@ -21,7 +23,8 @@ type Commande = {
   statut: string
   montantTotal: number
   nbPersonnes: number
-  user: { email: string }
+  email: string | null
+  user: { email: string } | null
   formule: { nom: string }
 }
 
@@ -51,7 +54,7 @@ export default function DashboardPage() {
     <div>
       <h1 className="dash-title">Vue d&apos;ensemble</h1>
 
-      {/* Grille des 4 cartes de statistiques */}
+      {/* Grille des cartes de statistiques */}
       <div className="dash-cards-grid">
         <div className="dash-card">
           <div className="dash-card-value">{stats?.totalCommandes ?? 0}</div>
@@ -65,7 +68,11 @@ export default function DashboardPage() {
         </div>
         <div className="dash-card dash-card-attente">
           <div className="dash-card-value">{stats?.commandesEnAttente ?? 0}</div>
-          <div className="dash-card-label">En attente</div>
+          <div className="dash-card-label">En attente (en ligne)</div>
+        </div>
+        <div className="dash-card dash-card-regler">
+          <div className="dash-card-value">{stats?.commandesARegler ?? 0}</div>
+          <div className="dash-card-label">À régler à la livraison</div>
         </div>
         <div className="dash-card dash-card-payee">
           <div className="dash-card-value">{stats?.commandesPayees ?? 0}</div>
@@ -102,11 +109,11 @@ export default function DashboardPage() {
                 <tr key={c.id}>
                   <td>#{c.id}</td>
                   <td>{new Date(c.date).toLocaleDateString("fr-FR")}</td>
-                  <td>{c.user.email}</td>
+                  <td>{c.email ?? c.user?.email ?? "—"}</td>
                   <td>{c.formule.nom}</td>
                   <td>{c.montantTotal.toFixed(2)} €</td>
                   <td>
-                    <span className={`badge badge-${c.statut}`}>{c.statut.replace("_", " ")}</span>
+                    <span className={`badge badge-${c.statut}`}>{libelleStatut(c.statut)}</span>
                   </td>
                   <td>
                     <Link href={`/dashboard/commandes/${c.id}`} className="dash-btn dash-btn-sm">

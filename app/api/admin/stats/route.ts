@@ -15,18 +15,22 @@ export async function GET() {
   })
 
   const totalCommandes = commandes.length
+  // Le chiffre d'affaires ne compte que ce qui est encaissé : une commande
+  // « à régler » n'y entre qu'une fois passée en « payée » par l'admin.
   const chiffreAffaires = commandes
     .filter((c) => c.statut === "payee")
     .reduce((sum, c) => sum + c.montantTotal, 0)
   const commandesEnAttente = commandes.filter(
     (c) => c.statut === "en_attente"
   ).length
+  const commandesARegler = commandes.filter((c) => c.statut === "a_regler").length
   const commandesPayees = commandes.filter((c) => c.statut === "payee").length
 
   return NextResponse.json({
     totalCommandes,
     chiffreAffaires,
     commandesEnAttente,
+    commandesARegler,
     commandesPayees,
   })
 }

@@ -19,10 +19,25 @@ export async function POST(
     return NextResponse.json({ error: "Le nom du slot est requis" }, { status: 400 })
   }
 
+  const formuleId = parseInt(id)
+
+  // Sans position explicite, Prisma applique le @default(0) du schéma : tout
+  // nouveau créneau naissait donc à égalité avec le premier de la liste.
+  // Deux créneaux partageant une position cassent le réordonnancement, qui
+  // compare des positions strictement inférieures ou supérieures.
+  // _max donne la plus grande position existante ; null si la formule n'a
+  // encore aucun créneau, auquel cas le premier prend 0.
+  const { _max } = await prisma.slot.aggregate({
+    where: { formuleId },
+    _max: { position: true },
+  })
+  const position = _max.position === null ? 0 : _max.position + 1
+
   const slot = await prisma.slot.create({
     data: {
       nom,
-      formuleId: parseInt(id),
+      formuleId,
+      position,
     },
     include: {
       articles: { include: { article: true } },

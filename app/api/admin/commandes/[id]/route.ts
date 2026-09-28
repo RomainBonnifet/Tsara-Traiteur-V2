@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { requireAdmin } from "@/lib/adminAuth"
+import { estStatutValide } from "@/lib/statuts"
 
 // GET /api/admin/commandes/[id]
 // Retourne le détail complet d'une commande
@@ -39,7 +40,7 @@ export async function GET(
 }
 
 // PATCH /api/admin/commandes/[id]
-// Permet de modifier le statut d'une commande : { statut: "payee" | "annulee" | "en_attente" }
+// Permet de modifier le statut d'une commande : { statut } (valeurs dans lib/statuts.ts)
 export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -51,8 +52,7 @@ export async function PATCH(
   const body = await req.json()
   const { statut } = body
 
-  const statutsValides = ["en_attente", "payee", "annulee"]
-  if (!statut || !statutsValides.includes(statut)) {
+  if (!estStatutValide(statut)) {
     return NextResponse.json({ error: "Statut invalide" }, { status: 400 })
   }
 

@@ -13,7 +13,7 @@ export async function PUT(
 
   const { id } = await params
   const body = await req.json()
-  const { nom, prix, description, image, disponible } = body
+  const { nom, prix, description, image, disponible, categorieId } = body
 
   const extra = await prisma.extra.update({
     where: { id: parseInt(id) },
@@ -23,7 +23,14 @@ export async function PUT(
       ...(description !== undefined && { description: description || null }),
       ...(image !== undefined && { image: image || null }),
       ...(disponible !== undefined && { disponible: Boolean(disponible) }),
+      // undefined = champ non envoyé, on n'y touche pas : c'est le cas du
+      // bouton Dispo/Indispo, qui n'envoie que « disponible ».
+      // "" ou null = l'admin a choisi « Toutes les formules », on efface.
+      ...(categorieId !== undefined && {
+        categorieId: categorieId ? Number(categorieId) : null,
+      }),
     },
+    include: { categorie: { select: { id: true, nom: true } } },
   })
 
   return NextResponse.json(extra)

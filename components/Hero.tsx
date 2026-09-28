@@ -1,18 +1,23 @@
+"use client"
+import { useLang } from "@/context/LangContext"
+
 export default function Hero() {
+  const { t } = useLang()
+
   return (
     <section className="hero">
       <div className="hero-bg"></div>
       <div className="hero-content">
-        <div className="hero-eyebrow">Traiteur artisanal · Gironde</div>
+        <div className="hero-eyebrow">{t.hero.eyebrow}</div>
         <h1>
-          Votre<br /> <em>petit-déjeuner</em><br /> <strong>Livré</strong>
+          {t.hero.titre1}<br /> <em>{t.hero.titre2}</em><br /> <strong>{t.hero.titre3}</strong>.
         </h1>
         <p className="hero-sub">
-          Des petits-déjeuners gourmands, composés de produits locaux, frais et de saison.
+          {t.hero.sousTitre}
         </p>
         <div className="hero-actions">
-          <a href="#contact" className="btn-lime">Demander un devis</a>
-          <a href="#formules" className="btn-ghost">Commander en ligne</a>
+          <a href="#contact" className="btn-lime">{t.hero.ctaDevis}</a>
+          <a href="#formules" className="btn-ghost">{t.hero.ctaCommander}</a>
         </div>
       </div>
       <div className="scroll-cue">

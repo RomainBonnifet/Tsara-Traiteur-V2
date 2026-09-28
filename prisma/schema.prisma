@@ -10,7 +10,17 @@ datasource db {
 model Categorie {
   id       Int       @id @default(autoincrement())
   nom      String    @unique
+  // Creneaux de livraison proposes pour les formules de cette categorie.
+  // Un petit-dejeuner se livre le matin, un plateau apero le soir : c'est
+  // une propriete de la CATEGORIE, pas de chaque formule.
+  // Liste vide = repli sur CRENEAUX_DEFAUT (lib/creneaux.ts), ce qui evite
+  // qu'une categorie creee depuis le dashboard soit incommandable.
+  // @default([]) et non un simple String[] : la migration pose un DEFAULT
+  // en base pour que les categories existantes recoivent un tableau vide.
+  // Sans cette annotation, Prisma considererait ce DEFAULT comme une derive.
+  creneaux String[] @default([])
   formules Formule[]
+  extras   Extra[]
 }
 
 model Formule {
@@ -19,9 +29,18 @@ model Formule {
   prix         Float
   description  String?
   image        String?
+  // Unité de vente : "personne" (petit-déjeuner) ou "formule" (apéritif).
+  // Ne change pas le calcul du prix (prix x quantité), seulement le
+  // vocabulaire affiché. Valeurs dans lib/formule.ts.
+  unite        String    @default("personne")
+  // minPersonnes / pasPersonnes = quantité minimale et pas d'incrément,
+  // exprimés dans l'unité ci-dessus (4 personnes, ou 1 formule).
   minPersonnes Int       @default(1)
   pasPersonnes Int       @default(1)
   position     Int       @default(0)
+  // Carte mise en avant sur la page d'accueil (badge « La plus choisie »).
+  // L'API d'administration garantit qu'une seule formule par catégorie l'est.
+  miseEnAvant  Boolean   @default(false)
   categorieId  Int
   categorie    Categorie @relation(fields: [categorieId], references: [id])
   slots        Slot[]
@@ -31,7 +50,14 @@ model Formule {
 model Slot {
   id         Int           @id @default(autoincrement())
   nom        String
+  // capacite = DIVISEUR : nombre de personnes servies par une unité.
+  // 4 pour « une bouteille d'un litre pour quatre personnes ».
   capacite   Int           @default(1)
+  // quantiteParUnite = MULTIPLICATEUR : nombre d'exemplaires par personne
+  // ou par formule. 3 pour « trois saucissons par formule ».
+  // Les deux sont irréductibles l'un à l'autre : un diviseur entier ne peut
+  // pas exprimer un multiplicateur. Voir cibleSlot() dans lib/formule.ts.
+  quantiteParUnite Int      @default(1)
   position   Int           @default(0)
   formuleId  Int
   formule    Formule       @relation(fields: [formuleId], references: [id])
@@ -68,17 +94,36 @@ model User {
 
 model Order {
   id            Int          @id @default(autoincrement())
+  // Statuts : "en_attente" (paiement en ligne non finalisé), "payee",
+  // "a_regler" (commande confirmée, paiement prévu à la livraison), "annulee".
   statut        String       @default("en_attente")
+  // "en_ligne" (Stripe) ou "livraison" (carte bancaire ou espèces sur place)
+  modePaiement  String       @default("en_ligne")
   date          DateTime     @default(now())
   nbPersonnes   Int          @default(1)
   montantTotal  Float
-  userId        Int
+  // userId optionnel : une commande invitée n'est rattachée à aucun compte.
+  userId        Int?
   formuleId     Int
+  // Email saisi au moment de la commande. Nullable en base car les commandes
+  // historiques n'en ont pas (leur email vit sur le User lié) ; la route
+  // /api/checkout garantit qu'il est toujours rempli pour les nouvelles.
+  email            String?
   telephone        String?
   dateLivraison    DateTime?
   adresse          String?
   creneauLivraison String?
-  user          User         @relation(fields: [userId], references: [id])
+  // Remarque libre saisie par le client (allergies, produit de remplacement,
+  // consigne d'acces). Recopiee telle quelle dans l'email au traiteur.
+  remarque         String?
+  // Langue du client au moment de la commande.
+  //
+  // Stockee et non deduite a l envoi : pour un paiement en ligne, l email
+  // part depuis le webhook Stripe, parfois plusieurs minutes plus tard et
+  // sans aucun lien avec le navigateur du client. Le cookie de langue n y
+  // est plus accessible.
+  langue           String   @default("fr")
+  user          User?        @relation(fields: [userId], references: [id])
   formule       Formule      @relation(fields: [formuleId], references: [id])
   items         OrderItem[]
   extras        OrderExtra[]
@@ -99,6 +144,12 @@ model Extra {
   description String?
   image       String?
   disponible  Boolean      @default(true)
+  // Catégorie de formule à laquelle cet extra est proposé.
+  // NULL = proposé pour TOUTES les formules (une baguette, un sachet de
+  // chocolat). Nullable et non obligatoire : rendre la colonne NOT NULL
+  // obligerait à inventer une valeur pour les extras déjà en base.
+  categorieId Int?
+  categorie   Categorie?   @relation(fields: [categorieId], references: [id])
   orderExtras OrderExtra[]
 }
 
@@ -116,6 +167,11 @@ model OrderItem {
   orderId   Int
   slotId    Int
   articleId Int
+  // Nombre d'unités de cet article dans le créneau. Le client répartit des
+  // quantités ("12 cafés, 8 thés") plutôt que de composer un panier par
+  // personne : une seule ligne suffit là où il en fallait douze identiques.
+  // DEFAULT 1 : chaque ligne des commandes antérieures valait bien une unité.
+  quantite  Int     @default(1)
   order     Order   @relation(fields: [orderId], references: [id])
   slot      Slot    @relation(fields: [slotId], references: [id])
   article   Article @relation(fields: [articleId], references: [id])

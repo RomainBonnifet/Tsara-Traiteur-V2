@@ -6,9 +6,12 @@
 import { useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import Link from "next/link"
+import { STATUTS_COMMANDE, libelleStatut, libelleModePaiement } from "@/lib/statuts"
+import { libelleUnite } from "@/lib/formule"
 
 type OrderItem = {
   id: number
+  quantite: number
   slot: { nom: string }
   article: { nom: string }
 }
@@ -23,19 +26,20 @@ type Commande = {
   id: number
   date: string
   statut: string
+  modePaiement: string
   montantTotal: number
   nbPersonnes: number
   telephone: string | null
   dateLivraison: string | null
   creneauLivraison: string | null
   adresse: string | null
-  user: { email: string }
-  formule: { nom: string; prix: number }
+  remarque: string | null
+  email: string | null
+  user: { email: string } | null
+  formule: { nom: string; prix: number; unite: string }
   items: OrderItem[]
   extras: OrderExtra[]
 }
-
-const STATUTS = ["en_attente", "payee", "annulee"]
 
 export default function CommandeDetailPage() {
   const params = useParams()
@@ -107,13 +111,21 @@ export default function CommandeDetailPage() {
               })}
             </dd>
             <dt>Client</dt>
-            <dd>{commande.user.email}</dd>
+            <dd>
+              {commande.email ?? commande.user?.email ?? "—"}
+              {!commande.user && " (commande sans compte)"}
+            </dd>
             <dt>Formule</dt>
             <dd>{commande.formule.nom}</dd>
-            <dt>Nb personnes</dt>
-            <dd>{commande.nbPersonnes}</dd>
+            <dt>Quantité</dt>
+            <dd>
+              {commande.nbPersonnes}{" "}
+              {libelleUnite(commande.formule.unite, commande.nbPersonnes)}
+            </dd>
             <dt>Montant total</dt>
             <dd>{commande.montantTotal.toFixed(2)} €</dd>
+            <dt>Paiement</dt>
+            <dd>{libelleModePaiement(commande.modePaiement)}</dd>
             <dt>Téléphone</dt>
             <dd>{commande.telephone || "—"}</dd>
             <dt>Date de livraison</dt>
@@ -129,7 +141,7 @@ export default function CommandeDetailPage() {
             <dt>Statut actuel</dt>
             <dd>
               <span className={`badge badge-${commande.statut}`}>
-                {commande.statut.replace("_", " ")}
+                {libelleStatut(commande.statut)}
               </span>
             </dd>
           </dl>
@@ -148,9 +160,9 @@ export default function CommandeDetailPage() {
               value={newStatut}
               onChange={(e) => setNewStatut(e.target.value)}
             >
-              {STATUTS.map((s) => (
+              {STATUTS_COMMANDE.map((s) => (
                 <option key={s} value={s}>
-                  {s.replace("_", " ")}
+                  {libelleStatut(s)}
                 </option>
               ))}
             </select>
@@ -166,6 +178,18 @@ export default function CommandeDetailPage() {
         </div>
       </div>
 
+      {/* Remarque du client. Bloc dédié et non ligne de tableau : une
+          allergie ne doit pas se lire entre un numéro de téléphone et
+          un créneau horaire. */}
+      {commande.remarque && (
+        <div className="dash-remarque">
+          <h2 className="dash-subtitle">Remarque du client</h2>
+          {/* pre-wrap conserve les retours à la ligne saisis par le
+              client sans réintroduire de HTML : le texte reste du texte. */}
+          <p style={{ whiteSpace: "pre-wrap" }}>{commande.remarque}</p>
+        </div>
+      )}
+
       {/* Détail des articles sélectionnés */}
       {commande.items.length > 0 && (
         <div className="dash-section">
@@ -173,8 +197,9 @@ export default function CommandeDetailPage() {
           <table className="dash-table">
             <thead>
               <tr>
-                <th>Slot (catégorie)</th>
+                <th>Créneau</th>
                 <th>Article choisi</th>
+                <th>Quantité</th>
               </tr>
             </thead>
             <tbody>
@@ -182,6 +207,9 @@ export default function CommandeDetailPage() {
                 <tr key={item.id}>
                   <td>{item.slot.nom}</td>
                   <td>{item.article.nom}</td>
+                  {/* Les commandes passées avant l'ajout du champ valent 1 :
+                      le ?? 1 évite un « undefined » à l'écran pour elles. */}
+                  <td>{item.quantite ?? 1}</td>
                 </tr>
               ))}
             </tbody>

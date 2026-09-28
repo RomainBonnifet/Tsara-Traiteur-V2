@@ -13,7 +13,7 @@ export async function PUT(
 
   const { id } = await params
   const body = await req.json()
-  const { nom, capacite } = body
+  const { nom, capacite, quantiteParUnite } = body
 
   if (!nom) {
     return NextResponse.json({ error: "Le nom est requis" }, { status: 400 })
@@ -23,7 +23,14 @@ export async function PUT(
     where: { id: parseInt(id) },
     data: {
       nom,
-      ...(capacite !== undefined && { capacite: parseInt(capacite) }),
+      // Math.max(1, ...) : le champ du dashboard a bien min="1", mais rien
+      // n'oblige à passer par lui pour appeler cette API. Une capacité à 0
+      // provoquerait une division par zéro, une quantité à 0 rendrait le
+      // créneau impossible à satisfaire.
+      ...(capacite !== undefined && { capacite: Math.max(1, parseInt(capacite) || 1) }),
+      ...(quantiteParUnite !== undefined && {
+        quantiteParUnite: Math.max(1, parseInt(quantiteParUnite) || 1),
+      }),
     },
     include: {
       articles: { include: { article: true } },
@@ -46,25 +53,47 @@ export async function PATCH(
   const { id } = await params
   const { direction } = await req.json()
 
-  const slot = await prisma.slot.findUnique({ where: { id: parseInt(id) } })
+  const slotId = parseInt(id)
+  const slot = await prisma.slot.findUnique({ where: { id: slotId } })
   if (!slot) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
 
-  const voisin = await prisma.slot.findFirst({
-    where: {
-      formuleId: slot.formuleId,
-      position: direction === "up"
-        ? { lt: slot.position }
-        : { gt: slot.position },
-    },
-    orderBy: { position: direction === "up" ? "desc" : "asc" },
+  // L'ancienne version échangeait la position du créneau avec celle de son
+  // voisin le plus proche, trouvé par « position strictement inférieure /
+  // supérieure ». Elle supposait donc des positions UNIQUES et CONTIGUËS.
+  // Dès que deux créneaux partageaient une position, le « strictement
+  // supérieur » les sautait tous les deux : descendre faisait franchir deux
+  // lignes d'un coup.
+  //
+  // On raisonne désormais sur l'ordre AFFICHÉ, pas sur les valeurs : on lit
+  // la liste triée comme le dashboard la lit, on permute deux éléments du
+  // tableau, puis on renumérote TOUT de 0 à n-1. Conséquence utile : chaque
+  // déplacement répare au passage les positions en doublon ou à trous.
+  const freres = await prisma.slot.findMany({
+    where: { formuleId: slot.formuleId },
+    // Le tri par id départage les ex aequo. Sans lui, PostgreSQL ne garantit
+    // aucun ordre entre deux positions égales, et le serveur pourrait
+    // déplacer par rapport à un ordre différent de celui affiché.
+    orderBy: [{ position: "asc" }, { id: "asc" }],
+    select: { id: true },
   })
 
-  if (!voisin) return NextResponse.json({ ok: true })
+  const index = freres.findIndex((s) => s.id === slotId)
+  const cible = direction === "up" ? index - 1 : index + 1
 
-  await prisma.$transaction([
-    prisma.slot.update({ where: { id: slot.id }, data: { position: voisin.position } }),
-    prisma.slot.update({ where: { id: voisin.id }, data: { position: slot.position } }),
-  ])
+  // Déjà en haut ou déjà en bas : rien à faire, ce n'est pas une erreur.
+  if (index === -1 || cible < 0 || cible >= freres.length) {
+    return NextResponse.json({ ok: true })
+  }
+
+  const ordre = [...freres]
+  ordre[index] = freres[cible]
+  ordre[cible] = freres[index]
+
+  // Une seule transaction : un renumérotage à moitié écrit laisserait la
+  // formule dans un état pire que celui qu'on répare.
+  await prisma.$transaction(
+    ordre.map((s, i) => prisma.slot.update({ where: { id: s.id }, data: { position: i } }))
+  )
 
   return NextResponse.json({ ok: true })
 }

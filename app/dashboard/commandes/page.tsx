@@ -5,6 +5,7 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
+import { libelleStatut } from "@/lib/statuts"
 
 type Commande = {
   id: number
@@ -12,7 +13,9 @@ type Commande = {
   statut: string
   montantTotal: number
   nbPersonnes: number
-  user: { email: string }
+  // null pour une commande invitée : l'email vit alors sur la commande
+  email: string | null
+  user: { email: string } | null
   formule: { nom: string }
 }
 
@@ -61,14 +64,14 @@ export default function CommandesPage() {
                       year: "numeric",
                     })}
                   </td>
-                  <td><span className="cell-truncate">{c.user.email}</span></td>
+                  <td><span className="cell-truncate">{c.email ?? c.user?.email ?? "—"}</span></td>
                   <td>{c.formule.nom}</td>
                   <td>{c.nbPersonnes}</td>
                   <td>{c.montantTotal.toFixed(2)} €</td>
                   <td>
                     {/* Le badge change de couleur selon le statut */}
                     <span className={`badge badge-${c.statut}`}>
-                      {c.statut.replace("_", " ")}
+                      {libelleStatut(c.statut)}
                     </span>
                   </td>
                   <td>

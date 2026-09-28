@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { requireAdmin } from "@/lib/adminAuth"
+import { estUniteValide } from "@/lib/formule"
 
 // GET /api/admin/formules
 // Retourne toutes les formules avec leur catégorie
@@ -23,7 +24,7 @@ export async function POST(req: NextRequest) {
   if (auth instanceof NextResponse) return auth
 
   const body = await req.json()
-  const { nom, prix, description, categorieId } = body
+  const { nom, prix, description, categorieId, unite } = body
 
   if (!nom || prix === undefined || !categorieId) {
     return NextResponse.json(
@@ -32,12 +33,19 @@ export async function POST(req: NextRequest) {
     )
   }
 
+  // unite est facultative : sans elle, le défaut du schéma ("personne")
+  // s'applique. Fournie, elle doit être l'une des valeurs connues.
+  if (unite !== undefined && !estUniteValide(unite)) {
+    return NextResponse.json({ error: "Unité invalide" }, { status: 400 })
+  }
+
   const formule = await prisma.formule.create({
     data: {
       nom,
       prix: parseFloat(prix),
       description: description || null,
       categorieId: parseInt(categorieId),
+      ...(unite !== undefined && { unite }),
     },
     include: { categorie: true },
   })

@@ -5,6 +5,7 @@ import Services from '@/components/Services'
 import Formules from '@/components/Formules'
 import Galerie from '@/components/Galerie'
 import Partenaires from '@/components/Partenaires'
+import Avis from '@/components/Avis'
 import Contact from '@/components/Contact'
 import Footer from '@/components/Footer'
 import ScrollRevealInit from '@/components/ScrollRevealInit'
@@ -20,6 +21,7 @@ export default function Home() {
       <Formules />
       <Galerie />
       <Partenaires />
+      <Avis />
       <Contact />
       <Footer />
     </>

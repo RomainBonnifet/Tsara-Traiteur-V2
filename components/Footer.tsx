@@ -1,18 +1,22 @@
+"use client";
 import Image from "next/image";
 import Link from "next/link";
+import { useLang } from "@/context/LangContext";
 
 export default function Footer() {
+  const { t } = useLang();
+
   return (
     <footer>
       <nav className="footer-links">
-        <a href="#about">À propos</a>
-        <a href="#formules">Formules</a>
-        <a href="#galerie">Galerie</a>
-        <a href="#partenaires">Partenaires</a>
-        <a href="#contact">Contact</a>
+        <a href="#about">{t.footer.apropos}</a>
+        <a href="#formules">{t.footer.formules}</a>
+        <a href="#galerie">{t.footer.galerie}</a>
+        <a href="#partenaires">{t.footer.partenaires}</a>
+        <a href="#contact">{t.footer.contact}</a>
       </nav>
       <div className="footer-social">
-        <a href="https://www.instagram.com/tsaratraiteur/" className="social-btn" aria-label="Instagram">
+        <a href="https://www.instagram.com/tsara_rural/" className="social-btn" aria-label="Instagram" target="blank">
           <Image
             src="/img/svg/instagram-brands-solid-full.svg"
             alt="Logo Facebook"
@@ -20,7 +24,7 @@ export default function Footer() {
             height={32}
           />
         </a>
-        <a href="" className="social-btn" aria-label="Facebook">
+        <a href="https://www.facebook.com/people/Tsara/61586816975312/#" className="social-btn" aria-label="Facebook" target="blank">
           <Image
             src="/img/svg/facebook-brands-solid-full.svg"
             alt="Logo Facebook"
@@ -30,8 +34,8 @@ export default function Footer() {
         </a>
       </div>
       <div className="footer-legal">
-        <Link href="/cgv">Conditions Générales de Vente</Link>
-        <Link href="/mentions-legales">Mentions légales</Link>
+        <Link href="/cgv">{t.footer.cgv}</Link>
+        <Link href="/mentions-legales">{t.footer.mentions}</Link>
       </div>
     </footer>
   );
