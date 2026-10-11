@@ -5,6 +5,8 @@ import Link from "next/link"
 import { useCart, type LigneSelection } from "@/context/CartContext"
 import { libelleUnite, uniteCourte, cibleSlot } from "@/lib/formule"
 import { useLang } from "@/context/LangContext"
+import { useReglages } from "@/context/ReglagesContext"
+import BanniereCommandes from "@/components/BanniereCommandes"
 import { traduireContenu } from "@/lib/i18n/contenu"
 import type { Langue } from "@/lib/i18n/config"
 import type { Dictionnaire } from "@/lib/i18n/fr"
@@ -105,6 +107,7 @@ export default function CommanderPage() {
   const { id }      = useParams()
   const { addItem } = useCart()
   const { t, langue } = useLang()
+  const { commandesOuvertes } = useReglages()
 
   const [formule, setFormule] = useState<Formule | null>(null)
   const [extras, setExtras]   = useState<Extra[]>([])
@@ -243,6 +246,12 @@ export default function CommanderPage() {
 
     // Pas de cul-de-sac : si la répartition est incomplète, on emmène le
     // client là où il doit agir plutôt que de laisser un bouton inerte.
+    // Garde-fou d'interface : le bouton est déjà neutralisé, mais la
+    // fonction peut être atteinte autrement (raccourci clavier sur un
+    // bouton mal désactivé, extension de navigateur). /api/checkout reste
+    // le seul contrôle qui compte.
+    if (!commandesOuvertes) return
+
     const incomplet = etats.find(e => !e.complet)
     if (incomplet) {
       refsSlots.current[incomplet.slot.id]?.scrollIntoView({ behavior: "smooth", block: "center" })
@@ -318,6 +327,7 @@ export default function CommanderPage() {
 
   return (
     <main className="commander">
+      <BanniereCommandes />
       <div className="choix-carte">
 
         <header className="choix-entete">
@@ -461,18 +471,23 @@ export default function CommanderPage() {
         <div className="choix-flottante-in">
           <p className="choix-etat">
             <span className={`choix-pastille ${complet ? "" : "choix-pastille-attente"}`} />
-            {complet
+            {!commandesOuvertes
+              ? t.pause.titre
+              : complet
               ? t.commander.complet
               : `${t.commander.resteAChoisir} ${manquants} ${t.commander.resteAChoisirSuite}`}
           </p>
           <div className="choix-flottante-droite">
             <span className="choix-somme">{t.commander.total} <b>{euro(total, langue)}</b></span>
+            {/* disabled plutôt que masqué : le client doit comprendre
+                pourquoi il ne peut pas commander, pas chercher le bouton. */}
             <button
               type="button"
-              className={`choix-btn-principal ${complet ? "" : "choix-btn-attente"}`}
+              className={`choix-btn-principal ${complet && commandesOuvertes ? "" : "choix-btn-attente"}`}
               onClick={ajouterAuPanier}
+              disabled={!commandesOuvertes}
             >
-              {t.commander.ajouter}
+              {commandesOuvertes ? t.commander.ajouter : t.pause.bouton}
             </button>
           </div>
         </div>

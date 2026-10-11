@@ -7,6 +7,32 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Réglages du site, en UNE SEULE LIGNE (id = 1).
+//
+// Pourquoi une table et non une variable d'environnement : le traiteur
+// doit pouvoir suspendre ses commandes depuis son dashboard, pendant ses
+// congés. Une variable d'environnement demanderait un déploiement.
+//
+// Pourquoi une table typée et non une table clé/valeur générique : avec
+// { cle, valeur } tout devient du texte, et on perd le typage de Prisma.
+// Ici commandesOuvertes est un vrai booléen.
+//
+// L'unicité de la ligne n'est pas garantie par une contrainte mais par
+// le code : lib/reglages.ts lit et écrit toujours id = 1. Une contrainte
+// CHECK serait plus rigoureuse, mais Prisma ne la modélise pas et
+// `migrate diff` la verrait comme une dérive à chaque exécution.
+model Reglages {
+  id                Int      @id @default(1)
+  // Faux = le site reste consultable, mais on ne peut plus commander.
+  // On garde la vitrine : un visiteur d'août doit pouvoir découvrir
+  // l'offre et envoyer une demande de devis pour septembre.
+  commandesOuvertes Boolean  @default(true)
+  // Mot du traiteur affiché aux visiteurs (« De retour le 20 août »).
+  // Texte libre, donc NON traduit : il s'affiche tel qu'il est saisi,
+  // sous une phrase standard, elle, traduite.
+  messagePause      String?
+  updatedAt         DateTime @updatedAt
+}
 model Categorie {
   id       Int       @id @default(autoincrement())
   nom      String    @unique

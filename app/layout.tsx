@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { cookies } from 'next/headers'
 import { COOKIE_LANGUE, LANGUE_DEFAUT, estLangueValide } from '@/lib/i18n/config'
+import { getReglages } from '@/lib/reglages'
 import { Cormorant_Garamond, Jost } from 'next/font/google'
 import './globals.css'
 import Providers from './providers'
@@ -85,6 +86,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const choix = (await cookies()).get(COOKIE_LANGUE)?.value
   const langue = estLangueValide(choix) ? choix : LANGUE_DEFAUT
 
+  // Lu ici plutot que par un fetch depuis chaque page : la page est deja
+  // rendue a la demande (cookies() l impose), une requete de plus sur la
+  // meme base ne coute rien, et le premier affichage est deja correct.
+  const reglages = await getReglages()
+
   return (
     // lang est lu par les lecteurs d ecran (prononciation) et par les moteurs
     // de recherche. Il doit suivre la langue reellement affichee.
@@ -94,7 +100,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        <Providers langue={langue}>{children}</Providers>
+        <Providers langue={langue} reglages={reglages}>{children}</Providers>
       </body>
     </html>
   )

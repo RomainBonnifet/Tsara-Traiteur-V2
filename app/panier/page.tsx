@@ -6,6 +6,8 @@ import { useAuth } from "@/context/AuthContext"
 import { libelleUnite, uniteCourte } from "@/lib/formule"
 import { creneauxDe } from "@/lib/creneaux"
 import { useLang } from "@/context/LangContext"
+import { useReglages } from "@/context/ReglagesContext"
+import BanniereCommandes from "@/components/BanniereCommandes"
 import { traduireContenu } from "@/lib/i18n/contenu"
 
 // Doit rester cohérent avec la regex de /api/checkout.
@@ -15,6 +17,7 @@ export default function PanierPage() {
   const { items, removeItem, total, clearCart } = useCart()
   const { user } = useAuth()
   const { t, langue } = useLang()
+  const { commandesOuvertes } = useReglages()
   const [loading, setLoading] = useState(false)
 
   // Un créneau PAR CATÉGORIE présente dans le panier : { categorieId → choix }.
@@ -86,6 +89,9 @@ export default function PanierPage() {
   const emailValide = !!user || EMAIL_REGEX.test(livraison.email.trim())
 
   const livraisonValide =
+    // Les commandes suspendues invalident tout le formulaire : inutile de
+    // laisser le client finir de le remplir pour rien.
+    commandesOuvertes &&
     emailValide &&
     livraison.telephone.trim() !== "" &&
     nbJours > 0 &&
@@ -147,6 +153,8 @@ export default function PanierPage() {
 
   return (
     <main className="panier">
+      <BanniereCommandes />
+
       <div className="panier-header">
         <Link href="/#formules" className="commander-back">{t.panier.retour}</Link>
         <h1>{t.panier.titre} <em>{t.panier.titreEm}</em></h1>
@@ -472,7 +480,9 @@ export default function PanierPage() {
               setLoading(false)
             }}
           >
-            {loading ? t.panier.chargement : modePaiement === "livraison" ? t.panier.confirmer : t.panier.payer}
+            {!commandesOuvertes
+              ? t.pause.bouton
+              : loading ? t.panier.chargement : modePaiement === "livraison" ? t.panier.confirmer : t.panier.payer}
           </button>
 
           {erreur && <p className="livraison-hint livraison-hint-error">{erreur}</p>}

@@ -10,6 +10,9 @@ import { estModePaiementValide, type ModePaiement } from "@/lib/statuts"
 import { envoyerConfirmationCommande } from "@/lib/emailCommande"
 import { libelleUnite } from "@/lib/formule"
 import { estCreneauValide } from "@/lib/creneaux"
+import { getReglages } from "@/lib/reglages"
+import fr from "@/lib/i18n/fr"
+import en from "@/lib/i18n/en"
 
 // Validation d'email volontairement permissive : on écarte les fautes de
 // frappe grossières sans rejeter d'adresse exotique mais valide. La seule
@@ -120,6 +123,31 @@ export async function POST(req: NextRequest) {
   // sur autre chose que sa propre langue — un enjeu nul.
   const cookieLangue = (await cookies()).get(COOKIE_LANGUE)?.value
   const langue = estLangueValide(cookieLangue) ? cookieLangue : LANGUE_DEFAUT
+
+  // 1 quinquies. Les commandes sont-elles ouvertes ?
+  //
+  // Relu en base à CHAQUE commande, et non hérité du rendu de la page. Un
+  // onglet ouvert avant le début des congés afficherait encore un bouton
+  // actif : c'est ici, et nulle part ailleurs, que la boutique ferme
+  // réellement.
+  //
+  // Le contrôle vient après la validation du panier pour que les erreurs de
+  // panier restent prioritaires : « votre panier n'est plus à jour » est
+  // plus utile que « revenez en septembre » quand les deux sont vrais.
+  const reglages = await getReglages()
+  if (!reglages.commandesOuvertes) {
+    const messages = (langue === "en" ? en : fr).pause
+    return NextResponse.json(
+      {
+        error: reglages.messagePause
+          ? `${messages.erreur} ${reglages.messagePause}`
+          : messages.erreur,
+      },
+      // 503 et non 400 : la demande du client est correcte, c'est le service
+      // qui est temporairement indisponible.
+      { status: 503 }
+    )
+  }
 
   // 1 quater. Un créneau par catégorie présente dans le panier.
   //           Les horaires autorisés viennent de la base (via validerPanier),

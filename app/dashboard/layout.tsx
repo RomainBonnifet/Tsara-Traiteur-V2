@@ -12,6 +12,7 @@ const navLinks = [
   { href: "/dashboard/articles", label: "Articles" },
   { href: "/dashboard/extras", label: "Extras" },
   { href: "/dashboard/galerie", label: "Galerie" },
+  { href: "/dashboard/reglages", label: "Réglages" },
 ]
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {

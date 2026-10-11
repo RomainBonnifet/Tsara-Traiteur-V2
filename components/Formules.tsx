@@ -3,6 +3,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react"
 import Link from "next/link"
 import { parUnite } from "@/lib/formule"
 import { useLang } from "@/context/LangContext"
+import { useReglages } from "@/context/ReglagesContext"
 import type { Dictionnaire } from "@/lib/i18n/fr"
 import { traduireContenu } from "@/lib/i18n/contenu"
 import type { Langue } from "@/lib/i18n/config"
@@ -128,6 +129,7 @@ function formatPrix(prix: number) {
 export default function Formules() {
   const [categories, setCategories] = useState<Categorie[]>([])
   const { t, langue } = useLang()
+  const { commandesOuvertes } = useReglages()
 
   useEffect(() => {
     fetch("/api/formules")
@@ -294,6 +296,20 @@ export default function Formules() {
                     })}
                   </ul>
 
+                  {/* Commandes suspendues : le lien devient un <span>.
+                      Le griser sans le neutraliser laisserait un lien
+                      cliquable au clavier et par clic-milieu. */}
+                  {!commandesOuvertes ? (
+                    <span
+                      className={
+                        (formule.miseEnAvant ? "btn-lime" : "formule-cta") +
+                        " formule-card-cta cta-suspendu"
+                      }
+                      aria-disabled="true"
+                    >
+                      {t.pause.bouton}
+                    </span>
+                  ) : (
                   <Link
                     href={`/commander/${formule.id}`}
                     className={
@@ -315,6 +331,7 @@ export default function Formules() {
                       <path d="M5 12h13M13 6l6 6-6 6" />
                     </svg>
                   </Link>
+                  )}
                 </article>
               ))}
             </div>

@@ -313,6 +313,19 @@ const fr = {
       "Merci pour votre commande. Vous recevrez une confirmation par email.",
     retour: "Retour à l'accueil",
   },
+  // ── Commandes suspendues ──
+  pause: {
+    titre: "Commandes en ligne suspendues",
+    explication:
+      "Vous pouvez toujours nous écrire : nous répondons à chaque demande de devis.",
+    contact: "Nous contacter",
+    bouton: "Commandes suspendues",
+    // Renvoyée par /api/checkout, donc visible même si le bouton a été
+    // contourné ou si la pause a commencé pendant que le client remplissait
+    // son panier.
+    erreur:
+      "Les commandes en ligne sont momentanément suspendues. Contactez-nous pour toute demande.",
+  },
 }
 
 export type Dictionnaire = typeof fr

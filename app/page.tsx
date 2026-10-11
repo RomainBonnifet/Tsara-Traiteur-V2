@@ -9,11 +9,14 @@ import Avis from '@/components/Avis'
 import Contact from '@/components/Contact'
 import Footer from '@/components/Footer'
 import ScrollRevealInit from '@/components/ScrollRevealInit'
+import BanniereCommandes from '@/components/BanniereCommandes'
 
 export default function Home() {
   return (
     <>
       <ScrollRevealInit />
+      {/* Ne rend rien tant que les commandes sont ouvertes. */}
+      <BanniereCommandes />
       <Nav />
       <Hero />
       <About />

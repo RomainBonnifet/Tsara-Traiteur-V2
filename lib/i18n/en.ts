@@ -304,6 +304,15 @@ const en: Dictionnaire = {
       "Thank you for your order. You will receive a confirmation by email.",
     retour: "Back to home",
   },
+  pause: {
+    titre: "Online ordering is paused",
+    explication:
+      "You can still write to us: we answer every quote request.",
+    contact: "Contact us",
+    bouton: "Ordering paused",
+    erreur:
+      "Online ordering is temporarily paused. Please contact us for any request.",
+  },
 }
 
 export default en

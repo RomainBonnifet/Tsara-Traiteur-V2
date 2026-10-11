@@ -4194,3 +4194,68 @@ nav.scrolled .nav-admin:hover {
   padding: .6rem .8rem;
   max-width: 60ch;
 }
+
+/* ══ Bandeau « commandes suspendues » ══ */
+
+/* position: sticky et non fixed : le bandeau reste visible en haut lors
+   du defilement, mais il occupe sa place dans le flux au lieu de recouvrir
+   le contenu. z-index superieur a la nav (100), sinon elle passerait
+   devant. */
+.banniere-pause {
+  position: sticky;
+  top: 0;
+  z-index: 130;
+  background: #8a6a2a;
+  color: #fdf6e8;
+  padding: .7rem clamp(1rem, 4vw, 3rem);
+  font-size: .88rem;
+  line-height: 1.5;
+}
+
+.banniere-pause-in {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: .3rem .8rem;
+  max-width: 1120px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.banniere-pause-mot {
+  font-style: italic;
+}
+
+.banniere-pause-texte {
+  opacity: .85;
+}
+
+.banniere-pause-lien {
+  color: #fdf6e8;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  white-space: nowrap;
+}
+
+/* Bouton de commande neutralise. Le lien devient un <span> : on ne se
+   contente pas de le griser, il ne doit plus etre cliquable ni atteignable
+   au clavier. */
+.cta-suspendu {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  cursor: not-allowed;
+  opacity: .55;
+}
+
+/* Etat des commandes dans les reglages : le badge et le bouton sur la
+   meme ligne, pour que l action et son effet se lisent ensemble. */
+.reglage-etat {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: .8rem;
+}
