@@ -164,15 +164,22 @@ export async function validerPanier(itemsRecus: unknown): Promise<Resultat> {
     // Chaque créneau de la formule doit être servi, y compris ceux que le
     // client n'a pas vus parce qu'ils ne proposaient qu'un seul article.
     for (const slot of formule.slots) {
-      // slot.articles est filtré sur les articles disponibles : un créneau
-      // vide est un créneau que plus rien ne peut satisfaire. On le dit
-      // explicitement, au lieu de laisser passer une commande amputée.
-      if (slot.articles.length === 0) {
-        return aActualiser(
-          `Plus aucun article n'est disponible pour « ${slot.nom} » dans la formule ${nom}. ` +
-          `Retirez-la de votre panier.`
-        )
-      }
+      // Un créneau sans aucun article disponible est IGNORÉ, pas bloquant.
+      //
+      // Cette route refusait la commande, pendant que la page de commande,
+      // elle, masquait simplement le créneau. Le client composait donc son
+      // panier normalement, puis se voyait refuser le paiement — une formule
+      // mise hors vente en silence par une configuration inachevée.
+      //
+      // Le choix entre les deux comportements se joue sur le coût de
+      // l'erreur. Bloquer à tort ferme la boutique sans prévenir personne.
+      // Ignorer à tort fait partir une commande incomplète — que le traiteur
+      // voit sur son bon, et qu'il rattrape : il rappelle chaque client pour
+      // confirmer avant de préparer.
+      //
+      // Le défaut se signale donc à sa source, dans le dashboard, là où le
+      // créneau vide est créé.
+      if (slot.articles.length === 0) continue
       // Même fonction que la page de commande : la règle de quota n'est
       // écrite qu'une fois, les deux côtés ne peuvent pas diverger.
       const cible = cibleSlot(nbPersonnes, slot.capacite, slot.quantiteParUnite)

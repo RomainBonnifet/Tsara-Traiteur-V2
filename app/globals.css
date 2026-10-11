@@ -4180,3 +4180,17 @@ nav.scrolled .nav-admin:hover {
   padding: .7rem .9rem;
   margin-bottom: 1rem;
 }
+
+/* Creneau sans article, dans l editeur de formule. Ambre et non rouge :
+   ce n est pas une erreur bloquante, c est une consequence a connaitre. */
+.slot-vide-alerte {
+  display: block;
+  font-size: .8rem;
+  line-height: 1.5;
+  color: #8a6a2a;
+  background: #fdf6e8;
+  border-left: 3px solid #d9a441;
+  border-radius: 0 6px 6px 0;
+  padding: .6rem .8rem;
+  max-width: 60ch;
+}

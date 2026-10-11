@@ -531,9 +531,14 @@ export default function EditFormulePage() {
 
               {/* Liste des articles dans ce slot */}
               <div className="slot-articles-list">
+                {/* Un constat ne suffit pas : « aucun article » ne dit pas
+                    à l'admin ce que ça produit sur le site. Le message
+                    énonce la conséquence, qui est invisible depuis ici. */}
                 {slot.articles.length === 0 && (
-                  <span style={{ fontSize: ".8rem", color: "var(--brun-clair)" }}>
-                    Aucun article dans ce slot.
+                  <span className="slot-vide-alerte">
+                    Aucun article : ce créneau est ignoré à la commande. Il
+                    reste affiché sur la carte de la formule, mais le client
+                    ne choisira rien et ne recevra rien pour ce créneau.
                   </span>
                 )}
                 {slot.articles.map((sa) => (
