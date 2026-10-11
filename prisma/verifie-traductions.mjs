@@ -18,11 +18,16 @@ import { PrismaClient } from "@prisma/client"
 const prisma = new PrismaClient()
 
 // On lit le glossaire comme du TEXTE plutôt que de l'importer : contenu.ts
-// est du TypeScript, que Node ne sait pas exécuter directement. Les clés sont
-// les chaînes en début de ligne, avant le « : ».
+// est du TypeScript, que Node ne sait pas exécuter directement.
+//
+// Deux formes à reconnaître, indentées de deux espaces :
+//   "Boissons chaudes": "Hot drinks",   une traduction
+//   "Ferme Bodard",                     un nom propre, laissé en français
+// Les deux comptent comme « traitées » : l'une est traduite, l'autre a été
+// explicitement décidée intraduisible.
 const source = readFileSync(new URL("../lib/i18n/contenu.ts", import.meta.url), "utf8")
 const cles = new Set(
-  [...source.matchAll(/^\s{2}"((?:[^"\\]|\\.)*)":\s*"/gm)].map((m) => m[1])
+  [...source.matchAll(/^ {2}"((?:[^"\\]|\\.)*)" *[,:]/gm)].map((m) => m[1])
 )
 
 const normaliser = (t) => t.replace(/\s+/g, " ").trim().toLowerCase()
@@ -69,6 +74,8 @@ if (manquantes === 0) {
 } else {
   console.log(`\n=> ${manquantes} chaîne(s) sans traduction anglaise.`)
   console.log("   Copiez les lignes ci-dessus dans lib/i18n/contenu.ts et remplissez-les.")
+  console.log("   Un nom propre (ferme, artisan, marque) va dans NOMS_PROPRES,")
+  console.log("   sans traduction : il doit rester en français.")
 }
 
 if (orphelines.length > 0) {
