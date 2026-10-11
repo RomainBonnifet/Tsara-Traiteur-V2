@@ -327,7 +327,6 @@ export default function CommanderPage() {
 
   return (
     <main className="commander">
-      <BanniereCommandes />
       <div className="choix-carte">
 
         <header className="choix-entete">
@@ -466,7 +465,12 @@ export default function CommanderPage() {
 
       {/* Barre fixe : le total et l'état de complétude restent lisibles quelle
           que soit la position dans la page, sans dupliquer un récapitulatif
-          en colonne. */}
+          en colonne.
+
+          Masquée quand les commandes sont suspendues : le bandeau de pause
+          occupe le même bas d'écran, et cette barre ne proposerait qu'une
+          action devenue impossible. */}
+      {commandesOuvertes && (
       <div className="choix-flottante">
         <div className="choix-flottante-in">
           <p className="choix-etat">
@@ -492,6 +496,7 @@ export default function CommanderPage() {
           </div>
         </div>
       </div>
+      )}
 
       {ajoute && (
         <div className="choix-modale" role="dialog" aria-modal="true" aria-labelledby="ajout-titre">
@@ -519,6 +524,9 @@ export default function CommanderPage() {
           </div>
         </div>
       )}
+
+      {/* En dernier : le bandeau reserve sa place en bas de page. */}
+      <BanniereCommandes />
 
     </main>
   )

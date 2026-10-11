@@ -153,8 +153,6 @@ export default function PanierPage() {
 
   return (
     <main className="panier">
-      <BanniereCommandes />
-
       <div className="panier-header">
         <Link href="/#formules" className="commander-back">{t.panier.retour}</Link>
         <h1>{t.panier.titre} <em>{t.panier.titreEm}</em></h1>
@@ -496,6 +494,9 @@ export default function PanierPage() {
         </div>
 
       </div>
+
+      {/* En dernier : le bandeau reserve sa place en bas de page. */}
+      <BanniereCommandes />
     </main>
   )
 }

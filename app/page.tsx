@@ -15,8 +15,6 @@ export default function Home() {
   return (
     <>
       <ScrollRevealInit />
-      {/* Ne rend rien tant que les commandes sont ouvertes. */}
-      <BanniereCommandes />
       <Nav />
       <Hero />
       <About />
@@ -27,6 +25,9 @@ export default function Home() {
       <Avis />
       <Contact />
       <Footer />
+      {/* En dernier : le bandeau réserve sa place en bas de page.
+          Ne rend rien tant que les commandes sont ouvertes. */}
+      <BanniereCommandes />
     </>
   )
 }
