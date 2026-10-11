@@ -904,10 +904,15 @@ h1 em {
   color: var(--brun);
 }
 
+/* Plus d'aplat vert : la carte garde le fond des autres.
+   La mise en avant passe désormais par la bordure, l'ombre portée, le badge
+   et le bouton lime. Un aplat foncé obligeait à réécrire la couleur de
+   CHAQUE texte de la carte — quatre règles qui n'existaient que pour ça, et
+   autant d'occasions d'oublier un élément ajouté plus tard.
+   La bordure reste à 1px comme les autres cartes : passer à 2px décalerait
+   sa hauteur d'un pixel et désalignerait la rangée. */
 .formule-card.mise-en-avant {
-  background: var(--vert);
   border-color: var(--vert);
-  color: var(--blanc);
   box-shadow: 0 18px 45px rgba(46, 34, 21, .16);
 }
 
@@ -936,8 +941,10 @@ h1 em {
 }
 
 /* Laisse la place au badge positionné en absolu dans le coin */
+/* padding-right : réserve la place du badge « La plus choisie », posé en
+   absolu dans le coin. C'est de la mise en page, pas de la couleur : cette
+   règle reste. La couleur lime, elle, était illisible sur fond clair. */
 .mise-en-avant .formule-eyebrow {
-  color: var(--lime);
   padding-right: 7.5rem;
 }
 
@@ -949,10 +956,6 @@ h1 em {
   padding-bottom: 1.4rem;
   margin-bottom: 1.4rem;
   border-bottom: 1px solid var(--beige);
-}
-
-.mise-en-avant .formule-head {
-  border-bottom-color: rgba(253, 250, 244, .25);
 }
 
 .formule-nom {
@@ -976,10 +979,6 @@ h1 em {
   font-size: .72rem;
   font-weight: 300;
   color: var(--brun-clair);
-}
-
-.mise-en-avant .formule-prix span {
-  color: rgba(253, 250, 244, .7);
 }
 
 .formule-produits {
@@ -1016,6 +1015,8 @@ h1 em {
   stroke: var(--vert);
 }
 
+/* Conservée : sur fond clair, la pastille lime reste lisible et distingue
+   la carte sans rien imposer au texte. */
 .mise-en-avant .formule-check circle {
   fill: var(--lime);
 }

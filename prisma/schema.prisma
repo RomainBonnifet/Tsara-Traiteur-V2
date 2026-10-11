@@ -3,8 +3,19 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  // url : connexion POOLEE (PgBouncer). C est celle de l application, qui
+  // ouvre des milliers de connexions courtes — le pooler les mutualise.
+  url       = env("DATABASE_URL")
+  // directUrl : connexion DIRECTE, utilisee par prisma migrate.
+  //
+  // Avant d appliquer des migrations, Prisma pose un verrou consultatif
+  // (pg_advisory_lock) pour qu un seul deploiement les applique si deux
+  // partent en meme temps. Ce verrou tient a la SESSION. A travers un
+  // pooler, chaque requete peut atterrir sur une connexion differente :
+  // la session qui pose le verrou n est pas celle qui le conserve, et
+  // migrate deploy echoue sur un timeout (P1002).
+  directUrl = env("DIRECT_URL")
 }
 
 // Réglages du site, en UNE SEULE LIGNE (id = 1).
