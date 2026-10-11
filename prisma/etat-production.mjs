@@ -15,18 +15,32 @@ const q = (sql) => prisma.$queryRawUnsafe(sql)
 console.log("Base :", new URL(process.env.DATABASE_URL).host)
 console.log()
 
-const categories = await q(`SELECT "id","nom","creneaux" FROM "Categorie" ORDER BY "id"`)
+// La colonne visiblePublic peut ne pas exister encore : ce script doit
+// pouvoir tourner sur une base dont les migrations sont en retard, c est
+// precisement le cas qu on cherche a diagnostiquer.
+const colonneVisible = await q(`
+  SELECT 1 FROM information_schema.columns
+  WHERE table_schema = 'public' AND table_name = 'Categorie' AND column_name = 'visiblePublic'`)
+const aVisible = colonneVisible.length > 0
+console.log(aVisible
+  ? "Migration categorie_visible : APPLIQUEE"
+  : "Migration categorie_visible : PAS ENCORE APPLIQUEE (toute categorie non vide est publique)")
+console.log()
+
+const categories = await q(
+  `SELECT "id","nom","creneaux"${aVisible ? `,"visiblePublic"` : ""} FROM "Categorie" ORDER BY "id"`)
 
 for (const c of categories) {
   const formules = await q(`
     SELECT "id","nom","prix","description","position","minPersonnes","pasPersonnes","unite","miseEnAvant"
     FROM "Formule" WHERE "categorieId" = ${c.id} ORDER BY "position","id"`)
 
-  // La règle de /api/formules depuis la refonte : une catégorie sans formule
-  // n'est pas servie au site public. Avec des formules, elle l'est — y
-  // compris « Groupe », que l'ancien code excluait par son nom.
-  const publique = formules.length > 0
-  console.log(`── #${c.id} ${c.nom} ${publique ? "[VISIBLE sur le site public]" : "[masquée : aucune formule]"}`)
+  // Regle de /api/formules : visiblePublic ET au moins une formule.
+  const publique = (aVisible ? c.visiblePublic : true) && formules.length > 0
+  const raison = publique
+    ? "[VISIBLE sur le site public]"
+    : formules.length === 0 ? "[masquée : aucune formule]" : "[MASQUÉE : visiblePublic = false]"
+  console.log(`── #${c.id} ${c.nom} ${raison}`)
   console.log(`   créneaux : ${c.creneaux?.length ? c.creneaux.join(" | ") : "(aucun)"}`)
 
   if (formules.length === 0) { console.log() ; continue }
