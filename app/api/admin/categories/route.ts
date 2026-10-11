@@ -14,7 +14,15 @@ export async function GET() {
 
   const categories = await prisma.categorie.findMany({
     orderBy: { id: "asc" },
-    select: { id: true, nom: true },
+    select: {
+      id: true,
+      nom: true,
+      visiblePublic: true,
+      creneaux: true,
+      // Nombre de formules : la page de gestion prévient avant de masquer
+      // une catégorie qui en contient, et signale celles qui sont vides.
+      _count: { select: { formules: true } },
+    },
   })
 
   return NextResponse.json(categories)

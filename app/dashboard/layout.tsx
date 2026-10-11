@@ -8,6 +8,7 @@ const navLinks = [
   { href: "/dashboard", label: "Vue d'ensemble" },
   { href: "/dashboard/commandes", label: "Commandes" },
   { href: "/dashboard/formules", label: "Formules" },
+  { href: "/dashboard/categories", label: "Catégories" },
   { href: "/dashboard/articles", label: "Articles" },
   { href: "/dashboard/extras", label: "Extras" },
   { href: "/dashboard/galerie", label: "Galerie" },

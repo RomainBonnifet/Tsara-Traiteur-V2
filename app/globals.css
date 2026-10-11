@@ -4119,3 +4119,64 @@ nav.scrolled .nav-admin:hover {
     display: none;
   }
 }
+
+/* ══ Page de gestion des categories ══ */
+.dash-intro {
+  font-size: .9rem;
+  color: var(--brun-clair);
+  line-height: 1.6;
+  max-width: 70ch;
+  margin-bottom: 1.5rem;
+}
+
+.dash-categorie {
+  margin-bottom: 1.5rem;
+}
+
+.dash-categorie-tete {
+  display: flex;
+  align-items: center;
+  gap: .8rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+/* Le champ de nom prend la place restante, les deux indicateurs gardent
+   la leur : sans flex:1 ici, l input se reduit a sa taille par defaut. */
+.dash-categorie-tete .dash-input {
+  flex: 1;
+  min-width: 180px;
+}
+
+.dash-categorie-compte {
+  font-size: .8rem;
+  color: var(--brun-clair);
+  white-space: nowrap;
+}
+
+.dash-textarea {
+  resize: vertical;
+  font-family: inherit;
+  line-height: 1.6;
+}
+
+.dash-aide {
+  display: block;
+  margin-top: .4rem;
+  font-size: .78rem;
+  color: var(--brun-clair);
+  line-height: 1.5;
+}
+
+/* Avertissement de renommage. Ambre et non rouge : ce n est pas une erreur,
+   c est une consequence que l admin doit connaitre avant de valider. */
+.dash-avertissement {
+  font-size: .82rem;
+  line-height: 1.5;
+  color: #8a6a2a;
+  background: #fdf6e8;
+  border-left: 3px solid #d9a441;
+  border-radius: 0 6px 6px 0;
+  padding: .7rem .9rem;
+  margin-bottom: 1rem;
+}
