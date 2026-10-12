@@ -181,6 +181,11 @@ model Photo {
   url       String
   publicId  String?
   alt       String   @default("")
+  // Ordre d affichage, regle par le traiteur depuis son dashboard.
+  // Les lectures trient par (position, id) : le tri secondaire departage
+  // deux positions egales, sinon PostgreSQL ne garantit aucun ordre et
+  // la galerie changerait d un chargement a l autre.
+  position  Int      @default(0)
   createdAt DateTime @default(now())
 }
 

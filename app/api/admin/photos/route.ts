@@ -11,7 +11,12 @@ cloudinary.config({
 
 // GET — liste toutes les photos
 export async function GET() {
-  const photos = await prisma.photo.findMany({ orderBy: { createdAt: "desc" } })
+  // Le tri par id départage deux positions égales : sans lui, PostgreSQL
+  // ne garantit aucun ordre et la liste changerait d'un chargement à
+  // l'autre, ce qui rendrait les flèches imprévisibles.
+  const photos = await prisma.photo.findMany({
+    orderBy: [{ position: "asc" }, { id: "asc" }],
+  })
   return NextResponse.json(photos)
 }
 
@@ -46,8 +51,15 @@ export async function POST(req: NextRequest) {
     }
   )
 
+  // Position = max + 1 : la nouvelle photo arrive EN FIN de liste.
+  // Sans ça, le @default(0) du schéma la placerait à égalité avec la
+  // première — et deux positions identiques cassent le déplacement,
+  // comme on l'a vu sur les créneaux de formule.
+  const { _max } = await prisma.photo.aggregate({ _max: { position: true } })
+  const position = _max.position === null ? 0 : _max.position + 1
+
   const photo = await prisma.photo.create({
-    data: { url: result.secure_url, publicId: result.public_id, alt },
+    data: { url: result.secure_url, publicId: result.public_id, alt, position },
   })
 
   return NextResponse.json(photo)

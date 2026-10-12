@@ -12,6 +12,9 @@ export default function DashboardGaleriePage() {
   const [file, setFile] = useState<File | null>(null)
   const [uploading, setUploading] = useState(false)
   const [toast, setToast] = useState("")
+  // Identifiant de la photo en cours de déplacement : les flèches se
+  // désactivent pendant la requête, pour éviter deux clics qui se croisent.
+  const [deplacement, setDeplacement] = useState<number | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   function showToast(msg: string) {
@@ -80,6 +83,28 @@ export default function DashboardGaleriePage() {
     setUploading(false)
   }
 
+  async function handleMove(id: number, direction: "up" | "down") {
+    setDeplacement(id)
+
+    const res = await fetch(`/api/admin/photos/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ direction }),
+    })
+
+    if (res.ok) {
+      // On relit la liste au lieu de permuter le tableau local : le
+      // serveur a renuméroté toutes les positions, et l'écran doit
+      // montrer ce qu'il a réellement écrit.
+      const maj = await fetch("/api/admin/photos").then((r) => r.json())
+      setPhotos(maj)
+    } else {
+      showToast("Erreur lors du déplacement.")
+    }
+
+    setDeplacement(null)
+  }
+
   async function handleDelete(id: number) {
     if (!confirm("Supprimer cette photo ?")) return
     const res = await fetch(`/api/admin/photos/${id}`, { method: "DELETE" })
@@ -144,11 +169,15 @@ export default function DashboardGaleriePage() {
         {/* Grille des photos existantes */}
         <div className="dash-section">
           <h2 className="dash-subtitle">Photos en ligne ({photos.length})</h2>
+          <p className="dash-aide">
+            L&apos;ordre ci-dessous est celui du site. Les cinq premières
+            apparaissent sur la page d&apos;accueil, toutes sur la page Galerie.
+          </p>
           {photos.length === 0
             ? <p className="dash-empty">Aucune photo pour l&apos;instant.</p>
             : (
               <div className="galerie-admin-grid">
-                {photos.map(photo => (
+                {photos.map((photo, i) => (
                   <div key={photo.id} className="galerie-admin-item">
                     <div className="galerie-admin-img">
                       <Image
@@ -160,12 +189,33 @@ export default function DashboardGaleriePage() {
                       />
                     </div>
                     {photo.alt && <p className="galerie-admin-alt">{photo.alt}</p>}
-                    <button
-                      className="dash-btn dash-btn-danger dash-btn-sm"
-                      onClick={() => handleDelete(photo.id)}
-                    >
-                      Supprimer
-                    </button>
+
+                    <div className="galerie-admin-actions">
+                      {/* disabled sur la première et la dernière : un bouton
+                          qui ne peut rien faire doit le montrer, pas attendre
+                          le clic pour ne rien faire. */}
+                      <button
+                        className="dash-btn dash-btn-sm dash-btn-neutral"
+                        onClick={() => handleMove(photo.id, "up")}
+                        disabled={i === 0 || deplacement !== null}
+                        title="Monter"
+                        aria-label={`Monter la photo ${i + 1}`}
+                      >▲</button>
+                      <button
+                        className="dash-btn dash-btn-sm dash-btn-neutral"
+                        onClick={() => handleMove(photo.id, "down")}
+                        disabled={i === photos.length - 1 || deplacement !== null}
+                        title="Descendre"
+                        aria-label={`Descendre la photo ${i + 1}`}
+                      >▼</button>
+                      <span className="galerie-admin-rang">{i + 1}</span>
+                      <button
+                        className="dash-btn dash-btn-danger dash-btn-sm"
+                        onClick={() => handleDelete(photo.id)}
+                      >
+                        Supprimer
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>

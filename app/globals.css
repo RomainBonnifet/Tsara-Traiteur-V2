@@ -4262,3 +4262,21 @@ nav.scrolled .nav-admin:hover {
   flex-wrap: wrap;
   margin-bottom: .8rem;
 }
+
+/* Barre d action sous chaque photo du dashboard. */
+.galerie-admin-actions {
+  display: flex;
+  align-items: center;
+  gap: .3rem;
+  flex-wrap: wrap;
+}
+
+/* Le rang pousse le bouton Supprimer a droite : les fleches et la action
+   destructrice ne doivent pas se toucher. */
+.galerie-admin-rang {
+  flex: 1;
+  text-align: center;
+  font-size: .78rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--brun-clair);
+}

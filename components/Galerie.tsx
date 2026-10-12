@@ -23,7 +23,9 @@ const NB_APERCU = 5
 
 export default async function Galerie() {
   const photos = await prisma.photo.findMany({
-    orderBy: { createdAt: "desc" },
+    // L'ordre est celui réglé au dashboard. Le tri par id départage deux
+    // positions égales, pour que l'aperçu ne change pas d'un rendu à l'autre.
+    orderBy: [{ position: "asc" }, { id: "asc" }],
     take: NB_APERCU,
   })
 

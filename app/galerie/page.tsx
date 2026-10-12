@@ -8,7 +8,9 @@ export const dynamic = 'force-dynamic'
 
 // Page serveur : on interroge directement Prisma, pas besoin de route API
 export default async function GaleriePage() {
-  const photos = await prisma.photo.findMany({ orderBy: { createdAt: "desc" } })
+  const photos = await prisma.photo.findMany({
+    orderBy: [{ position: "asc" }, { id: "asc" }],
+  })
 
   // Composant serveur : pas de useLang(), on lit le cookie directement.
   const t = await getDictionnaire()
