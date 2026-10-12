@@ -1,6 +1,7 @@
 "use client"
 import { useEffect, useRef, useState, type ReactNode } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { parUnite } from "@/lib/formule"
 import { useLang } from "@/context/LangContext"
 import { useReglages } from "@/context/ReglagesContext"
@@ -25,6 +26,7 @@ type Formule = {
   minPersonnes: number
   unite: string
   miseEnAvant: boolean
+  image: string | null
   slots: Slot[]
 }
 type Categorie = { id: number; nom: string; formules: Formule[] }
@@ -229,6 +231,21 @@ export default function Formules() {
                   key={formule.id}
                   className={formule.miseEnAvant ? "formule-card mise-en-avant" : "formule-card"}
                 >
+                  {/* Photo optionnelle, posée en haut de carte. Le badge
+                      « La plus choisie » reste au-dessus d'elle : il est en
+                      position absolue par rapport à la carte. */}
+                  {formule.image && (
+                    <div className="formule-photo">
+                      <Image
+                        src={formule.image}
+                        alt=""
+                        fill
+                        sizes="(max-width: 768px) 100vw, 380px"
+                        style={{ objectFit: "cover" }}
+                      />
+                    </div>
+                  )}
+
                   {formule.miseEnAvant && <span className="formule-badge">{t.formules.badge}</span>}
 
                   <p className="formule-eyebrow">

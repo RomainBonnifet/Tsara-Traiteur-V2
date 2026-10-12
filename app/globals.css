@@ -4293,3 +4293,57 @@ nav.scrolled .nav-admin:hover {
   padding: .25rem .45rem;
   line-height: 1;
 }
+
+/* Champ photo d une formule, dans l editeur du dashboard. */
+.formule-photo-admin {
+  display: flex;
+  align-items: center;
+  gap: .7rem;
+  flex-wrap: wrap;
+}
+
+.formule-photo-vide {
+  display: grid;
+  place-items: center;
+  width: 140px;
+  height: 90px;
+  border: 1px dashed var(--beige);
+  border-radius: 8px;
+  font-size: .75rem;
+  color: var(--brun-clair);
+}
+
+/* ══ Photo en tete de carte de formule ══ */
+
+/* Marges negatives egales au padding de la carte : la photo touche les
+   bords au lieu de flotter dans un cadre. La valeur est la MEME expression
+   clamp() que .formule-card — si tu changes son padding, change aussi
+   celle-ci, sinon un liseré apparaitra sur les cotes.
+
+   aspect-ratio plutot qu une hauteur fixe : la hauteur suit la largeur de
+   la carte, donc le cadrage reste constant du mobile au grand ecran. */
+.formule-photo {
+  position: relative;
+  margin: calc(clamp(1.6rem, 3vw, 2.2rem) * -1);
+  margin-bottom: 1.6rem;
+  aspect-ratio: 16 / 10;
+  background: var(--beige);
+  overflow: hidden;
+  /* Les deux coins du haut suivent ceux de la carte (18px). En bas, la
+     photo est coupee droit : elle est suivie de contenu. */
+  border-radius: 18px 18px 0 0;
+}
+
+/* Sans photo, le surtitre doit reserver la place du badge pose en haut a
+   droite. Avec une photo, le badge se superpose a l image : la reserve
+   n a plus lieu d etre et laisserait un vide inexplique.
+   :has() permet de le dire en CSS, sans condition dans le composant. */
+.mise-en-avant:has(.formule-photo) .formule-eyebrow {
+  padding-right: 0;
+}
+
+/* Le badge passe au-dessus de la photo. Une ombre portee le detache d un
+   fond clair, sur lequel le lime se lirait mal. */
+.formule-card:has(.formule-photo) .formule-badge {
+  box-shadow: 0 2px 10px rgba(20, 32, 10, .3);
+}

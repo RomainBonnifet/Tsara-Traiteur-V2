@@ -49,7 +49,7 @@ export async function PUT(
   const { id } = await params
   const formuleId = parseInt(id)
   const body = await req.json()
-  const { nom, prix, description, minPersonnes, pasPersonnes, miseEnAvant, unite } = body
+  const { nom, prix, description, minPersonnes, pasPersonnes, miseEnAvant, unite, image } = body
 
   // Validation stricte : "false" (texte) est une chaîne non vide, donc
   // « vraie » en JavaScript. Sans ce contrôle, elle mettrait la formule en avant.
@@ -69,6 +69,9 @@ export async function PUT(
     ...(pasPersonnes !== undefined && { pasPersonnes: parseInt(pasPersonnes) }),
     ...(miseEnAvant !== undefined && { miseEnAvant }),
     ...(unite !== undefined && { unite }),
+    // Chaîne vide = photo retirée. On stocke null plutôt qu'une chaîne
+    // vide, pour que « pas de photo » ait une seule représentation.
+    ...(image !== undefined && { image: image || null }),
   }
 
   // Une seule formule « La plus choisie » par catégorie. Mettre celle-ci en

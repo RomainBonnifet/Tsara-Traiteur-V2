@@ -3,9 +3,10 @@
 // Page d'édition complète d'une formule.
 // Permet de modifier les infos de base, gérer les slots et les articles de chaque slot.
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useParams } from "next/navigation"
 import Link from "next/link"
+import Image from "next/image"
 import { UNITES_FORMULE, libelleUnite } from "@/lib/formule"
 
 // --- Types ---
@@ -43,6 +44,7 @@ type Formule = {
   pasPersonnes: number
   unite: string
   miseEnAvant: boolean
+  image: string | null
   categorieId: number
   categorie: { id: number; nom: string }
   slots: Slot[]
@@ -58,7 +60,12 @@ export default function EditFormulePage() {
   const [loading, setLoading] = useState(true)
 
   // Champs pour la section "Infos de base"
-  const [infoData, setInfoData] = useState({ nom: "", prix: "", description: "", minPersonnes: "1", pasPersonnes: "1", unite: "personne", miseEnAvant: false })
+  const [infoData, setInfoData] = useState({ nom: "", prix: "", description: "", minPersonnes: "1", pasPersonnes: "1", unite: "personne", miseEnAvant: false, image: "" })
+  // Téléversement de la photo de la formule, séparé de l'enregistrement :
+  // l'upload part vers Cloudinary dès le choix du fichier, et ne renvoie
+  // qu'une URL. C'est elle qu'on enregistre ensuite avec le reste.
+  const [imageEnCours, setImageEnCours] = useState(false)
+  const imageInputRef = useRef<HTMLInputElement>(null)
   const [infoSaving, setInfoSaving] = useState(false)
   const [infoMessage, setInfoMessage] = useState("")
 
@@ -101,6 +108,7 @@ export default function EditFormulePage() {
         pasPersonnes: String(formulaData.pasPersonnes ?? 1),
         unite: formulaData.unite ?? "personne",
         miseEnAvant: Boolean(formulaData.miseEnAvant),
+        image: formulaData.image ?? "",
       })
       setLoading(false)
     })
@@ -129,6 +137,26 @@ export default function EditFormulePage() {
     setSlotQuantites(qtes)
   }
 
+  // Téléverse la photo et récupère son URL.
+  //
+  // L'image part vers Cloudinary immédiatement, mais l'URL n'est encore
+  // que dans l'état local : rien n'est enregistré tant que le traiteur
+  // n'a pas cliqué sur « Enregistrer ». Il peut donc changer d'avis.
+  async function handleImage(file: File) {
+    setImageEnCours(true)
+    const form = new FormData()
+    form.append("file", file)
+
+    const res = await fetch("/api/admin/upload", { method: "POST", body: form })
+    if (res.ok) {
+      const data = await res.json()
+      setInfoData((prev) => ({ ...prev, image: data.url }))
+    } else {
+      setInfoMessage("Le téléversement de la photo a échoué.")
+    }
+    setImageEnCours(false)
+  }
+
   // --- Section 1 : Sauvegarder les infos de base ---
   async function handleSaveInfo() {
     setInfoSaving(true)
@@ -145,6 +173,7 @@ export default function EditFormulePage() {
         pasPersonnes: parseInt(infoData.pasPersonnes),
         unite: infoData.unite,
         miseEnAvant: infoData.miseEnAvant,
+        image: infoData.image,
       }),
     })
 
@@ -428,6 +457,52 @@ export default function EditFormulePage() {
               />
             </div>
           </div>
+          <div className="dash-field">
+            <label className="dash-label">Photo de la formule</label>
+            <div className="formule-photo-admin">
+              {infoData.image ? (
+                <Image
+                  src={infoData.image}
+                  alt=""
+                  width={140}
+                  height={90}
+                  style={{ objectFit: "cover", borderRadius: 8 }}
+                />
+              ) : (
+                <span className="formule-photo-vide">Aucune photo</span>
+              )}
+              <input
+                ref={imageInputRef}
+                type="file"
+                accept="image/*"
+                style={{ display: "none" }}
+                onChange={(e) => e.target.files?.[0] && handleImage(e.target.files[0])}
+              />
+              <button
+                type="button"
+                className="dash-btn dash-btn-sm"
+                onClick={() => imageInputRef.current?.click()}
+                disabled={imageEnCours}
+              >
+                {imageEnCours ? "Envoi..." : infoData.image ? "Changer" : "Ajouter une photo"}
+              </button>
+              {infoData.image && (
+                <button
+                  type="button"
+                  className="dash-btn dash-btn-sm dash-btn-neutral"
+                  onClick={() => setInfoData({ ...infoData, image: "" })}
+                >
+                  Retirer
+                </button>
+              )}
+            </div>
+            <span className="dash-aide">
+              Affichée en haut de la carte, sur la page d&apos;accueil.
+              Format paysage conseillé. Le changement n&apos;est pris en
+              compte qu&apos;après « Enregistrer les infos ».
+            </span>
+          </div>
+
           {/* Une seule formule mise en avant par catégorie : l&apos;API retire
               automatiquement la mise en avant des autres à la sauvegarde. */}
           <label className="dash-checkbox">
