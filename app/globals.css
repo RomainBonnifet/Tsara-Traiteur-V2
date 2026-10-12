@@ -4347,3 +4347,19 @@ nav.scrolled .nav-admin:hover {
 .formule-card:has(.formule-photo) .formule-badge {
   box-shadow: 0 2px 10px rgba(20, 32, 10, .3);
 }
+
+/* Bouton du dashboard reduit a une icone.
+   inline-grid + place-items centre le SVG quelles que soient les marges
+   internes heritees de .dash-btn ; sans ca l icone se cale en bas a
+   gauche, decalee par la hauteur de ligne du texte absent. */
+.dash-btn-icone {
+  display: inline-grid;
+  place-items: center;
+  padding: .35rem .5rem;
+}
+
+.dash-btn-icone svg {
+  width: 16px;
+  height: 16px;
+  display: block;
+}

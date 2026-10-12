@@ -324,12 +324,30 @@ export default function FormulesPage() {
                   >
                     X
                   </button>
+                  {/* Bouton sans texte : title affiche une infobulle à la
+                      souris, aria-label donne son nom aux lecteurs
+                      d'écran. Sans l'un des deux, le bouton est muet pour
+                      une partie des utilisateurs — une icône seule ne dit
+                      rien à qui ne la voit pas. */}
                   <Link
                     href={`/dashboard/formules/${f.id}`}
-                    className="dash-btn dash-btn-sm dash-btn-neutral"
+                    className="dash-btn dash-btn-sm dash-btn-neutral dash-btn-icone"
                     style={{ textDecoration: "none" }}
+                    title="Configurer les créneaux et articles"
+                    aria-label={`Configurer la formule ${f.nom}`}
                   >
-                    Slots
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      aria-hidden="true"
+                    >
+                      <circle cx="12" cy="12" r="3" />
+                      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                    </svg>
                   </Link>
                 </td>
               </tr>
