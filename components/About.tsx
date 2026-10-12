@@ -79,9 +79,9 @@ export default function About() {
                   <circle cx="12" cy="12" r="9" />
                   <path d="M12 7v5l3 2" strokeLinecap="round" />
                 </svg>
-                <span>Dès 17 h</span>
+                <span>{t.afterwork.badge}</span>
               </div>
-              <div className="afterwork-badge-sub">livré • prêt à partager</div>
+              <div className="afterwork-badge-sub">{t.afterwork.badgeSousTitre}</div>
             </div>
           </div>
         </div>

@@ -56,6 +56,8 @@ const en: Dictionnaire = {
     carte1Texte: "A meeting, a seminar or a relaxed moment with colleagues.",
     carte2Titre: "Drinks at home",
     carte2Texte: "At home, in a holiday cottage or at your venue.",
+    badge: "From 6 pm",
+    badgeSousTitre: "delivered • ready to share",
     cta: "Book an after-work",
   },
 

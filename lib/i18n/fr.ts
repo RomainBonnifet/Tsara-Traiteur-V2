@@ -58,6 +58,10 @@ const fr = {
     carte1Texte: "Réunion, séminaire ou moment convivial entre collaborateurs.",
     carte2Titre: "Apéro à domicile",
     carte2Texte: "À la maison, dans un gîte ou sur votre lieu de réception.",
+    // Badge posé sur la photo. Il avait échappé à la traduction : un
+    // visiteur anglophone lisait « Dès 18 h ».
+    badge: "Dès 18 h",
+    badgeSousTitre: "livré • prêt à partager",
     cta: "Demander un afterwork",
   },
 
