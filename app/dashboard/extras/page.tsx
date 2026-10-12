@@ -37,6 +37,10 @@ export default function ExtrasPage() {
   const [newData, setNewData]   = useState({ nom: "", prix: "", description: "", image: "", categorieId: "" })
   const [saving, setSaving]   = useState(false)
   const [message, setMessage] = useState("")
+  // Identifiant de l'extra en cours de déplacement : les flèches se
+  // désactivent pendant la requête, sinon deux clics rapides partiraient
+  // sur la même liste et se contrediraient.
+  const [deplacement, setDeplacement] = useState<number | null>(null)
 
   const editFileRef = useRef<HTMLInputElement>(null)
   const newFileRef  = useRef<HTMLInputElement>(null)
@@ -107,6 +111,28 @@ export default function ExtrasPage() {
     }
   }
 
+  async function handleMove(id: number, direction: "up" | "down") {
+    setDeplacement(id)
+
+    const res = await fetch(`/api/admin/extras/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ direction }),
+    })
+
+    if (res.ok) {
+      // On relit la liste plutôt que de permuter le tableau local : le
+      // serveur a renuméroté toutes les positions, l'écran doit montrer
+      // ce qu'il a réellement écrit.
+      const maj = await fetch("/api/admin/extras").then((r) => r.json())
+      setExtras(maj)
+    } else {
+      setMessage("Erreur lors du déplacement.")
+    }
+
+    setDeplacement(null)
+  }
+
   async function handleDelete(id: number) {
     if (!confirm("Supprimer cet extra ?")) return
     const res = await fetch(`/api/admin/extras/${id}`, { method: "DELETE" })
@@ -147,6 +173,7 @@ export default function ExtrasPage() {
       <table className="dash-table">
         <thead>
           <tr>
+            <th>Ordre</th>
             <th>Photo</th>
             <th>Nom</th>
             <th>Proposé avec</th>
@@ -157,9 +184,13 @@ export default function ExtrasPage() {
           </tr>
         </thead>
         <tbody>
-          {extras.map(ex =>
+          {extras.map((ex, i) =>
             editId === ex.id ? (
               <tr key={ex.id} className="dash-row-edit">
+                {/* Cellule vide : on ne déplace pas une ligne en cours
+                    d'édition, mais le tableau doit garder le même nombre de
+                    colonnes sous peine de décaler tout l'affichage. */}
+                <td />
                 <td>
                   <div className="dash-img-cell">
                     {editData.image && (
@@ -205,6 +236,24 @@ export default function ExtrasPage() {
               </tr>
             ) : (
               <tr key={ex.id}>
+                <td className="dash-ordre">
+                  {/* disabled sur le premier et le dernier : un bouton qui
+                      ne peut rien faire doit le montrer. */}
+                  <button
+                    className="dash-btn dash-btn-sm dash-btn-neutral"
+                    onClick={() => handleMove(ex.id, "up")}
+                    disabled={i === 0 || deplacement !== null}
+                    title="Monter"
+                    aria-label={`Monter ${ex.nom}`}
+                  >▲</button>
+                  <button
+                    className="dash-btn dash-btn-sm dash-btn-neutral"
+                    onClick={() => handleMove(ex.id, "down")}
+                    disabled={i === extras.length - 1 || deplacement !== null}
+                    title="Descendre"
+                    aria-label={`Descendre ${ex.nom}`}
+                  >▼</button>
+                </td>
                 <td>
                   {ex.image
                     ? <Image src={ex.image} alt={ex.nom} width={50} height={50} style={{ objectFit: "cover", borderRadius: 6 }} />

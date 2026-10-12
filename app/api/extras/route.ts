@@ -30,7 +30,9 @@ export async function GET(req: NextRequest) {
         OR: [{ categorieId }, { categorieId: null }],
       }),
     },
-    orderBy: { id: 'asc' },
+    // L'ordre vient du dashboard. Le filtre par catégorie ne le change
+    // pas : il retire des lignes, il ne les réordonne pas.
+    orderBy: [{ position: 'asc' }, { id: 'asc' }],
   })
 
   return NextResponse.json(extras)

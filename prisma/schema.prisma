@@ -196,6 +196,10 @@ model Extra {
   description String?
   image       String?
   disponible  Boolean      @default(true)
+  // Ordre d affichage, regle par le traiteur depuis son dashboard.
+  // Les lectures trient par (position, id) : le tri secondaire departage
+  // deux positions egales, que PostgreSQL ordonnerait sinon au hasard.
+  position    Int          @default(0)
   // Catégorie de formule à laquelle cet extra est proposé.
   // NULL = proposé pour TOUTES les formules (une baguette, un sachet de
   // chocolat). Nullable et non obligatoire : rendre la colonne NOT NULL

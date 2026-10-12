@@ -9,7 +9,7 @@ export async function GET() {
   if (auth instanceof NextResponse) return auth
 
   const extras = await prisma.extra.findMany({
-    orderBy: { id: "asc" },
+    orderBy: [{ position: "asc" }, { id: "asc" }],
     // La catégorie est jointe pour que le tableau du dashboard affiche son
     // nom sans avoir à faire une requête supplémentaire par ligne.
     include: { categorie: { select: { id: true, nom: true } } },
@@ -34,8 +34,15 @@ export async function POST(req: NextRequest) {
     )
   }
 
+  // Position = max + 1 : le nouvel extra arrive EN FIN de liste.
+  // Le @default(0) du schéma le placerait à égalité avec le premier, et
+  // deux positions identiques rendent le déplacement imprévisible.
+  const { _max } = await prisma.extra.aggregate({ _max: { position: true } })
+  const position = _max.position === null ? 0 : _max.position + 1
+
   const extra = await prisma.extra.create({
     data: {
+      position,
       nom,
       prix: parseFloat(prix),
       description: description || null,

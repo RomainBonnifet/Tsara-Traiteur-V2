@@ -4280,3 +4280,16 @@ nav.scrolled .nav-admin:hover {
   font-variant-numeric: tabular-nums;
   color: var(--brun-clair);
 }
+
+/* Colonne des fleches de reordonnancement, dans les tableaux du dashboard.
+   white-space: nowrap empeche les deux fleches de se retrouver sur deux
+   lignes quand la colonne se resserre. */
+.dash-ordre {
+  white-space: nowrap;
+  width: 1%;
+}
+
+.dash-ordre .dash-btn {
+  padding: .25rem .45rem;
+  line-height: 1;
+}
