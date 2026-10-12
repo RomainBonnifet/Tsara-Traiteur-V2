@@ -176,15 +176,11 @@ export default function Formules() {
     <>
       {categories.map((categorie, index) => {
         const habillage = habillageDe(categorie, t)
-        // Alternance des fonds : deux sections crème collées se liraient
-        // comme un seul bloc. L'alternance se fait sur l'index, donc elle
-        // tient quel que soit le nombre de catégories.
-        const fond = index % 2 === 1 ? " formules-blanc" : ""
 
         return (
           <section
             key={categorie.id}
-            className={`formules reveal${fond}`}
+            className="formules reveal"
             id={habillage.id}
           >
             <div className="formules-header">

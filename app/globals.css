@@ -780,12 +780,10 @@ h1 em {
   background: var(--creme);
 }
 
-/* En-tête sur 2 colonnes : titre à gauche, texte d'intro aligné en bas à droite */
-/* Fond alterné : deux sections de formules qui se suivent se liraient comme
-   un seul bloc. Le composant pose cette classe un index sur deux. */
-.formules-blanc {
-  background: var(--blanc);
-}
+/* L'alternance de fonds a été retirée : toutes les sections de formules
+   partagent désormais le crème. Elle existait pour que deux sections qui se
+   suivent ne se lisent pas comme un seul bloc, mais l'en-tête de chacune
+   (surtitre, grand titre, introduction) suffit largement à les séparer. */
 
 .formules-header {
   display: grid;
