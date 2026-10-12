@@ -1,10 +1,6 @@
 {
   "compilerOptions": {
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -16,26 +12,23 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
+    "plugins": [{ "name": "next" }],
     "paths": {
-      "@/*": [
-        "./*"
-      ]
+      "@/*": ["./*"]
     }
   },
+  // .next-verif/types : types générés par un build de vérification lancé
+  // avec NEXT_DIST_DIR (voir next.config.js). Le dossier n'existe pas en
+  // production ; un motif qui ne correspond à rien est sans effet.
+  // L'entrée est conservée pour que Next cesse de réécrire ce fichier à
+  // chaque build de vérification.
   "include": [
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "next.config.tsx",
-    ".next-verif/types/**/*.ts"
+    ".next-verif/types/**/*.ts",
+    "next.config.tsx"
   ],
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules"]
 }
