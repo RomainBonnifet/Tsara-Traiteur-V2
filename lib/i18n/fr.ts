@@ -337,6 +337,7 @@ const fr = {
     logo: "Logo Tsara",
     portrait: "Portrait Tsara Traiteur",
     afterwork: "Planche de charcuteries et fromages locaux pour un afterwork",
+    brunch: "Table de brunch dressée avec viennoiseries, fruits frais et boissons chaudes",
     seminaire: "Prestation séminaire Tsara",
     instagram: "Tsara sur Instagram",
     facebook: "Tsara sur Facebook",
@@ -422,6 +423,18 @@ const fr = {
 
     // Contact
     nomTelephoneRequis: "Nom et téléphone requis.",
+  },
+  // ── Brunch ──
+  brunch: {
+    label: "Brunch",
+    titre: "Le brunch",
+    titreEm: "Tsara",
+    texte:
+      "Pour vos moments en famille, entre amis ou vos événements professionnels, Tsara imagine des brunchs généreux composés de produits locaux et artisanaux, livrés et présentés avec soin.",
+    accroche:
+      "Une prestation personnalisée selon vos envies et le nombre de convives.",
+    badge: "Sur devis",
+    cta: "Demander un devis",
   },
 }
 

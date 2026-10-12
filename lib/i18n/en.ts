@@ -319,6 +319,7 @@ const en: Dictionnaire = {
     logo: "Tsara logo",
     portrait: "Tsara Traiteur portrait",
     afterwork: "A board of local charcuterie and cheeses for after-work drinks",
+    brunch: "A brunch table laid with pastries, fresh fruit and hot drinks",
     seminaire: "Tsara seminar catering",
     instagram: "Tsara on Instagram",
     facebook: "Tsara on Facebook",
@@ -387,6 +388,17 @@ const en: Dictionnaire = {
     emailDejaUtilise: "This email address is already in use.",
 
     nomTelephoneRequis: "Name and phone number are required.",
+  },
+  brunch: {
+    label: "Brunch",
+    titre: "The Tsara",
+    titreEm: "brunch",
+    texte:
+      "For family gatherings, time with friends or your business events, Tsara puts together generous brunches made with local, artisan produce, delivered and presented with care.",
+    accroche:
+      "A bespoke service, shaped around your wishes and the number of guests.",
+    badge: "On request",
+    cta: "Request a quote",
   },
 }
 

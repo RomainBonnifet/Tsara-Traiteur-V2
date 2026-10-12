@@ -53,8 +53,56 @@ export default function About() {
           </div>
         </div>
       </div>
-      {/* AFTERWORK — 2e bloc : devient nth-child(even), donc l'image passe
-          à droite automatiquement grâce à la règle .about-block:nth-child(even) */}
+      {/* BRUNCH.
+          Inséré ici, il devient le 2e bloc : nth-child(even) lui donne
+          l'image à droite et le fond crème, sans classe supplémentaire.
+
+          Conséquence à connaître : les blocs suivants changent de parité,
+          donc de côté. L'alternance reste cohérente, mais l'afterwork et
+          les prestations ont échangé leurs positions. */}
+      <div className="about-block brunch reveal">
+        <div className="about-img brunch-img">
+          {/* Même wrapper que l'afterwork : il porte le position:relative
+              exigé par <Image fill>, ce qui permet de mettre le padding
+              sur le parent sans que l'image le recouvre. */}
+          <div className="brunch-img-inner">
+            <Image
+              src="/img/Photos/pdj.jpg"
+              alt={t.alt.brunch}
+              fill
+              style={{ objectFit: "cover" }}
+              sizes="(max-width: 900px) 100vw, 50vw"
+            />
+            <span className="brunch-badge">{t.brunch.badge}</span>
+          </div>
+        </div>
+        <div className="about-text-wrap">
+          <div className="section-label">{t.brunch.label}</div>
+          <h2>
+            {t.brunch.titre}
+            <br />
+            <em>{t.brunch.titreEm}</em>
+          </h2>
+          <p>{t.brunch.texte}</p>
+          <p className="brunch-accroche">{t.brunch.accroche}</p>
+          <a href="#contact" className="btn-lime about-cta">
+            {t.brunch.cta}
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M5 12h13M13 6l6 6-6 6" />
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      {/* AFTERWORK — devient le 3e bloc depuis l'ajout du brunch. */}
       <div className="about-block afterwork reveal">
         <div className="about-img afterwork-img">
           {/* wrapper intermédiaire : porte le position:relative dont <Image fill>

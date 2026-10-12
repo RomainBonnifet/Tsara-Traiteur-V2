@@ -489,6 +489,53 @@ h1 em {
   padding: clamp(1.5rem, 4vw, 4rem);
 }
 
+/* ══ Bloc brunch ══
+   Reprend la structure de l'afterwork — photo encadrée, badge posé
+   dessus — mais sur le fond clair par défaut du bloc. */
+
+.about-block.brunch .about-img {
+  padding: clamp(1.5rem, 4vw, 4rem);
+}
+
+/* Même rôle que .afterwork-img-inner : porter le position:relative dont
+   <Image fill> a besoin, pour que le padding du parent soit respecté. */
+.brunch-img-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 320px;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+/* Pastille « Sur devis ». Vert plein et non lime : elle doit se détacher
+   d'une photo claire, où le lime se perdrait. */
+.brunch-badge {
+  position: absolute;
+  left: clamp(1rem, 2.5vw, 2rem);
+  bottom: clamp(1rem, 2.5vw, 2rem);
+  background: var(--vert);
+  color: var(--blanc);
+  border-radius: 10px;
+  padding: .6rem 1.1rem;
+  font-size: .72rem;
+  font-weight: 500;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  box-shadow: 0 6px 22px rgba(0, 0, 0, .2);
+}
+
+/* Phrase d'accroche : c'est la promesse commerciale, elle se détache du
+   paragraphe qui la précède.
+
+   Le sélecteur descendant est OBLIGATOIRE : .about-text-wrap p pèse
+   (0,1,1) et écraserait une simple classe .brunch-accroche, qui ne pèse
+   que (0,1,0). Ici on monte à (0,2,0) et la règle passe devant. */
+.about-text-wrap .brunch-accroche {
+  color: var(--vert);
+  font-weight: 500;
+}
+
 /* Ce wrapper porte le position:relative exigé par <Image fill>.
    Sans lui, l'image (inset:0) se calerait sur la padding-box du parent
    et ignorerait donc le padding ci-dessus. */
@@ -649,7 +696,8 @@ h1 em {
     grid-template-columns: 1fr;
   }
 
-  .afterwork-img-inner {
+  .afterwork-img-inner,
+  .brunch-img-inner {
     min-height: 260px;
   }
 }
