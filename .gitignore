@@ -44,3 +44,6 @@ CLAUDE.md
 maquette/
 
 .env*
+
+# Dossier de verification de build (voir distDir dans next.config.js)
+.next-verif
