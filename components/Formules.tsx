@@ -297,10 +297,7 @@ export default function Formules() {
                       cliquable au clavier et par clic-milieu. */}
                   {!commandesOuvertes ? (
                     <span
-                      className={
-                        (formule.miseEnAvant ? "btn-lime" : "formule-cta") +
-                        " formule-card-cta cta-suspendu"
-                      }
+                      className="btn-lime formule-card-cta cta-suspendu"
                       aria-disabled="true"
                     >
                       {t.pause.bouton}
@@ -308,11 +305,7 @@ export default function Formules() {
                   ) : (
                   <Link
                     href={`/commander/${formule.id}`}
-                    className={
-                      formule.miseEnAvant
-                        ? "btn-lime formule-card-cta"
-                        : "formule-cta formule-card-cta"
-                    }
+                    className="btn-lime formule-card-cta"
                   >
                     {t.formules.cta}
                     <svg

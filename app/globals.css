@@ -897,22 +897,20 @@ h1 em {
   flex-direction: column;
   padding: clamp(1.6rem, 3vw, 2.2rem);
   background: var(--blanc);
-  border: 1px solid var(--beige);
+  /* Bordure verte et ombre portée pour TOUTES les cartes : elles ne
+     distinguaient plus la formule mise en avant, elles lui donnaient juste
+     une allure plus soignée que les autres. */
+  border: 1px solid var(--vert);
   border-radius: 18px;
+  box-shadow: 0 18px 45px rgba(46, 34, 21, .16);
   color: var(--brun);
 }
 
-/* Plus d'aplat vert : la carte garde le fond des autres.
-   La mise en avant passe désormais par la bordure, l'ombre portée, le badge
-   et le bouton lime. Un aplat foncé obligeait à réécrire la couleur de
-   CHAQUE texte de la carte — quatre règles qui n'existaient que pour ça, et
-   autant d'occasions d'oublier un élément ajouté plus tard.
-   La bordure reste à 1px comme les autres cartes : passer à 2px décalerait
-   sa hauteur d'un pixel et désalignerait la rangée. */
-.formule-card.mise-en-avant {
-  border-color: var(--vert);
-  box-shadow: 0 18px 45px rgba(46, 34, 21, .16);
-}
+/* Toutes les cartes partagent désormais le même habillage : bordure verte,
+   ombre portée, pastilles lime et bouton lime. La formule mise en avant ne
+   se distingue plus que par son badge « La plus choisie ».
+   C'est volontaire : un seul signal se repère mieux que quatre, et surtout
+   une carte sur deux ne paraît plus négligée. */
 
 .formule-badge {
   position: absolute;
@@ -1006,17 +1004,11 @@ h1 em {
 }
 
 .formule-check circle {
-  fill: rgba(58, 90, 28, .12);
+  fill: var(--lime);
 }
 
 .formule-check path {
   stroke: var(--vert);
-}
-
-/* Conservée : sur fond clair, la pastille lime reste lisible et distingue
-   la carte sans rien imposer au texte. */
-.mise-en-avant .formule-check circle {
-  fill: var(--lime);
 }
 
 /* Bouton vert. Aussi utilisé par le lien du panier vide (panier/page.tsx) :
