@@ -1,5 +1,8 @@
 import { prisma } from "@/lib/prisma"
 import { cibleSlot } from "@/lib/formule"
+import fr from "@/lib/i18n/fr"
+import en from "@/lib/i18n/en"
+import { LANGUE_DEFAUT, type Langue } from "@/lib/i18n/config"
 
 // Validation et chiffrage du panier CÔTÉ SERVEUR.
 //
@@ -42,8 +45,12 @@ function entierPositif(valeur: unknown): valeur is number {
 }
 
 // 400 : requête mal formée (ne peut pas venir du site tel qu'il est codé).
-function invalide(): Resultat {
-  return { ok: false, status: 400, error: "Panier invalide." }
+//
+// Le message est passé en argument : cette fonction est déclarée au niveau
+// du module, elle ne voit donc pas le dictionnaire choisi dans
+// validerPanier. Lui transmettre le texte la garde pure.
+function invalide(error: string): Resultat {
+  return { ok: false, status: 400, error }
 }
 
 // 409 : panier cohérent au moment de sa création, mais qui ne correspond
@@ -52,9 +59,16 @@ function aActualiser(error: string): Resultat {
   return { ok: false, status: 409, error }
 }
 
-export async function validerPanier(itemsRecus: unknown): Promise<Resultat> {
+// La langue est un PARAMÈTRE, pas une lecture de cookie faite ici : cette
+// fonction reste indépendante de la requête HTTP, donc testable sans
+// contexte. C'est /api/checkout, qui connaît la requête, qui la transmet.
+export async function validerPanier(
+  itemsRecus: unknown,
+  langue: Langue = LANGUE_DEFAUT
+): Promise<Resultat> {
+  const e = (langue === "en" ? en : fr).erreurs
   if (!Array.isArray(itemsRecus) || itemsRecus.length === 0) {
-    return { ok: false, status: 400, error: "Panier vide" }
+    return { ok: false, status: 400, error: e.panierVide }
   }
 
   const items = itemsRecus as Record<string, unknown>[]
@@ -64,7 +78,7 @@ export async function validerPanier(itemsRecus: unknown): Promise<Resultat> {
       entierPositif(i.formuleId) && entierPositif(i.nbPersonnes) &&
       Array.isArray(i.lignes) && Array.isArray(i.extras)
   )
-  if (!formeCorrecte) return invalide()
+  if (!formeCorrecte) return invalide(e.panierInvalide)
 
   // Deux requêtes pour tout le panier, quel que soit le nombre de formules,
   // plutôt qu'une requête par formule (le problème dit « N+1 »).
@@ -95,7 +109,7 @@ export async function validerPanier(itemsRecus: unknown): Promise<Resultat> {
   for (const item of items) {
     const formule = formuleParId.get(item.formuleId as number)
     if (!formule) {
-      return aActualiser("Une formule de votre panier n'est plus proposée. Retirez-la de votre panier.")
+      return aActualiser(e.formuleRetiree)
     }
 
     // Les deux contrôles ci-dessus (liste et détail) sont du confort
@@ -103,7 +117,7 @@ export async function validerPanier(itemsRecus: unknown): Promise<Resultat> {
     // une formule retirée de la vente : rien n'oblige à passer par le site
     // pour appeler /api/checkout.
     if (!formule.categorie.visiblePublic) {
-      return aActualiser("Une formule de votre panier n'est plus proposée à la vente en ligne. Retirez-la de votre panier.")
+      return aActualiser(e.formuleHorsVente)
     }
 
     const nom = formule.nom.trim()
@@ -115,10 +129,7 @@ export async function validerPanier(itemsRecus: unknown): Promise<Resultat> {
       nbPersonnes >= formule.minPersonnes &&
       (nbPersonnes - formule.minPersonnes) % formule.pasPersonnes === 0
     if (!nbValide) {
-      return aActualiser(
-        `Le nombre de personnes pour la formule ${nom} ne correspond plus aux conditions ` +
-        `(à partir de ${formule.minPersonnes}, par tranche de ${formule.pasPersonnes}). Retirez-la et ajoutez-la à nouveau.`
-      )
+      return aActualiser(e.nbPersonnes(nom, formule.minPersonnes, formule.pasPersonnes))
     }
 
     // Le client répartit des quantités par créneau. On revérifie ici que
@@ -137,10 +148,10 @@ export async function validerPanier(itemsRecus: unknown): Promise<Resultat> {
     const selections: { slotId: number; articleId: number; quantite: number }[] = []
 
     for (const ligneRecue of lignesRecues) {
-      if (typeof ligneRecue !== "object" || ligneRecue === null) return invalide()
+      if (typeof ligneRecue !== "object" || ligneRecue === null) return invalide(e.panierInvalide)
       const { slotId, articleId, quantite } = ligneRecue as Record<string, unknown>
       if (!entierPositif(slotId) || !entierPositif(articleId) || !entierPositif(quantite)) {
-        return invalide()
+        return invalide(e.panierInvalide)
       }
 
       // Le créneau doit appartenir à CETTE formule, et l'article à CE créneau.
@@ -148,13 +159,11 @@ export async function validerPanier(itemsRecus: unknown): Promise<Resultat> {
       // un article retiré du stock fait donc échouer la vérification.
       const slot = formule.slots.find((s) => s.id === slotId)
       if (!slot || !slot.articles.some((a) => a.articleId === articleId)) {
-        return aActualiser(
-          `Un article choisi pour la formule ${nom} n'est plus disponible. Retirez la formule et composez-la à nouveau.`
-        )
+        return aActualiser(e.articleIndisponible(nom))
       }
 
       const couple = `${slotId}:${articleId}`
-      if (couplesVus.has(couple)) return invalide()
+      if (couplesVus.has(couple)) return invalide(e.panierInvalide)
       couplesVus.add(couple)
 
       quantiteParSlot.set(slotId, (quantiteParSlot.get(slotId) ?? 0) + quantite)
@@ -184,10 +193,7 @@ export async function validerPanier(itemsRecus: unknown): Promise<Resultat> {
       // écrite qu'une fois, les deux côtés ne peuvent pas diverger.
       const cible = cibleSlot(nbPersonnes, slot.capacite, slot.quantiteParUnite)
       if ((quantiteParSlot.get(slot.id) ?? 0) !== cible) {
-        return aActualiser(
-          `La répartition de « ${slot.nom} » pour la formule ${nom} ne correspond plus ` +
-          `(${cible} attendu${cible > 1 ? "s" : ""}). Retirez la formule et composez-la à nouveau.`
-        )
+        return aActualiser(e.repartition(slot.nom, nom, cible))
       }
     }
 
@@ -197,20 +203,18 @@ export async function validerPanier(itemsRecus: unknown): Promise<Resultat> {
     for (const extraRecu of item.extras as unknown[]) {
       const extraId = (extraRecu as { extraId?: unknown } | null)?.extraId
       const quantite = (extraRecu as { quantite?: unknown } | null)?.quantite
-      if (!entierPositif(extraId) || !entierPositif(quantite)) return invalide()
+      if (!entierPositif(extraId) || !entierPositif(quantite)) return invalide(e.panierInvalide)
 
       const extra = extraParId.get(extraId)
       if (!extra) {
-        return aActualiser("Un extra de votre panier n'est plus disponible. Retirez la formule et ajoutez-la à nouveau.")
+        return aActualiser(e.extraIndisponible)
       }
       // Un extra est proposé soit pour toutes les formules (categorieId à
       // null), soit pour la catégorie de CETTE formule. On revérifie ici ce
       // que /api/extras applique déjà à l'affichage : rien n'oblige à passer
       // par la page de commande pour appeler cette API.
       if (extra.categorieId !== null && extra.categorieId !== formule.categorieId) {
-        return aActualiser(
-          `Un extra de votre panier n'est plus proposé avec la formule ${nom}. Retirez-la et ajoutez-la à nouveau.`
-        )
+        return aActualiser(e.extraHorsFormule(nom))
       }
       // Les extras ne sont pas multipliés par le nombre de personnes,
       // comme sur la page de commande.
@@ -224,10 +228,7 @@ export async function validerPanier(itemsRecus: unknown): Promise<Resultat> {
     // tolérance absorbe les arrondis du calcul fait par le navigateur.
     const affiche = typeof item.subtotal === "number" ? enCentimes(item.subtotal) : NaN
     if (!(Math.abs(affiche - montantCentimes) <= 1)) {
-      return aActualiser(
-        `Le prix de la formule ${nom} a changé depuis son ajout au panier ` +
-        `(${(montantCentimes / 100).toFixed(2)} €). Retirez-la et ajoutez-la à nouveau.`
-      )
+      return aActualiser(e.prixChange(nom, (montantCentimes / 100).toFixed(2)))
     }
 
     lignes.push({

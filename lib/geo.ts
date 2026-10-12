@@ -1,3 +1,10 @@
+import fr from "@/lib/i18n/fr"
+import en from "@/lib/i18n/en"
+import { LANGUE_DEFAUT, type Langue } from "@/lib/i18n/config"
+
+// Raccourci : le dictionnaire d'erreurs de la langue demandée.
+const e = (langue: Langue) => (langue === "en" ? en : fr).erreurs
+
 // Convertit des degrés en radians (requis par la formule de Haversine)
 function toRad(deg: number): number {
   return (deg * Math.PI) / 180
@@ -36,7 +43,9 @@ export async function geocodeAdresse(adresse: string): Promise<{ lat: number; ln
 
 // Vérifie qu'une adresse est dans le rayon de livraison configuré dans .env.
 // Retourne { ok: true } ou { ok: false, message, distanceKm }
-export async function verifierRayon(adresse: string): Promise<
+// La langue est transmise par l'appelant, comme pour validerPanier :
+// cette fonction ne connaît pas la requête HTTP.
+export async function verifierRayon(adresse: string, langue: Langue = LANGUE_DEFAUT): Promise<
   { ok: true; label: string } | { ok: false; message: string; distance?: number }
 > {
   const businessLat = parseFloat(process.env.BUSINESS_LAT!)
@@ -46,7 +55,7 @@ export async function verifierRayon(adresse: string): Promise<
   const coords = await geocodeAdresse(adresse)
 
   if (!coords) {
-    return { ok: false, message: "Adresse introuvable. Vérifiez l'adresse saisie." }
+    return { ok: false, message: e(langue).adresseIntrouvable }
   }
 
   const distance = distanceKm(businessLat, businessLng, coords.lat, coords.lng)
@@ -54,7 +63,7 @@ export async function verifierRayon(adresse: string): Promise<
   if (distance > radius) {
     return {
       ok: false,
-      message: `Cette adresse est à ${Math.round(distance)} km — hors de la zone de livraison (${radius} km max).`,
+      message: e(langue).horsZone(Math.round(distance), radius),
       distance: Math.round(distance),
     }
   }

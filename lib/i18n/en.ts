@@ -350,6 +350,49 @@ const en: Dictionnaire = {
     vide: "No photos yet.",
     photoParDefaut: "Tsara Traiteur photo",
   },
+  erreurs: {
+    panierInvalide: "Invalid basket.",
+    panierVide: "Your basket is empty.",
+    formuleRetiree: "One of the offers in your basket is no longer available. Please remove it.",
+    formuleHorsVente:
+      "One of the offers in your basket is no longer sold online. Please remove it from your basket.",
+    nbPersonnes: (nom: string, min: number, pas: number) =>
+      `The number of people for the ${nom} offer no longer matches its conditions ` +
+      `(from ${min}, in steps of ${pas}). Please remove it and add it again.`,
+    articleIndisponible: (nom: string) =>
+      `An item chosen for the ${nom} offer is no longer available. Please remove the offer and build it again.`,
+    repartition: (slot: string, nom: string, cible: number) =>
+      `The quantities for “${slot}” in the ${nom} offer no longer match ` +
+      `(${cible} expected). Please remove the offer and build it again.`,
+    extraIndisponible:
+      "One of the extras in your basket is no longer available. Please remove the offer and add it again.",
+    extraHorsFormule: (nom: string) =>
+      `One of the extras in your basket is no longer offered with the ${nom} offer. Please remove it and add it again.`,
+    prixChange: (nom: string, montant: string) =>
+      `The price of the ${nom} offer has changed since you added it ` +
+      `(€${montant}). Please remove it and add it again.`,
+
+    livraisonManquante: "Delivery details are missing.",
+    modePaiementInvalide: "Invalid payment method.",
+    emailRequis: "A valid email address is required to confirm your order.",
+    nombreDeDates: (max: number) => `Choose between 1 and ${max} delivery dates.`,
+    dateInvalide: "Invalid delivery date.",
+    datePassee: "One of the delivery dates is already in the past.",
+    creneauManquant: "Delivery time is missing.",
+    creneauInvalide: (categorie: string) =>
+      `Choose a valid delivery time for “${categorie}”.`,
+
+    adresseVide: "Address is empty.",
+    adresseIntrouvable: "Address not found. Please check what you typed.",
+    horsZone: (distance: number, rayon: number) =>
+      `This address is ${distance} km away — outside our delivery area (${rayon} km max).`,
+
+    identifiantsRequis: "Email and password are required.",
+    identifiantsIncorrects: "Incorrect email or password.",
+    emailDejaUtilise: "This email address is already in use.",
+
+    nomTelephoneRequis: "Name and phone number are required.",
+  },
 }
 
 export default en

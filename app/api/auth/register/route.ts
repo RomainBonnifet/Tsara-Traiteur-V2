@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { getDictionnaire } from "@/lib/i18n/serveur"
 import { hash } from "bcryptjs"
 import { prisma } from "@/lib/prisma"
 
@@ -7,13 +8,13 @@ export async function POST(req: NextRequest) {
 
   // Validation basique
   if (!email || !password) {
-    return NextResponse.json({ error: "Email et mot de passe requis" }, { status: 400 })
+    return NextResponse.json({ error: (await getDictionnaire()).erreurs.identifiantsRequis }, { status: 400 })
   }
 
   // Vérifier que l'email n'est pas déjà utilisé
   const existing = await prisma.user.findUnique({ where: { email } })
   if (existing) {
-    return NextResponse.json({ error: "Cet email est déjà utilisé" }, { status: 409 })
+    return NextResponse.json({ error: (await getDictionnaire()).erreurs.emailDejaUtilise }, { status: 409 })
   }
 
   // hash(password, 12) : le 12 est le "salt rounds" — plus c'est élevé, plus c'est lent

@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { cookies } from "next/headers"
-import { COOKIE_LANGUE, LANGUE_DEFAUT, estLangueValide } from "@/lib/i18n/config"
+
 import { prisma } from "@/lib/prisma"
 import { getStripe } from "@/lib/stripe"
 import { getCurrentUser } from "@/lib/auth"
@@ -13,6 +12,7 @@ import { estCreneauValide } from "@/lib/creneaux"
 import { getReglages } from "@/lib/reglages"
 import fr from "@/lib/i18n/fr"
 import en from "@/lib/i18n/en"
+import { getLangue } from "@/lib/i18n/serveur"
 
 // Validation d'email volontairement permissive : on écarte les fautes de
 // frappe grossières sans rejeter d'adresse exotique mais valide. La seule
@@ -47,16 +47,22 @@ export async function POST(req: NextRequest) {
   //    une commande invitée.
   const currentUser = await getCurrentUser()
 
+  // Langue lue en tête de requête : tous les messages d'erreur en
+  // dépendent, y compris ceux des tout premiers contrôles. Elle était
+  // calculée plus bas, après la validation du panier.
+  const langue = await getLangue()
+  const e = (langue === "en" ? en : fr).erreurs
+
   const { items, livraison, modePaiement }: { items: unknown; livraison: Livraison | undefined; modePaiement: unknown } = await req.json()
 
   if (!livraison || typeof livraison !== "object") {
-    return NextResponse.json({ error: "Informations de livraison manquantes." }, { status: 400 })
+    return NextResponse.json({ error: e.livraisonManquante }, { status: 400 })
   }
 
   // Le mode de paiement vient du navigateur : seules les deux valeurs
   // prévues sont acceptées. Toute autre valeur est refusée, pas devinée.
   if (!estModePaiementValide(modePaiement)) {
-    return NextResponse.json({ error: "Mode de paiement invalide." }, { status: 400 })
+    return NextResponse.json({ error: e.modePaiementInvalide }, { status: 400 })
   }
   const mode: ModePaiement = modePaiement
   const aLaLivraison = mode === "livraison"
@@ -77,7 +83,7 @@ export async function POST(req: NextRequest) {
 
   if (!EMAIL_REGEX.test(email)) {
     return NextResponse.json(
-      { error: "Une adresse email valide est nécessaire pour confirmer la commande." },
+      { error: e.emailRequis },
       { status: 400 }
     )
   }
@@ -93,36 +99,31 @@ export async function POST(req: NextRequest) {
 
   if (dates.length === 0 || dates.length > MAX_DATES) {
     return NextResponse.json(
-      { error: `Choisissez entre 1 et ${MAX_DATES} dates de livraison.` },
+      { error: e.nombreDeDates(MAX_DATES) },
       { status: 400 }
     )
   }
 
   if (dates.some(d => !/^\d{4}-\d{2}-\d{2}$/.test(d) || Number.isNaN(new Date(d).getTime()))) {
-    return NextResponse.json({ error: "Date de livraison invalide." }, { status: 400 })
+    return NextResponse.json({ error: e.dateInvalide }, { status: 400 })
   }
 
   // Une date ISO se compare et se trie comme du texte : "2026-09-02" est
   // bien avant "2026-09-10", sans conversion en objet Date.
   if (dates.some(d => d < aujourdhui)) {
-    return NextResponse.json({ error: "Une des dates de livraison est déjà passée." }, { status: 400 })
+    return NextResponse.json({ error: e.datePassee }, { status: 400 })
   }
   dates.sort()
 
   // 1 ter. Le panier est revalidé et rechiffré à partir de la base.
   //        Plus aucun prix envoyé par le navigateur n'est utilisé ensuite.
-  const panier = await validerPanier(items)
+  // La langue est transmise : les messages du panier reviennent traduits.
+  const panier = await validerPanier(items, langue)
   if (!panier.ok) {
     return NextResponse.json({ error: panier.error }, { status: panier.status })
   }
   const { lignes } = panier
 
-  // Langue du client, lue dans SON cookie et non dans le corps de la requête.
-  // Le navigateur joint ses cookies à toute requête de même origine : la page
-  // panier n'a donc rien à envoyer, et une requête forgée ne peut pas mentir
-  // sur autre chose que sa propre langue — un enjeu nul.
-  const cookieLangue = (await cookies()).get(COOKIE_LANGUE)?.value
-  const langue = estLangueValide(cookieLangue) ? cookieLangue : LANGUE_DEFAUT
 
   // 1 quinquies. Les commandes sont-elles ouvertes ?
   //
@@ -155,7 +156,7 @@ export async function POST(req: NextRequest) {
   //           mais rien n'oblige à passer par le formulaire.
   const creneauxRecus = (livraison.creneaux ?? {}) as Record<string, unknown>
   if (typeof creneauxRecus !== "object" || creneauxRecus === null || Array.isArray(creneauxRecus)) {
-    return NextResponse.json({ error: "Créneau de livraison manquant." }, { status: 400 })
+    return NextResponse.json({ error: e.creneauManquant }, { status: 400 })
   }
 
   // Map plutôt qu'objet : les clés d'un objet JSON sont des chaînes, alors
@@ -167,7 +168,7 @@ export async function POST(req: NextRequest) {
     const choix = creneauxRecus[String(ligne.categorieId)]
     if (!estCreneauValide(choix, ligne.creneauxCategorie)) {
       return NextResponse.json(
-        { error: `Choisissez un créneau de livraison valide pour « ${ligne.categorieNom} ».` },
+        { error: e.creneauInvalide(ligne.categorieNom) },
         { status: 400 }
       )
     }
@@ -182,7 +183,7 @@ export async function POST(req: NextRequest) {
   // Le rayon de livraison vaut pour toutes les formules. La condition qui
   // en exemptait les buffets de groupe a disparu avec eux : il n'y a plus
   // de catégorie livrée hors zone.
-  const rayonCheck = await verifierRayon(livraison.adresse)
+  const rayonCheck = await verifierRayon(livraison.adresse, langue)
   if (!rayonCheck.ok) {
     return NextResponse.json({ error: rayonCheck.message }, { status: 422 })
   }

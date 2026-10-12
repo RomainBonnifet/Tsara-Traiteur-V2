@@ -1,4 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
+import { getLangue } from "@/lib/i18n/serveur"
+import fr from "@/lib/i18n/fr"
+import en from "@/lib/i18n/en"
 import { verifierRayon } from "@/lib/geo"
 
 // POST /api/validate-adresse
@@ -8,10 +11,16 @@ import { verifierRayon } from "@/lib/geo"
 export async function POST(req: NextRequest) {
   const { adresse } = await req.json()
 
+  // Lue une fois : les deux réponses possibles de cette route en dépendent.
+  const langue = await getLangue()
+  const e = (langue === "en" ? en : fr).erreurs
+
   if (!adresse || adresse.trim() === "") {
-    return NextResponse.json({ ok: false, message: "Adresse vide." }, { status: 400 })
+    return NextResponse.json({ ok: false, message: e.adresseVide }, { status: 400 })
   }
 
-  const result = await verifierRayon(adresse)
+  // La langue est transmise : « hors de la zone de livraison » s'affiche
+  // sous le champ d'adresse du panier, c'est un message vu par le client.
+  const result = await verifierRayon(adresse, langue)
   return NextResponse.json(result)
 }

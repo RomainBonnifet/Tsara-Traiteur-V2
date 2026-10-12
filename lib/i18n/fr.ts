@@ -370,6 +370,64 @@ const fr = {
     vide: "Aucune photo pour l'instant.",
     photoParDefaut: "Photo Tsara Traiteur",
   },
+  // ── Messages d'erreur renvoyés par les API ──
+  //
+  // Ils remontent tels quels dans l'interface : le panier affiche
+  // data.error, les pages d'authentification aussi. Ils sont donc du
+  // contenu visible, pas des journaux techniques.
+  //
+  // Les messages à trous sont des FONCTIONS et non des chaînes à assembler.
+  // Deux raisons : l'ordre des mots change d'une langue à l'autre, et le
+  // type de la fonction oblige la traduction à accepter exactement les
+  // mêmes paramètres. Oublier un argument ne compile pas.
+  erreurs: {
+    // Panier
+    panierInvalide: "Panier invalide.",
+    panierVide: "Panier vide.",
+    formuleRetiree: "Une formule de votre panier n'est plus proposée. Retirez-la de votre panier.",
+    formuleHorsVente:
+      "Une formule de votre panier n'est plus proposée à la vente en ligne. Retirez-la de votre panier.",
+    nbPersonnes: (nom: string, min: number, pas: number) =>
+      `Le nombre de personnes pour la formule ${nom} ne correspond plus aux conditions ` +
+      `(à partir de ${min}, par tranche de ${pas}). Retirez-la et ajoutez-la à nouveau.`,
+    articleIndisponible: (nom: string) =>
+      `Un article choisi pour la formule ${nom} n'est plus disponible. Retirez la formule et composez-la à nouveau.`,
+    repartition: (slot: string, nom: string, cible: number) =>
+      `La répartition de « ${slot} » pour la formule ${nom} ne correspond plus ` +
+      `(${cible} attendu${cible > 1 ? "s" : ""}). Retirez la formule et composez-la à nouveau.`,
+    extraIndisponible:
+      "Un extra de votre panier n'est plus disponible. Retirez la formule et ajoutez-la à nouveau.",
+    extraHorsFormule: (nom: string) =>
+      `Un extra de votre panier n'est plus proposé avec la formule ${nom}. Retirez-la et ajoutez-la à nouveau.`,
+    prixChange: (nom: string, montant: string) =>
+      `Le prix de la formule ${nom} a changé depuis son ajout au panier ` +
+      `(${montant} €). Retirez-la et ajoutez-la à nouveau.`,
+
+    // Commande
+    livraisonManquante: "Informations de livraison manquantes.",
+    modePaiementInvalide: "Mode de paiement invalide.",
+    emailRequis: "Une adresse email valide est nécessaire pour confirmer la commande.",
+    nombreDeDates: (max: number) => `Choisissez entre 1 et ${max} dates de livraison.`,
+    dateInvalide: "Date de livraison invalide.",
+    datePassee: "Une des dates de livraison est déjà passée.",
+    creneauManquant: "Créneau de livraison manquant.",
+    creneauInvalide: (categorie: string) =>
+      `Choisissez un créneau de livraison valide pour « ${categorie} ».`,
+
+    // Adresse
+    adresseVide: "Adresse vide.",
+    adresseIntrouvable: "Adresse introuvable. Vérifiez l'adresse saisie.",
+    horsZone: (distance: number, rayon: number) =>
+      `Cette adresse est à ${distance} km — hors de la zone de livraison (${rayon} km max).`,
+
+    // Compte
+    identifiantsRequis: "Email et mot de passe requis.",
+    identifiantsIncorrects: "Email ou mot de passe incorrect.",
+    emailDejaUtilise: "Cet email est déjà utilisé.",
+
+    // Contact
+    nomTelephoneRequis: "Nom et téléphone requis.",
+  },
 }
 
 export type Dictionnaire = typeof fr

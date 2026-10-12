@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server"
 import { Resend } from "resend"
+import { getDictionnaire } from "@/lib/i18n/serveur"
 
 export async function POST(req: NextRequest) {
   const resend = new Resend(process.env.RESEND_API_KEY)
   const { nom, telephone, email, prestation, date, nbPersonnes, message } = await req.json()
 
   if (!nom || !telephone) {
-    return NextResponse.json({ error: "Nom et téléphone requis" }, { status: 400 })
+    return NextResponse.json({ error: (await getDictionnaire()).erreurs.nomTelephoneRequis }, { status: 400 })
   }
 
   try {
