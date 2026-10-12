@@ -322,11 +322,6 @@ const en: Dictionnaire = {
     seminaire: "Tsara seminar catering",
     instagram: "Tsara on Instagram",
     facebook: "Tsara on Facebook",
-    photo1: "Tsara breakfast tray",
-    photo2: "Artisan pastries",
-    photo3: "Local produce",
-    photo4: "Preparing a tray",
-    photo5: "Breakfast at a holiday cottage",
   },
 
   auth: {

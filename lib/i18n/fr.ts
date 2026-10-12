@@ -340,11 +340,6 @@ const fr = {
     seminaire: "Prestation séminaire Tsara",
     instagram: "Tsara sur Instagram",
     facebook: "Tsara sur Facebook",
-    photo1: "Plateau petit-déjeuner Tsara",
-    photo2: "Viennoiseries artisanales",
-    photo3: "Produits locaux",
-    photo4: "Préparation d'un plateau",
-    photo5: "Petit-déjeuner en gîte",
   },
 
   // ── Connexion et inscription ──
