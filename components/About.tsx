@@ -11,7 +11,7 @@ export default function About() {
         <div className="about-img">
           <Image
             src="/img/Photos/about.jpg"
-            alt="Portrait Tsara Traiteur"
+            alt={t.alt.portrait}
             fill
             className="about-portrait"
             sizes="(max-width: 768px) 100vw, 50vw"
@@ -62,7 +62,7 @@ export default function About() {
           <div className="afterwork-img-inner">
             <Image
               src="/img/Photos/plancheAfterWork.jpeg"
-              alt="Planche de charcuteries et fromages locaux pour un afterwork"
+              alt={t.alt.afterwork}
               fill
               style={{ objectFit: "cover" }}
               sizes="(max-width: 900px) 100vw, 50vw"
@@ -158,7 +158,7 @@ export default function About() {
         <div className="about-img dark">
           <Image
             src="/img/Photos/seminaire2.png"
-            alt="Prestation séminaire Tsara"
+            alt={t.alt.seminaire}
             fill
             style={{ objectFit: "cover" }}
             sizes="(max-width: 768px) 100vw, 50vw"

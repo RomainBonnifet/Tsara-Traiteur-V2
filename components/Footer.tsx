@@ -16,18 +16,18 @@ export default function Footer() {
         <a href="#contact">{t.footer.contact}</a>
       </nav>
       <div className="footer-social">
-        <a href="https://www.instagram.com/tsara_rural/" className="social-btn" aria-label="Instagram" target="blank">
+        <a href="https://www.instagram.com/tsara_rural/" className="social-btn" aria-label={t.alt.instagram} target="blank">
           <Image
             src="/img/svg/instagram-brands-solid-full.svg"
-            alt="Logo Facebook"
+            alt={t.alt.instagram}
             width={32}
             height={32}
           />
         </a>
-        <a href="https://www.facebook.com/people/Tsara/61586816975312/#" className="social-btn" aria-label="Facebook" target="blank">
+        <a href="https://www.facebook.com/people/Tsara/61586816975312/#" className="social-btn" aria-label={t.alt.facebook} target="blank">
           <Image
             src="/img/svg/facebook-brands-solid-full.svg"
-            alt="Logo Facebook"
+            alt={t.alt.facebook}
             width={32}
             height={32}
           />

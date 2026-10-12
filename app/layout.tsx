@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
-import { cookies } from 'next/headers'
-import { COOKIE_LANGUE, LANGUE_DEFAUT, estLangueValide } from '@/lib/i18n/config'
+import { getLangue } from '@/lib/i18n/serveur'
 import { getReglages } from '@/lib/reglages'
 import { Cormorant_Garamond, Jost } from 'next/font/google'
 import './globals.css'
@@ -83,8 +82,7 @@ const jsonLd = {
 // prix d un premier affichage deja dans la bonne langue ; sur un site de cette
 // taille, le cout est negligeable.
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const choix = (await cookies()).get(COOKIE_LANGUE)?.value
-  const langue = estLangueValide(choix) ? choix : LANGUE_DEFAUT
+  const langue = await getLangue()
 
   // Lu ici plutot que par un fetch depuis chaque page : la page est deja
   // rendue a la demande (cookies() l impose), une requete de plus sur la

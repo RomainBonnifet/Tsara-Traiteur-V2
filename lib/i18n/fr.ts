@@ -330,6 +330,46 @@ const fr = {
     erreur:
       "Les commandes en ligne sont momentanément suspendues. Contactez-nous pour toute demande.",
   },
+  // ── Textes alternatifs des images ──
+  // Invisibles à l'écran, mais lus par les lecteurs d'écran et indexés
+  // par Google Images : ils font partie du contenu du site.
+  alt: {
+    logo: "Logo Tsara",
+    portrait: "Portrait Tsara Traiteur",
+    afterwork: "Planche de charcuteries et fromages locaux pour un afterwork",
+    seminaire: "Prestation séminaire Tsara",
+    instagram: "Tsara sur Instagram",
+    facebook: "Tsara sur Facebook",
+    photo1: "Plateau petit-déjeuner Tsara",
+    photo2: "Viennoiseries artisanales",
+    photo3: "Produits locaux",
+    photo4: "Préparation d'un plateau",
+    photo5: "Petit-déjeuner en gîte",
+  },
+
+  // ── Connexion et inscription ──
+  auth: {
+    connexionTitre: "Se connecter",
+    compteCree: "Compte créé avec succès ! Connectez-vous.",
+    email: "Email",
+    emailPlaceholder: "vous@exemple.com",
+    motDePasse: "Mot de passe",
+    motDePassePlaceholder: "8 caractères minimum",
+    connexionEnCours: "Connexion...",
+    pasDeCompte: "Pas encore de compte ?",
+    sInscrire: "S'inscrire",
+    inscriptionTitre: "Créer un compte",
+    inscriptionEnCours: "Création...",
+    creerMonCompte: "Créer mon compte",
+    dejaUnCompte: "Déjà un compte ?",
+  },
+
+  // ── Page galerie ──
+  galeriePage: {
+    retour: "← Retour",
+    vide: "Aucune photo pour l'instant.",
+    photoParDefaut: "Photo Tsara Traiteur",
+  },
 }
 
 export type Dictionnaire = typeof fr

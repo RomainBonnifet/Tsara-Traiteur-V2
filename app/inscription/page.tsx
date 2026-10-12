@@ -2,6 +2,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import { useLang } from "@/context/LangContext"
 
 export default function InscriptionPage() {
   const router = useRouter()
@@ -9,6 +10,7 @@ export default function InscriptionPage() {
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
+  const { t } = useLang()
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -36,30 +38,30 @@ export default function InscriptionPage() {
   return (
     <main className="auth-page">
       <div className="auth-card">
-        <h1 className="auth-title">Créer un compte</h1>
+        <h1 className="auth-title">{t.auth.inscriptionTitre}</h1>
 
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="auth-field">
-            <label htmlFor="email">Email</label>
+            <label htmlFor="email">{t.auth.email}</label>
             <input
               id="email"
               type="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
               required
-              placeholder="vous@exemple.com"
+              placeholder={t.auth.emailPlaceholder}
             />
           </div>
 
           <div className="auth-field">
-            <label htmlFor="password">Mot de passe</label>
+            <label htmlFor="password">{t.auth.motDePasse}</label>
             <input
               id="password"
               type="password"
               value={password}
               onChange={e => setPassword(e.target.value)}
               required
-              placeholder="8 caractères minimum"
+              placeholder={t.auth.motDePassePlaceholder}
               minLength={8}
             />
           </div>
@@ -67,12 +69,12 @@ export default function InscriptionPage() {
           {error && <p className="auth-error">{error}</p>}
 
           <button type="submit" className="auth-btn" disabled={loading}>
-            {loading ? "Création..." : "Créer mon compte"}
+            {loading ? t.auth.inscriptionEnCours : t.auth.creerMonCompte}
           </button>
         </form>
 
         <p className="auth-switch">
-          Déjà un compte ? <Link href="/connexion">Se connecter</Link>
+          {t.auth.dejaUnCompte} <Link href="/connexion">{t.auth.connexionTitre}</Link>
         </p>
       </div>
     </main>

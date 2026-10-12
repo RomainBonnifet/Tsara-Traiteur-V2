@@ -315,6 +315,41 @@ const en: Dictionnaire = {
     erreur:
       "Online ordering is temporarily paused. Please contact us for any request.",
   },
+  alt: {
+    logo: "Tsara logo",
+    portrait: "Tsara Traiteur portrait",
+    afterwork: "A board of local charcuterie and cheeses for after-work drinks",
+    seminaire: "Tsara seminar catering",
+    instagram: "Tsara on Instagram",
+    facebook: "Tsara on Facebook",
+    photo1: "Tsara breakfast tray",
+    photo2: "Artisan pastries",
+    photo3: "Local produce",
+    photo4: "Preparing a tray",
+    photo5: "Breakfast at a holiday cottage",
+  },
+
+  auth: {
+    connexionTitre: "Log in",
+    compteCree: "Account created! You can now log in.",
+    email: "Email",
+    emailPlaceholder: "you@example.com",
+    motDePasse: "Password",
+    motDePassePlaceholder: "8 characters minimum",
+    connexionEnCours: "Logging in...",
+    pasDeCompte: "No account yet?",
+    sInscrire: "Sign up",
+    inscriptionTitre: "Create an account",
+    inscriptionEnCours: "Creating...",
+    creerMonCompte: "Create my account",
+    dejaUnCompte: "Already have an account?",
+  },
+
+  galeriePage: {
+    retour: "← Back",
+    vide: "No photos yet.",
+    photoParDefaut: "Tsara Traiteur photo",
+  },
 }
 
 export default en

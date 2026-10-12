@@ -34,7 +34,7 @@ export default function Nav() {
         </a>
         <Image
           src="/img/Logo/logoNoBackground.png"
-          alt="Tsara logo"
+          alt={t.alt.logo}
           width={50}
           height={50}
         />

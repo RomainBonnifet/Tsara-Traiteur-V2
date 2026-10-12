@@ -2,6 +2,7 @@
 import { Suspense, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import Link from "next/link"
+import { useLang } from "@/context/LangContext"
 
 function ConnexionForm() {
   const searchParams = useSearchParams()
@@ -9,6 +10,7 @@ function ConnexionForm() {
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
+  const { t } = useLang()
 
   // Si l'utilisateur vient de s'inscrire, on affiche un message de confirmation
   const justRegistered = searchParams.get("registered") === "1"
@@ -41,27 +43,27 @@ function ConnexionForm() {
   return (
     <main className="auth-page">
       <div className="auth-card">
-        <h1 className="auth-title">Se connecter</h1>
+        <h1 className="auth-title">{t.auth.connexionTitre}</h1>
 
         {justRegistered && (
-          <p className="auth-success">Compte créé avec succès ! Connectez-vous.</p>
+          <p className="auth-success">{t.auth.compteCree}</p>
         )}
 
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="auth-field">
-            <label htmlFor="email">Email</label>
+            <label htmlFor="email">{t.auth.email}</label>
             <input
               id="email"
               type="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
               required
-              placeholder="vous@exemple.com"
+              placeholder={t.auth.emailPlaceholder}
             />
           </div>
 
           <div className="auth-field">
-            <label htmlFor="password">Mot de passe</label>
+            <label htmlFor="password">{t.auth.motDePasse}</label>
             <input
               id="password"
               type="password"
@@ -74,12 +76,12 @@ function ConnexionForm() {
           {error && <p className="auth-error">{error}</p>}
 
           <button type="submit" className="auth-btn" disabled={loading}>
-            {loading ? "Connexion..." : "Se connecter"}
+            {loading ? t.auth.connexionEnCours : t.auth.connexionTitre}
           </button>
         </form>
 
         <p className="auth-switch">
-          Pas encore de compte ? <Link href="/inscription">S&apos;inscrire</Link>
+          {t.auth.pasDeCompte} <Link href="/inscription">{t.auth.sInscrire}</Link>
         </p>
       </div>
     </main>
