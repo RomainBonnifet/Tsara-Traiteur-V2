@@ -61,20 +61,18 @@ export default function About() {
           donc de côté. L'alternance reste cohérente, mais l'afterwork et
           les prestations ont échangé leurs positions. */}
       <div className="about-block brunch reveal">
-        <div className="about-img brunch-img">
-          {/* Même wrapper que l'afterwork : il porte le position:relative
-              exigé par <Image fill>, ce qui permet de mettre le padding
-              sur le parent sans que l'image le recouvre. */}
-          <div className="brunch-img-inner">
-            <Image
-              src="/img/Photos/pdj.jpg"
-              alt={t.alt.brunch}
-              fill
-              style={{ objectFit: "cover" }}
-              sizes="(max-width: 900px) 100vw, 50vw"
-            />
-            <span className="brunch-badge">{t.brunch.badge}</span>
-          </div>
+        {/* Photo à fond perdu, comme « Qui sommes-nous » : pas de wrapper
+            intermédiaire. .about-img porte déjà position:relative, ce qui
+            suffit à <Image fill> et à l'ancrage du badge. */}
+        <div className="about-img">
+          <Image
+            src="/img/Photos/pdj.jpg"
+            alt={t.alt.brunch}
+            fill
+            style={{ objectFit: "cover" }}
+            sizes="(max-width: 900px) 100vw, 50vw"
+          />
+          <span className="brunch-badge">{t.brunch.badge}</span>
         </div>
         <div className="about-text-wrap">
           <div className="section-label">{t.brunch.label}</div>

@@ -490,26 +490,21 @@ h1 em {
 }
 
 /* ══ Bloc brunch ══
-   Reprend la structure de l'afterwork — photo encadrée, badge posé
-   dessus — mais sur le fond clair par défaut du bloc. */
+   Contrairement à l'afterwork, la photo est à fond perdu : aucun padding
+   sur .about-img, aucun wrapper intérieur. L'image remplit toute sa moitié
+   de bloc, comme dans « Qui sommes-nous ».
 
-.about-block.brunch .about-img {
-  padding: clamp(1.5rem, 4vw, 4rem);
-}
-
-/* Même rôle que .afterwork-img-inner : porter le position:relative dont
-   <Image fill> a besoin, pour que le padding du parent soit respecté. */
-.brunch-img-inner {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  min-height: 320px;
-  border-radius: 16px;
-  overflow: hidden;
-}
+   Le bloc n'a donc plus besoin que d'une seule règle, celle du badge :
+   .about-img est déjà position:relative pour <Image fill>, ce qui sert
+   aussi d'ancrage à la pastille. */
 
 /* Pastille « Sur devis ». Vert plein et non lime : elle doit se détacher
-   d'une photo claire, où le lime se perdrait. */
+   d'une photo claire, où le lime se perdrait.
+
+   z-index indispensable : <Image fill> est lui aussi en position:absolute.
+   À z-index égal, c'est le dernier élément du DOM qui passe devant — ça
+   fonctionnerait ici par simple effet de l'ordre des balises, mais un
+   empilement ne doit pas dépendre de ça. */
 .brunch-badge {
   position: absolute;
   left: clamp(1rem, 2.5vw, 2rem);
@@ -523,6 +518,7 @@ h1 em {
   letter-spacing: .14em;
   text-transform: uppercase;
   box-shadow: 0 6px 22px rgba(0, 0, 0, .2);
+  z-index: 1;
 }
 
 /* Phrase d'accroche : c'est la promesse commerciale, elle se détache du
@@ -696,8 +692,7 @@ h1 em {
     grid-template-columns: 1fr;
   }
 
-  .afterwork-img-inner,
-  .brunch-img-inner {
+  .afterwork-img-inner {
     min-height: 260px;
   }
 }
